@@ -33,6 +33,7 @@ class Configurable(metaclass=_ConfigurableMeta):
     """
     def __init__(self, key):
         self.key = key
+        self._initialized = False
 
     def _setup(self, _config):
         """Initializes this object using a dictionary loaded from a config file.
@@ -66,6 +67,7 @@ class Configurable(metaclass=_ConfigurableMeta):
            expected fields being set.
         """
         self.check_required_fields()
+        self._initialized = True
 
     def copy(self, **overrides):
         """Creates and returns a new instance of this instance's class.
@@ -106,6 +108,17 @@ class Configurable(metaclass=_ConfigurableMeta):
         return inst
 
     @classmethod
+    def _instance(cls, key, copy=False, **overrides):
+        if key not in cls._lookup:
+            raise RuntimeError(f"No base instance of {key} created")
+        base_instance, _ = cls._lookup[key]
+        if copy:
+            inst = base_instance.copy(**overrides)
+        else:
+            inst = base_instance
+        return inst
+
+    @classmethod
     def instance(cls, key, copy=False, **overrides):
         """Returns an instance of the Configurable identified by a key.
 
@@ -118,14 +131,9 @@ class Configurable(metaclass=_ConfigurableMeta):
         Returns:
             A new instance of the class.
         """
-        if key not in cls._lookup:
-            raise RuntimeError(f"No base instance of {key} created")
-        base_instance, _ = cls._lookup[key]
-        if copy:
-            inst = base_instance.copy(**overrides)
-        else:
-            inst = base_instance
-        inst.initialize()
+        inst = cls._instance(key, copy=copy, **overrides)
+        if not inst._initialized:
+            inst.initialize()
         return inst
 
 def _check_for_configurable(s):
@@ -174,14 +182,18 @@ def load_from_obj(obj):
             if class_:
                 if key in class_._lookup:
                     # Update an already-defined instance
-                    obj = class_.instance(key)
+                    obj = class_._instance(key)
                     class_._lookup[key] = (obj, v)
                     obj._setup(v)
+                    obj.initialize()
                     _undefined_objects.discard((class_, key))
                     return obj
                 else:
                     # Define the instance
-                    return class_._define(key, v)
+                    obj = class_._define(key, v)
+                    # Lazy initialization
+                    obj.initialize()
+                    return obj
         # Apply recursively
         return {k: load_from_obj(v) for k, v in obj.items()}
     elif isinstance(obj, list):
@@ -192,7 +204,7 @@ def load_from_obj(obj):
         if class_:
             if key in class_._lookup:
                 # Dereference the instance
-                obj = class_.instance(key)
+                obj = class_._instance(key)
             else:
                 # Define the instance with an empty config, to be setup later
                 obj = class_._define(key, {})
