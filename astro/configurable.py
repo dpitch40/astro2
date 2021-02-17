@@ -1,5 +1,33 @@
-"""Defines a superclass for objects that are instantiated from YAML configs.
+"""Defines a superclass for objects that are defined and instantiated from YAML configs.
 
+The basic syntax for config files is as follows. They are loaded as YAML, but certain strings
+and dictionary values will be interpreted as definitions of or references to Configurable objects.
+The syntax for a Configurable definition is a dictionary mapping one or more strings of the format
+
+<Name of a Configurable subclass>[<A unique key which may be used to refer to this instance>]:
+    configitem1: ...
+    configitem2: ...
+
+The instance will have the subdictionary applied to its own dictionary, i.e. all keys in the subdict
+will become attributes of the defined instance.
+
+There are two ways to refer to a previously defined instance with a string value. First:
+
+<Name of a Configurable subclass>[<key>]
+
+This is simply the dictionary key from the definition syntax as a string. This will directly
+reference the previously defined instance. To use a copy of the instance instead of the original, use
+parentheses instead of square backets:
+
+<Name of a Configurable subclass>(<key>)
+
+Additionally, when referencing a copy, you may override any config values you wish using the same syntax you
+did when defining the instance, only again with parentheses instead of square brackets.
+
+<Name of a Configurable subclass>(<Key>):
+    overridden_configitem1: ...
+
+See the unit test module for usage examples.
 """
 
 import os.path
@@ -9,6 +37,7 @@ from yaml import safe_load
 
 # Regex for identifying references to Configurables
 configurable_re = re.compile(r"^(\w+)\[(\w+)\]$")
+configurable_copy_re = re.compile(r"^(\w+)\((\w+)\)$")
 # Mapping allowign lookup of Configurable subclasses by name
 _configurable_class_lookup = dict()
 _undefined_objects = set()
@@ -33,7 +62,6 @@ class Configurable(metaclass=_ConfigurableMeta):
     """
     def __init__(self, key):
         self.key = key
-        self._initialized = False
 
     def _setup(self, _config):
         """Initializes this object using a dictionary loaded from a config file.
@@ -66,8 +94,7 @@ class Configurable(metaclass=_ConfigurableMeta):
            Subclasses can override this to perform any final setup that relies on all
            expected fields being set.
         """
-        self.check_required_fields()
-        self._initialized = True
+        pass
 
     def copy(self, **overrides):
         """Creates and returns a new instance of this instance's class.
@@ -89,7 +116,7 @@ class Configurable(metaclass=_ConfigurableMeta):
         return copied
 
     @classmethod
-    def _define(cls, key, config):
+    def define(cls, key, config):
         """Defines the base instance of a Configurable and adds it to the instance lookup.
 
         Args:
@@ -103,19 +130,10 @@ class Configurable(metaclass=_ConfigurableMeta):
         # Initialize and setup the base instance
         inst = cls(key)
         inst._setup(config)
+        inst.check_required_fields()
+        inst.initialize()
         # Add it and its config dict to the instabce lookup
         cls._lookup[key] = (inst, config)
-        return inst
-
-    @classmethod
-    def _instance(cls, key, copy=False, **overrides):
-        if key not in cls._lookup:
-            raise RuntimeError(f"No base instance of {key} created")
-        base_instance, _ = cls._lookup[key]
-        if copy:
-            inst = base_instance.copy(**overrides)
-        else:
-            inst = base_instance
         return inst
 
     @classmethod
@@ -131,9 +149,15 @@ class Configurable(metaclass=_ConfigurableMeta):
         Returns:
             A new instance of the class.
         """
-        inst = cls._instance(key, copy=copy, **overrides)
-        if not inst._initialized:
+        if key not in cls._lookup:
+            raise RuntimeError(f"No base instance of {key} created")
+
+        base_instance, _ = cls._lookup[key]
+        if copy:
+            inst = base_instance.copy(**overrides)
             inst.initialize()
+        else:
+            inst = base_instance
         return inst
 
 def _check_for_configurable(s):
@@ -143,15 +167,22 @@ def _check_for_configurable(s):
         s (str): A string.
     
     Returns:
-        A 2-tuple. (None, None) if s does not identify an instance of a Configurable.
-        Otherwise, returns the instance's class and key.
+        A 3-tuple. (None, None, None) if s does not identify an instance of a Configurable.
+        Otherwise, returns the instance's class and key and whether a copy was requested.
     """
     m = configurable_re.match(s)
+    m2 = configurable_copy_re.match(s)
+    name = None
     if m:
         name, key = m.groups()
-        if name in _configurable_class_lookup:
-            return _configurable_class_lookup[name], key
-    return None, None
+        copy = False
+    elif m2:
+        name, key = m2.groups()
+        copy = True
+
+    if name in _configurable_class_lookup:
+        return _configurable_class_lookup[name], key, copy
+    return None, None, None
 
 def load_from_yaml(path_or_fobj):
     """Loads and returns a Configurable from YAML.
@@ -169,51 +200,55 @@ def load_from_yaml(path_or_fobj):
         data = safe_load(path_or_fobj)
     return load_from_obj(data)
 
-def load_from_obj(obj):
+def load_from_obj(obj, dict_key=None):
     """Recursive helper function for loading Configurables.
 
     Initializes or dereferences Configurables in obj, passes other values through.
     Works recursively on data structures.
     """
     if isinstance(obj, dict):
-        if len(obj) == 1:
-            k, v = next(iter(obj.items()))
-            class_, key = _check_for_configurable(k)
+        if dict_key:
+            class_, key, copy = _check_for_configurable(dict_key)
             if class_:
-                if key in class_._lookup:
-                    # Update an already-defined instance
-                    obj = class_._instance(key)
-                    class_._lookup[key] = (obj, v)
-                    obj._setup(v)
-                    obj.initialize()
-                    _undefined_objects.discard((class_, key))
-                    return obj
-                else:
-                    # Define the instance
-                    obj = class_._define(key, v)
-                    # Lazy initialization
-                    obj.initialize()
-                    return obj
+                return load_configurable(class_, key, copy, d=obj)
+
         # Apply recursively
-        return {k: load_from_obj(v) for k, v in obj.items()}
+        result = dict()
+        for k, v in obj.items():
+            loaded = load_from_obj(v, dict_key=k)
+            if isinstance(loaded, Configurable):
+                result[loaded.key] = loaded
+            else:
+                result[k] = loaded
+        if len(result) > 1:
+            return result
+        else:
+            return next(iter(result.values()))
     elif isinstance(obj, list):
         # Apply recursively
         return [load_from_obj(v) for v in obj]
     elif isinstance(obj, str):
-        class_, key = _check_for_configurable(obj)
+        class_, key, copy = _check_for_configurable(obj)
         if class_:
-            if key in class_._lookup:
-                # Dereference the instance
-                obj = class_._instance(key)
-            else:
-                # Define the instance with an empty config, to be setup later
-                obj = class_._define(key, {})
-                _undefined_objects.add((class_, key))
+            # Dereference the instance
+            return load_configurable(class_, key, copy)
 
-    # Default to passing objects through
     return obj
 
-def check_for_undefined_objects():
-    if _undefined_objects:
-        lines = '\n'.join([f'\t- {class_.__name__}[{key}]' for class_, key in sorted(_undefined_objects)])
-        raise RuntimeError(f"The following referenced Configurables were not defined:\n{lines}")
+def load_configurable(class_, key, copy, d=None):
+    """Interprets a reference to a Configurable instance.
+
+    If copy is False and a config dictionary is passed, defines the instance.
+    if copy is False and no config dictionary is passed, references a previously defined instance.
+    Otherwise, returns a copy, using the config dictionary (if any) to override base values.
+    """
+    if copy:
+        overrides = {} if not d else d
+        return class_.instance(key, copy, **overrides)
+    else:
+        if d:
+            # Define the base instance
+            return class_.define(key, d)
+        else:
+            # Return the base instacce
+            return class_.instance(key, copy)

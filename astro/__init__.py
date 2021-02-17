@@ -10,6 +10,11 @@ SCREEN_SIZE = (640, 480)
 OFF_SCREEN_CUTOFF = 500
 MAX_FPS = 60
 
+# Order in which to load configs
+CONFIG_ORDER = ['projectiles',
+                'weapons',
+                'ships']
+
 # Sprite groups
 
 FRIENDLY_SHIPS = pygame.sprite.RenderPlain()

@@ -5,7 +5,7 @@ import sys
 import pygame
 from pygame.locals import *
 
-from astro import SCREEN_SIZE, GROUPS, MAX_FPS, COLLIDABLE_PAIRS, CONFIG_DIR
+from astro import SCREEN_SIZE, GROUPS, MAX_FPS, COLLIDABLE_PAIRS, CONFIG_DIR, CONFIG_ORDER
 import astro.keys
 from astro.configurable import load_from_yaml
 from astro.ship import PlayerShip
@@ -20,8 +20,9 @@ def check_collisions():
                 sprite.collide(collider)
 
 def load_all():
-    for dirpath, dirnames, fnames in os.walk(CONFIG_DIR):
-        for fname in fnames:
+    for d in CONFIG_ORDER:
+        dirpath = os.path.join(CONFIG_DIR, d)
+        for fname in os.listdir(dirpath):
             if os.path.splitext(fname)[1].lower() == '.yaml':
                 load_from_yaml(os.path.join(dirpath, fname))
 
