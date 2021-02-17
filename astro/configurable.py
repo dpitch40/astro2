@@ -49,7 +49,7 @@ class _ConfigurableMeta(type):
         # Instantiate the new class
         result = type.__new__(cls, name, bases, dict(namespace))
         # Add it to the Configurable (sub)class lookup dict
-        _configurable_class_lookup[name] = result 
+        _configurable_class_lookup[name] = result
         # Initialize its instance lookup dict
         result._lookup = dict()
         return result

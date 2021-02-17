@@ -17,7 +17,7 @@ def check_collisions():
     for group1, group2 in COLLIDABLE_PAIRS:
         for sprite, colliders in pygame.sprite.groupcollide(group1, group2, False, False):
             for collider in colliders:
-                sprite.collide(collider)
+                sprite.collide_with(collider)
 
 def load_all():
     for d in CONFIG_ORDER:

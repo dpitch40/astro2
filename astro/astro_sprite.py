@@ -7,9 +7,10 @@ import pygame
 
 from astro import ASSET_DIR, SCREEN_SIZE, OFF_SCREEN_CUTOFF
 from astro.configurable import Configurable
+from astro.collidable import Collidable
 from astro.timekeeper import Timekeeper
 
-class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper):
+class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable):
     """Class for any object that is rendered onscreen in the game.
 
     Attributes:
@@ -28,6 +29,7 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper):
     def __init__(self, key):
         pygame.sprite.Sprite.__init__(self)
         Timekeeper.__init__(self)
+        Collidable.__init__(self)
         Configurable.__init__(self, key)
 
     def place(self, startx, starty, speedx=0, speedy=0):
@@ -71,15 +73,6 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper):
         self.mask_rect = self.mask.get_bounding_rects()[0]
         self.mask_rect_offsetx = self.mask_rect.centerx - self.rect.centerx
         self.mask_rect_offsety = self.mask_rect.centery - self.rect.centery
-
-    def collide(self, collider):
-        """Handles collisions between this sprite and another sprite.
-
-        Args:
-            collider: The sprite this sprite collided with.
-        """
-        # TODO
-        pass
 
     def destroy(self):
         """Removes this object from the game.
