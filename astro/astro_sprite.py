@@ -6,11 +6,15 @@ import os.path
 import pygame
 
 from astro import ASSET_DIR, SCREEN_SIZE, OFF_SCREEN_CUTOFF
-from astro.configurable import Configurable
-from astro.collidable import Collidable
+from astro.configurable import Configurable, ConfigurableMeta
+from astro.collidable import Collidable, CollidableMeta
 from astro.timekeeper import Timekeeper
 
-class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable):
+class AstroSpriteMeta(ConfigurableMeta, CollidableMeta):
+    pass
+
+class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
+    metaclass=AstroSpriteMeta):
     """Class for any object that is rendered onscreen in the game.
 
     Attributes:

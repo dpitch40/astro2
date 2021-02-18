@@ -42,7 +42,7 @@ configurable_copy_re = re.compile(r"^(\w+)\((\w+)\)$")
 _configurable_class_lookup = dict()
 _undefined_objects = set()
 
-class _ConfigurableMeta(type):
+class ConfigurableMeta(type):
     """Metaclass for Configurable and its subclasses that initializes them in the lookup systems.
     """
     def __new__(cls, name, bases, namespace):
@@ -54,7 +54,7 @@ class _ConfigurableMeta(type):
         result._lookup = dict()
         return result
 
-class Configurable(metaclass=_ConfigurableMeta):
+class Configurable(metaclass=ConfigurableMeta):
     defaults = dict()
     required_fields = ()
 
