@@ -108,11 +108,15 @@ class Configurable(metaclass=ConfigurableMeta):
         Returns:
             A new instance of the called instance's class.
         """
-        _, base_config = self._lookup[self.key]
-        config = base_config.copy()
-        config.update(overrides)
+        ##_, base_config = self._lookup[self.key]
+        ##config = base_config.copy()
+        ##config.update(overrides)
         copied = self.__class__(self.key)
-        copied._setup(config)
+        ##copied._setup(config)
+        Thing = self.__dict__.copy()
+        Thing.update(overrides)
+        copied.__dict__ = Thing
+
         return copied
 
     @classmethod
@@ -123,6 +127,7 @@ class Configurable(metaclass=ConfigurableMeta):
             key (str): A unique key that identifies this instance.
             config (dict): A dictionary that will be used to configure the object.
         """
+
         if key in cls._lookup:
             # Should only be called once, to add an instance to the instance lookup
             raise RuntimeError(f"Base instance of {key} already exists")
@@ -149,6 +154,7 @@ class Configurable(metaclass=ConfigurableMeta):
         Returns:
             A new instance of the class.
         """
+
         if key not in cls._lookup:
             raise RuntimeError(f"No base instance of {key} created")
 
