@@ -26,15 +26,8 @@ class Weapon(Configurable, Timekeeper):
         Creates a new instance of the weapon's projectile
         """
 
-        # TODO: Support multiple projectiles and firing directions other than forward
         for projectile in self.projectiles:
-
-            ##print(f"BEFORE: Angle {projectile.angle}")
-
             projectile = projectile.copy()
-
-            ##print(f"AFTER: Angle {projectile.angle}")
-
             projectile.place(firer=self.owner, friendly=self.owner.inverted)
         self.last_fired = now
 

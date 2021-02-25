@@ -94,7 +94,9 @@ class Configurable(metaclass=ConfigurableMeta):
            Subclasses can override this to perform any final setup that relies on all
            expected fields being set.
         """
-        pass
+        _, base_config = self._lookup[self.key]
+        self.fields = set(self.defaults.keys()) | set(self.required_fields) | set(base_config.keys())
+        self.fields = sorted(self.fields)
 
     def copy(self, **overrides):
         """Creates and returns a new instance of this instance's class.
@@ -108,14 +110,12 @@ class Configurable(metaclass=ConfigurableMeta):
         Returns:
             A new instance of the called instance's class.
         """
-        ##_, base_config = self._lookup[self.key]
-        ##config = base_config.copy()
-        ##config.update(overrides)
+        _, base_config = self._lookup[self.key]
+        config = base_config.copy()
+        config.update({f: getattr(self, f) for f in self.fields if hasattr(self, f)})
+        config.update(overrides)
         copied = self.__class__(self.key)
-        ##copied._setup(config)
-        Thing = self.__dict__.copy()
-        Thing.update(overrides)
-        copied.__dict__ = Thing
+        copied._setup(config)
 
         return copied
 
@@ -136,9 +136,9 @@ class Configurable(metaclass=ConfigurableMeta):
         inst = cls(key)
         inst._setup(config)
         inst.check_required_fields()
-        inst.initialize()
         # Add it and its config dict to the instabce lookup
         cls._lookup[key] = (inst, config)
+        inst.initialize()
         return inst
 
     @classmethod
