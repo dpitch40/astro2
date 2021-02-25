@@ -94,9 +94,16 @@ class Configurable(metaclass=ConfigurableMeta):
            Subclasses can override this to perform any final setup that relies on all
            expected fields being set.
         """
-        _, base_config = self._lookup[self.key]
-        self.fields = set(self.defaults.keys()) | set(self.required_fields) | set(base_config.keys())
-        self.fields = sorted(self.fields)
+        pass
+
+    @classmethod
+    def _set_fields(cls, base_config):
+        if not hasattr(cls, 'fields'):
+            cls.fields = set(cls.defaults.keys()) | set(cls.required_fields)
+            cls.fields = sorted(cls.fields)
+        for k in base_config.keys():
+            if k not in cls.fields:
+                cls.fields.append(k)
 
     def copy(self, **overrides):
         """Creates and returns a new instance of this instance's class.
@@ -136,9 +143,10 @@ class Configurable(metaclass=ConfigurableMeta):
         inst = cls(key)
         inst._setup(config)
         inst.check_required_fields()
+        inst.initialize()
         # Add it and its config dict to the instabce lookup
         cls._lookup[key] = (inst, config)
-        inst.initialize()
+        cls._set_fields(config)
         return inst
 
     @classmethod
