@@ -98,8 +98,8 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
     def update_position(self, elapsed):
         """Called each tick; updates the sprite's position based on its velocity.
         """
-        self.rect.centerx += elapsed * self.speedx
-        self.rect.centery += elapsed * self.speedy
+        self.rect.centerx += round(elapsed * self.speedx)
+        self.rect.centery += round(elapsed * self.speedy)
         self.update_mask_pos()
 
         self.check_bounds()

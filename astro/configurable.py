@@ -96,6 +96,15 @@ class Configurable(metaclass=ConfigurableMeta):
         """
         pass
 
+    @classmethod
+    def _set_fields(cls, base_config):
+        if not hasattr(cls, 'fields'):
+            cls.fields = set(cls.defaults.keys()) | set(cls.required_fields)
+            cls.fields = sorted(cls.fields)
+        for k in base_config.keys():
+            if k not in cls.fields:
+                cls.fields.append(k)
+
     def copy(self, **overrides):
         """Creates and returns a new instance of this instance's class.
 
@@ -110,9 +119,11 @@ class Configurable(metaclass=ConfigurableMeta):
         """
         _, base_config = self._lookup[self.key]
         config = base_config.copy()
+        config.update({f: getattr(self, f) for f in self.fields if hasattr(self, f)})
         config.update(overrides)
         copied = self.__class__(self.key)
         copied._setup(config)
+
         return copied
 
     @classmethod
@@ -123,6 +134,7 @@ class Configurable(metaclass=ConfigurableMeta):
             key (str): A unique key that identifies this instance.
             config (dict): A dictionary that will be used to configure the object.
         """
+
         if key in cls._lookup:
             # Should only be called once, to add an instance to the instance lookup
             raise RuntimeError(f"Base instance of {key} already exists")
@@ -134,6 +146,7 @@ class Configurable(metaclass=ConfigurableMeta):
         inst.initialize()
         # Add it and its config dict to the instabce lookup
         cls._lookup[key] = (inst, config)
+        cls._set_fields(config)
         return inst
 
     @classmethod
@@ -149,6 +162,7 @@ class Configurable(metaclass=ConfigurableMeta):
         Returns:
             A new instance of the class.
         """
+
         if key not in cls._lookup:
             raise RuntimeError(f"No base instance of {key} created")
 

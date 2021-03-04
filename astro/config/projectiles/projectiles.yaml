@@ -1,0 +1,5 @@
+---
+  Projectile[testproj]:
+    imagepath: projectiles/test_projectile.png
+    speed: 500
+    damage: 1

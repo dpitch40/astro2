@@ -7,7 +7,7 @@ from astro.timekeeper import Timekeeper
 class Weapon(Configurable, Timekeeper):
     """A ship-mounted weapon.
     """
-    required_fields = ('rate_of_fire', 'projectile')
+    required_fields = ('rate_of_fire', 'projectiles')
 
     def __init__(self, key):
         Configurable.__init__(self, key)
@@ -26,9 +26,9 @@ class Weapon(Configurable, Timekeeper):
         Creates a new instance of the weapon's projectile
         """
 
-        # TODO: Support multiple projectiles and firing directions other than forward
-        projectile = self.projectile.copy()
-        projectile.place(firer=self.owner, friendly=self.owner.inverted)
+        for projectile in self.projectiles:
+            projectile = projectile.copy()
+            projectile.place(firer=self.owner, friendly=self.owner.inverted)
         self.last_fired = now
 
     def start_firing(self):
