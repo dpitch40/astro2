@@ -12,7 +12,7 @@ class Weapon(Configurable):
     pass
 
 class Projectile(Configurable):
-    pass
+    defaults = {'angle': 0}
 
 def test_configurable():
     projectile_data = """---
@@ -87,6 +87,22 @@ Ship[Bomber]:
     assert ships['Bomber'].weapons[0] is weapons['Chaingun']
     assert ships['Bomber'].weapons[1] is weapons['Chaingun']
     assert ships['Bomber'].weapons[2] is weapons['Bombs']
+
+def test_copying():
+    weapon_data = """---
+Weapon[Chaingun2]:
+    rate_of_fire: 10.0
+    projectiles:
+      - Projectile(Bullet):
+          damage: 7
+"""
+    chaingun = load_from_yaml(StringIO(weapon_data))
+    assert chaingun.projectiles[0].damage == 7
+    assert chaingun.projectiles[0].angle == 0
+
+    copied_proj = chaingun.projectiles[0].copy(angle=-15)
+    assert copied_proj.damage == 7
+    assert copied_proj.angle == -15
 
 class Triangle(Configurable):
     required_fields = ('side1', 'side2', 'side3')
