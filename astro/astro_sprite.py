@@ -36,6 +36,11 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         Collidable.__init__(self)
         Configurable.__init__(self, key)
 
+        self.speedx = 0
+        self.speedy = 0
+        self.mask_rect_offsetx = 0
+        self.mask_rect_offsety = 0
+
     def place(self, startx, starty, speedx=0, speedy=0):
         """Adds this object to the game at the specified location.
 

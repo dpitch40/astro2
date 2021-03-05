@@ -5,57 +5,58 @@ import pytest
 
 from astro.configurable import Configurable, load_from_yaml
 
-class Ship(Configurable):
+class ShipTest(Configurable):
     pass
 
-class Weapon(Configurable):
+class WeaponTest(Configurable):
     pass
 
-class Projectile(Configurable):
+class ProjectileTest(Configurable):
     defaults = {'angle': 0}
+
 
 def test_configurable():
     projectile_data = """---
-Projectile[Bullet]:
+ProjectileTest[Bullet]:
     speed: 2000
     damage: 5
-Projectile[Bomb]:
+ProjectileTest[Bomb]:
     speed: 200
     damage: 50
 """
 
     weapon_data = """---
-Weapon[Chaingun]:
+WeaponTest[Chaingun]:
     rate_of_fire: 10.0
     projectiles:
-        - Projectile[Bullet]
-Weapon[HeavyChaingun]:
+        - ProjectileTest[Bullet]
+WeaponTest[HeavyChaingun]:
     rate_of_fire: 10.0
     projectiles:
-        - Projectile(Bullet):
+        - ProjectileTest(Bullet):
             damage: 7
-Weapon[Bombs]:
+WeaponTest[Bombs]:
     rate_of_fire: 0.5
     projectiles:
-        - Projectile[Bomb]
-        - Projectile[Bomb]
+        - ProjectileTest[Bomb]
+        - ProjectileTest[Bomb]
 """
 
     ship_data = """---
-Ship[Fighter]:
+ShipTest[Fighter]:
     max_speed: 500
     acceleration: 1000
     HP: 100
     weapons:
-        - Weapon[HeavyChaingun]
-Ship[Bomber]:
+        - WeaponTest[HeavyChaingun]
+ShipTest[Bomber]:
     max_speed: 300
     acceleration: 500
     HP: 300
     weapons:
-        - Weapon[Chaingun]
-        - Weapon[Chaingun]
-        - Weapon[Bombs]
+        - WeaponTest[Chaingun]
+        - WeaponTest[Chaingun]
+        - WeaponTest[Bombs]
 """
 
     projectiles = load_from_yaml(StringIO(projectile_data))
@@ -90,10 +91,10 @@ Ship[Bomber]:
 
 def test_copying():
     weapon_data = """---
-Weapon[Chaingun2]:
+WeaponTest[Chaingun2]:
     rate_of_fire: 10.0
     projectiles:
-      - Projectile(Bullet):
+      - ProjectileTest(Bullet):
           damage: 7
 """
     chaingun = load_from_yaml(StringIO(weapon_data))

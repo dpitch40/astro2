@@ -164,7 +164,7 @@ class Configurable(metaclass=ConfigurableMeta):
         """
 
         if key not in cls._lookup:
-            raise RuntimeError(f"No base instance of {key} created")
+            raise RuntimeError(f"No base instance of {cls.__name__}[{key}] created")
 
         base_instance, _ = cls._lookup[key]
         if copy:
