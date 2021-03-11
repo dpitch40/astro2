@@ -22,7 +22,7 @@ class Projectile(AstroSprite, Timekeeper):
         self.inverted = friendly
         self.groups = [FRIENDLY_PROJECTILES] if friendly else [ENEMY_PROJECTILES]
         super().place(firer.rect.centerx, firer.rect.centery,
-                      speedx=math.sin(math.radians(self.angle)) * self.speed,
-                      speedy=math.cos(math.radians(self.angle)) * self.speed * (-1 if friendly else 1))
+                      speedx=math.sin(math.radians(self.angle)) * self.speed + firer.speedx,
+                      speedy=math.cos(math.radians(self.angle)) * self.speed * (-1 if friendly else 1) + firer.speedy)
 
 
