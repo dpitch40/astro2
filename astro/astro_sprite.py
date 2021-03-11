@@ -40,6 +40,8 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         self.speedy = 0
         self.mask_rect_offsetx = 0
         self.mask_rect_offsety = 0
+        self.x = 0
+        self.y = 0
 
     def place(self, startx, starty, speedx=0, speedy=0):
         """Adds this object to the game at the specified location.
@@ -56,6 +58,8 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         self.rect.center = (startx, starty)
         self.speedx = speedx
         self.speedy = speedy
+        self.x = self.rect.centerx
+        self.y = self.rect.centery
         self.add(self.groups)
 
     def _load_image(self, rel_path):
@@ -103,16 +107,20 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
     def update_position(self, elapsed):
         """Called each tick; updates the sprite's position based on its velocity.
         """
-        self.rect.centerx += round(elapsed * self.speedx)
-        self.rect.centery += round(elapsed * self.speedy)
-        self.update_mask_pos()
 
+        self.x += elapsed * self.speedx
+        self.y += elapsed * self.speedy
+
+        self.rect.centerx = round(self.x)
+        self.rect.centery = round(self.y)
+
+        self.update_mask_pos()
         self.check_bounds()
 
     def update_mask_pos(self, backwards=False):
         if backwards:
-            self.rect.centerx = self.mask_rect.centerx - self.mask_rect_offsetx
-            self.rect.centery = self.mask_rect.centery - self.mask_rect_offsety
+            self.rect.centerx = self.x = self.mask_rect.centerx - self.mask_rect_offsetx
+            self.rect.centery = self.y = self.mask_rect.centery - self.mask_rect_offsety
         else:
             self.mask_rect.centerx = self.rect.centerx + self.mask_rect_offsetx
             self.mask_rect.centery = self.rect.centery + self.mask_rect_offsety

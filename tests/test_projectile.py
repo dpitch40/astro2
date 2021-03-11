@@ -21,13 +21,18 @@ def create_test_projectile(x=SCREEN_SIZE[0]/2, y=SCREEN_SIZE[1]/2, size=(10, 10)
         proj.place(firer, friendly)
     return proj
 
+
 def test_that_slow_projectiles_still_move():
+
     fast_proj = create_test_projectile(speed=500)
+    fast_proj_start_pos = fast_proj.rect.center
     for i in range(60):
         fast_proj.tick(0, 1/60)
 
     slow_proj = create_test_projectile(speed=2)
+    slow_proj_start_pos = slow_proj.rect.center
     for i in range(60):
         slow_proj.tick(0, 1/60)
 
-    # TODO: Add some assertions to confirm that both projectiles move
+    assert fast_proj_start_pos != fast_proj.rect.center
+    assert slow_proj_start_pos != slow_proj.rect.center
