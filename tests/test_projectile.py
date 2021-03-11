@@ -41,7 +41,8 @@ def test_that_slow_projectiles_still_move():
     assert slow_proj_start_pos != slow_proj.rect.center
 
 def test_that_projectile_speed_is_relative_to_firer():
-    proj_from_static_firer = create_test_projectile(speed=500)
+    proj_from_static_firer = create_test_projectile(speed=500, firer_kwargs={"speedx": 0,
+                                                                             "speedy": 0})
     assert proj_from_static_firer.speedx == 0
     assert proj_from_static_firer.speedy == -500
 
