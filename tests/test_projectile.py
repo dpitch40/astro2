@@ -8,11 +8,14 @@ from astro import SCREEN_SIZE
 
 
 # TODO: Move this to a common module
-def create_test_projectile(x=SCREEN_SIZE[0]/2, y=SCREEN_SIZE[1]/2, size=(10, 10), **setup_kwargs):
+def create_test_projectile(x=SCREEN_SIZE[0]/2, y=SCREEN_SIZE[1]/2, size=(10, 10), 
+    firer_kwargs=None, **setup_kwargs):
     """Very simplified setup to create a Projectile for testing purposes.
     """
     firer_rect = pygame.Rect((x, y, 1, 1))
-    firer = Mock(rect=firer_rect)
+    if firer_kwargs is None:
+        firer_kwargs = {}
+    firer = Mock(rect=firer_rect, **firer_kwargs)
     friendly = setup_kwargs.pop('friendly', True)
     with patch.object(Projectile, 'load_image'):
         proj = Projectile('testproj')
@@ -36,3 +39,13 @@ def test_that_slow_projectiles_still_move():
 
     assert fast_proj_start_pos != fast_proj.rect.center
     assert slow_proj_start_pos != slow_proj.rect.center
+
+def test_that_projectile_speed_is_relative_to_firer():
+    proj_from_static_firer = create_test_projectile(speed=500)
+    assert proj_from_static_firer.speedx == 0
+    assert proj_from_static_firer.speedy == -500
+
+    proj_from_moving_firer = create_test_projectile(speed=500, firer_kwargs={"speedx": 100,
+                                                                             "speedy": 100})
+    assert proj_from_static_firer.speedx == 100
+    assert proj_from_static_firer.speedy == -400
