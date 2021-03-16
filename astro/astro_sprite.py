@@ -9,7 +9,7 @@ from astro import ASSET_DIR, SCREEN_SIZE, OFF_SCREEN_CUTOFF
 from astro.configurable import Configurable, ConfigurableMeta
 from astro.collidable import Collidable, CollidableMeta
 from astro.timekeeper import Timekeeper
-from astro.util import magnitude
+from astro.util import magnitude, convert_proportional_coordinates
 
 class AstroSpriteMeta(ConfigurableMeta, CollidableMeta):
     pass
@@ -61,6 +61,8 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
             speedy (optional int): The starting vertical speed. Defaults to 0.
         """
         self.load_image()
+        if isinstance(startx, float) and startx >= 0 and startx <= 1:
+            startx, starty = convert_proportional_coordinates(startx, starty)
         self.rect.center = (startx, starty)
         self.speedx = speedx
         self.speedy = speedy

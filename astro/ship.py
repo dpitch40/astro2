@@ -1,7 +1,7 @@
 """Defines a class for ships, and subclasses for player-controlled and hostile ships.
 """
 
-from astro import FRIENDLY_SHIPS, ENEMY_SHIPS, SCREEN_SIZE
+from astro import FRIENDLY_SHIPS, ENEMY_SHIPS
 from astro.astro_sprite import AstroSprite
 
 class Ship(AstroSprite):
@@ -22,7 +22,7 @@ class Ship(AstroSprite):
         super().load_image()
 
         # Optionally, load the engine glow image
-        if self.engine_glow_imagepath:
+        if hasattr(self, 'engine_glow_imagepath'):
             self.static_image = self.image
             engine_glow = self._load_image(self.engine_glow_imagepath)
             self.moving_image = self.image.copy()
@@ -51,13 +51,9 @@ class PlayerShip(Ship):
         self.dirx = 0
         self.diry = 0
 
-    def place(self, startx=None, starty=None, speedx=0, speedy=0):
+    def place(self, startx=0.5, starty=0.75, speedx=0, speedy=0):
         """Overrides AstroSprite.place with default starting location.
         """
-        if startx is None:
-            startx = SCREEN_SIZE[0] / 2
-        if starty is None:
-            starty = 3 * SCREEN_SIZE[1] / 4
         return super().place(startx, starty, speedx, speedy)
 
     def update_velocity(self, elapsed):
