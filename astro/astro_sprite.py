@@ -37,8 +37,8 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         Collidable.__init__(self)
         Configurable.__init__(self, key)
 
-        self.speedx = 0
-        self.speedy = 0
+        self.speedx = self.speedx_prev = 0
+        self.speedy = self.speedy_prev = 0
         self.mask_rect_offsetx = 0
         self.mask_rect_offsety = 0
         self.x = 0
@@ -102,9 +102,7 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         """Main function called by self.update() to update the sprite for each "tick" of the
         simulation.
         """
-        self.update_velocity(elapsed)
-        if hasattr(self, 'max_speed'):
-            self.clamp_speed()
+        self._update_velocity(elapsed)
         self.update_position(elapsed)
 
     def update(self):
@@ -116,8 +114,8 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         """Called each tick; updates the sprite's position based on its velocity.
         """
 
-        self.x += elapsed * self.speedx
-        self.y += elapsed * self.speedy
+        self.x += elapsed * (self.speedx + self.speedx_prev) / 2
+        self.y += elapsed * (self.speedy + self.speedy_prev) / 2
 
         self.rect.centerx = round(self.x)
         self.rect.centery = round(self.y)
@@ -132,6 +130,13 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         else:
             self.mask_rect.centerx = self.rect.centerx + self.mask_rect_offsetx
             self.mask_rect.centery = self.rect.centery + self.mask_rect_offsety
+
+    def _update_velocity(self, elapsed):
+        self.speedx_prev = self.speedx
+        self.speedy_prev = self.speedy
+        self.update_velocity(elapsed)
+        if hasattr(self, 'max_speed'):
+            self.clamp_speed()
 
     def update_velocity(self, elapsed):
         """Called each tick; updates the sprite's velocity.

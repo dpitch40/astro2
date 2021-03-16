@@ -41,34 +41,34 @@ def test_update_position():
     assert (sprite.x, sprite.y) == (0, 0)
 
     sprite.speedx = 8
-    sprite.update_position(0.5)
+    sprite.tick(0, 0.5)
     assert (sprite.x, sprite.y) == (4, 0)
-    sprite.update_position(1.0)
+    sprite.tick(0, 1.0)
     assert (sprite.x, sprite.y) == (12, 0)
 
     sprite.speedx = -2
     sprite.speedy = 4
-    sprite.update_position(0.5)
+    sprite.tick(0, 0.5)
     assert (sprite.x, sprite.y) == (11, 2)
-    sprite.update_position(1.0)
+    sprite.tick(0, 1.0)
     assert (sprite.x, sprite.y) == (9, 6)
 
     # Test rect position rounding
     sprite.speedx = -0.125
     sprite.speedy = 0
-    sprite.update_position(1.0)
+    sprite.tick(0, 1.0)
     assert (sprite.x, sprite.y) == (8.875, 6)
     assert sprite.rect.center == (9, 6)
-    sprite.update_position(1.0)
+    sprite.tick(0, 1.0)
     assert (sprite.x, sprite.y) == (8.75, 6)
     assert sprite.rect.center == (9, 6)
-    sprite.update_position(1.0)
+    sprite.tick(0, 1.0)
     assert (sprite.x, sprite.y) == (8.625, 6)
     assert sprite.rect.center == (9, 6)
-    sprite.update_position(1.0)
+    sprite.tick(0, 1.0)
     assert (sprite.x, sprite.y) == (8.5, 6)
     assert sprite.rect.center == (8, 6)
-    sprite.update_position(1.0)
+    sprite.tick(0, 1.0)
     assert (sprite.x, sprite.y) == (8.375, 6)
     assert sprite.rect.center == (8, 6)
 
@@ -79,34 +79,34 @@ def test_accelerate_toward_point():
     assert (sprite.speedx, sprite.speedy) == (0, 0)
     sprite.accelerate_toward_point(1, 100, 0)
     assert (sprite.speedx, sprite.speedy) == (5, 0)
-    sprite.update_position(1)
+    sprite.tick(0, 1)
     assert (sprite.x, sprite.y) == (5, 0)
 
     sprite.accelerate_toward_point(1, 100, 0)
     assert (sprite.speedx, sprite.speedy) == (10, 0)
-    sprite.update_position(1)
+    sprite.tick(0, 1)
     assert (sprite.x, sprite.y) == (15, 0)
 
     sprite.accelerate_toward_point(1, 100, 0)
     assert (sprite.speedx, sprite.speedy) == (10, 0)
-    sprite.update_position(1)
+    sprite.tick(0, 1)
     assert (sprite.x, sprite.y) == (25, 0)
 
-    sprite.update_position(1) # 35
-    sprite.update_position(1) # 45
-    sprite.update_position(1) # 55
-    sprite.update_position(1) # 65
-    sprite.update_position(1) # 75
-    sprite.update_position(1) # 85
+    sprite.tick(0, 1) # 35
+    sprite.tick(0, 1) # 45
+    sprite.tick(0, 1) # 55
+    sprite.tick(0, 1) # 65
+    sprite.tick(0, 1) # 75
+    sprite.tick(0, 1) # 85
 
     sprite.accelerate_toward_point(1, 100, 0)
     assert (sprite.speedx, sprite.speedy) == (10, 0)
-    sprite.update_position(0.5)
+    sprite.tick(0, 0.5)
     assert (sprite.x, sprite.y) == (90, 0)
 
     sprite.accelerate_toward_point(0.5, 100, 0)
     assert (sprite.speedx, sprite.speedy) == (10, 0)
-    sprite.update_position(0.5)
+    sprite.tick(0, 0.5)
     assert (sprite.x, sprite.y) == (95, 0)
 
     sprite.accelerate_toward_point(1, 100, 0)
