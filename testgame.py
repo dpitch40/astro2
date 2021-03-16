@@ -8,9 +8,12 @@ from pygame.locals import *
 from astro import SCREEN_SIZE, GROUPS, MAX_FPS, COLLIDABLE_PAIRS, CONFIG_DIR, CONFIG_ORDER
 import astro.keys
 from astro.configurable import load_from_yaml
-from astro.ship import PlayerShip
+from astro.ship import PlayerShip, EnemyShip
+
+# Imports to make sure all configurable classes have been initialized
 import astro.weapon
 import astro.projectile
+import astro.move_behavior
 
 def check_collisions():
     # TODO: Use masks, at least some of the time
@@ -55,8 +58,10 @@ def main():
 
     load_all()
     ship = PlayerShip.instance('testship')
+    enemy_ship = EnemyShip.instance('testenemyship')
     init_game(ship)
     ship.place()
+    enemy_ship.place(0.5, 0.25)
     clock = pygame.time.Clock()
 
     while True:

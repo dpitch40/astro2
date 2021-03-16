@@ -101,4 +101,14 @@ class PlayerShip(Ship):
         self.update_moving_image()
 
 class EnemyShip(Ship):
+    required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons',
+                       'move_behavior')
     groups = [ENEMY_SHIPS]
+
+    def initialize(self):
+        super().initialize()
+
+        self.move_behavior.ship = self
+
+    def update_velocity(self, elapsed):
+        self.move_behavior.update_velocity(elapsed)
