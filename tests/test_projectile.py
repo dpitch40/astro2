@@ -1,10 +1,4 @@
-from unittest.mock import patch, Mock
-
-import pygame
-
-from astro import SCREEN_SIZE
 from tests import ProjectileTest as Projectile
-
 
 def test_that_slow_projectiles_still_move():
 
@@ -31,5 +25,5 @@ def test_that_projectile_speed_is_relative_to_firer():
     proj_from_moving_firer = Projectile.create(config={'speed': 500,
                                                        'firer_kwargs': {'speedx': 100,
                                                                         'speedy': 100}})
-    assert proj_from_static_firer.speedx == 100
-    assert proj_from_static_firer.speedy == -400
+    assert proj_from_moving_firer.speedx == 100
+    assert proj_from_moving_firer.speedy == -400
