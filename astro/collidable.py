@@ -1,3 +1,5 @@
+from astro import logger
+
 _collidable_class_lookup = dict()
 
 class CollidableMeta(type):
@@ -19,4 +21,4 @@ class Collidable(metaclass=CollidableMeta):
         elif hasattr(other, f'collide_with_{this_class}'):
             return getattr(other, f'collide_with_{this_class}')(self)
         else:
-            raise RuntimeError(f'Collisions not defined between {this_class} and {other_class}')
+            logger.warning(f'Collisions not defined between {this_class} and {other_class}')

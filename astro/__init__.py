@@ -1,6 +1,9 @@
 import os.path
+from logging import getLogger
 
 import pygame
+
+logger = getLogger('astro')
 
 # TODO: Improve game config system--in-game options menu for many of these
 
