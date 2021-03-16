@@ -260,7 +260,7 @@ def load_configurable(class_, key, copy, d=None):
         overrides = {} if not d else d
         return class_.instance(key, copy, **overrides)
     else:
-        if d:
+        if d is not None:
             # Define the base instance
             return class_.define(key, d)
         else:
