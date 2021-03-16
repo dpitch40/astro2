@@ -1,10 +1,14 @@
 ---
 Weapon[testgun]:
-    rate_of_fire: 4.0
-    projectiles:
-      - Projectile(testproj):
-          angle: -15
-      - Projectile(testproj):
-          angle: 0
-      - Projectile(testproj):
-          angle: 15
+  rate_of_fire: 4.0
+  projectiles:
+    - Projectile(testproj):
+        angle: -15
+    - Projectile(testproj):
+        angle: 0
+    - Projectile(testproj):
+        angle: 15
+Weapon[enemygun]:
+  rate_of_fire: 0.5
+  projectiles:
+    - Projectile(testproj)

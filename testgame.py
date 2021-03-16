@@ -14,6 +14,7 @@ from astro.ship import PlayerShip, EnemyShip
 import astro.weapon
 import astro.projectile
 import astro.move_behavior
+import astro.fire_behavior
 
 def check_collisions():
     # TODO: Use masks, at least some of the time

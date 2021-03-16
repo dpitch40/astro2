@@ -2,6 +2,9 @@ from astro.configurable import Configurable
 from astro.util import magnitude, convert_proportional_coordinate_list
 
 class MoveBehavior(Configurable):
+    def init_ship(self, ship):
+        self.ship = ship
+
     def update_velocity(self, elapsed):
         """Updates the parent ship's velocity.
         """
