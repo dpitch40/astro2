@@ -9,6 +9,7 @@ from astro import ASSET_DIR, SCREEN_SIZE, OFF_SCREEN_CUTOFF
 from astro.configurable import Configurable, ConfigurableMeta
 from astro.collidable import Collidable, CollidableMeta
 from astro.timekeeper import Timekeeper
+from astro.util import magnitude
 
 class AstroSpriteMeta(ConfigurableMeta, CollidableMeta):
     pass
@@ -42,6 +43,11 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         self.mask_rect_offsety = 0
         self.x = 0
         self.y = 0
+
+    def initialize(self):
+        if hasattr(self, 'max_speed') and hasattr(self, 'acceleration'):
+            # Calsulate stopping distance
+            self.stopping_distance = (self.max_speed ** 2) / (self.acceleration * 2)
 
     def place(self, startx, starty, speedx=0, speedy=0):
         """Adds this object to the game at the specified location.
@@ -97,6 +103,8 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         simulation.
         """
         self.update_velocity(elapsed)
+        if hasattr(self, 'max_speed'):
+            self.clamp_speed()
         self.update_position(elapsed)
 
     def update(self):
@@ -133,6 +141,39 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         and AI for hostile ships.
         """
         pass
+
+    def clamp_speed(self):
+        # Clamp speed to within the object's maximum speed
+        speed = magnitude(self.speedx, self.speedy)
+        if abs(speed) > self.max_speed:
+            self.speedx = self.speedx * self.max_speed / speed
+            self.speedy = self.speedy * self.max_speed / speed
+
+    def accelerate_toward(self, elapsed, targetx, targety):
+        # Accelerate towards the target velocity
+        # Requires self.acceleration and self.max_speed to be defined
+        dx = targetx - self.speedx
+        dy = targety - self.speedy
+        dv = magnitude(dx, dy)
+        max_accel = self.acceleration * elapsed
+        if dv < max_accel:
+            self.speedx, self.speedy = targetx, targety
+        else:
+            self.speedx += dx * max_accel / dv
+            self.speedy += dy * max_accel / dv
+
+    def accelerate_toward_point(self, elapsed, targetx, targety):
+        # Move towards the target point
+        # Requires self.acceleration and self.max_speed to be defined
+        dx = targetx - self.x
+        dy = targety - self.y
+
+        distance = magnitude(dx, dy)
+        target_speed = self.max_speed * min(1.0, distance / self.stopping_distance)
+        target_speedx = dx * target_speed / distance
+        target_speedy = dy * target_speed / distance
+
+        return self.accelerate_toward(elapsed, target_speedx, target_speedy)
 
     def check_bounds(self):
         """Checks the object's position in relation to the screen edge.

@@ -3,7 +3,6 @@
 
 from astro import FRIENDLY_SHIPS, ENEMY_SHIPS, SCREEN_SIZE
 from astro.astro_sprite import AstroSprite
-from astro.util import magnitude
 
 class Ship(AstroSprite):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons')
@@ -68,21 +67,8 @@ class PlayerShip(Ship):
         # Calculate the target velocity
         targetx = self.dirx * self.max_speed
         targety = self.diry * self.max_speed
-        # Accelerate towards the target velocity
-        if targetx > self.speedx:
-            self.speedx = min(self.speedx + self.acceleration * elapsed, targetx)
-        else:
-            self.speedx = max(self.speedx - self.acceleration * elapsed, targetx)
-        if targety > self.speedy:
-            self.speedy = min(self.speedy + self.acceleration * elapsed, targety)
-        else:
-            self.speedy = max(self.speedy - self.acceleration * elapsed, targety)
 
-        # Clamp speed to within maximum speed
-        speed = magnitude(self.speedx, self.speedy)
-        if abs(speed) > self.max_speed:
-            self.speedx = self.speedx * self.max_speed / speed
-            self.speedy = self.speedy * self.max_speed / speed
+        self.accelerate_toward(elapsed, targetx, targety)
 
     def update_moving_image(self):
         """Updates the ship's image based on whether it is moving.
