@@ -2,7 +2,7 @@
 PlayerShip[testship]:
     imagepath: ships/test_ship.png
     engine_glow_imagepath: ships/test_ship_engine_glow.png
-    acceleration: 1000
-    max_speed: 200
+    acceleration: 2000
+    max_speed: 500
     weapons:
       - Weapon[testgun]
