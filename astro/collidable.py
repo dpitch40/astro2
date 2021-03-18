@@ -14,8 +14,8 @@ class CollidableMeta(type):
 
 class Collidable(metaclass=CollidableMeta):
     def collide_with(self, other):
-        this_class = self.__class__.__name__.lower()
-        other_class = other.__class__.__name__.lower()
+        this_class = self.class_name.lower()
+        other_class = other.class_name.lower()
         if hasattr(self, f'collide_with_{other_class}'):
             return getattr(self, f'collide_with_{other_class}')(other)
         elif hasattr(other, f'collide_with_{this_class}'):

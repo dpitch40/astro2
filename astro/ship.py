@@ -5,7 +5,7 @@ from astro import FRIENDLY_SHIPS, ENEMY_SHIPS
 from astro.astro_sprite import AstroSprite
 
 class Ship(AstroSprite):
-    required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons')
+    required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons', 'max_hp')
     confined = True
 
     def __init__(self, key):
@@ -17,6 +17,8 @@ class Ship(AstroSprite):
 
         for weapon in self.weapons:
             weapon.owner = self
+
+        self.hp = self.max_hp
 
     def load_image(self):
         super().load_image()
@@ -39,6 +41,17 @@ class Ship(AstroSprite):
             weapon.tick(now, elapsed)
 
         # TODO
+
+    def damage(self, damage_amount):
+        pre_hp = self.hp
+        self.hp -= damage_amount
+        print(f'HP of {self} reduced from {pre_hp} to {self.hp}')
+        if self.hp <= 0:
+            self.destroy()
+
+    def collide_with_projectile(self, projectile):
+        self.damage(projectile.damage)
+        projectile.destroy()
 
 class PlayerShip(Ship):
     groups = [FRIENDLY_SHIPS]

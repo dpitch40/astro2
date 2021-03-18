@@ -1,5 +1,6 @@
 ---
 PlayerShip[testship]:
+    max_hp: 100
     imagepath: ships/test_ship.png
     engine_glow_imagepath: ships/test_ship_engine_glow.png
     acceleration: 2000
@@ -7,6 +8,7 @@ PlayerShip[testship]:
     weapons:
       - Weapon(testgun)
 EnemyShip[testenemyship]:
+    max_hp: 10
     imagepath: ships/test_ship.png
     acceleration: 1000
     max_speed: 200

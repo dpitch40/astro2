@@ -1,4 +1,4 @@
-from tests import ProjectileTest as Projectile
+from tests import ProjectileTest as Projectile, PlayerShipTest as PlayerShip
 
 def test_that_slow_projectiles_still_move():
 
@@ -25,3 +25,23 @@ def test_that_projectile_speed_is_relative_to_firer():
                                                                         'speedy': 100}})
     assert proj_from_moving_firer.speedx == 100
     assert proj_from_moving_firer.speedy == -400
+
+def test_collision_between_projectile_and_ship():
+    proj = Projectile.create(config={'speed': 500,
+                                     'damage': 1})
+    target_ship = PlayerShip.create(config={'max_hp': 10})
+
+    assert target_ship.hp == 10
+    assert proj.alive()
+    assert target_ship.alive()
+
+    target_ship.collide_with(proj)
+    assert target_ship.hp == 9
+    assert not proj.alive()
+
+    for i in range(9):
+        assert target_ship.alive()
+        proj = Projectile.create(config={'speed': 500,
+                                         'damage': 1})
+        target_ship.collide_with(proj)
+    assert not target_ship.alive()

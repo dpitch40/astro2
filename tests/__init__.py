@@ -4,7 +4,7 @@ import pygame
 
 from astro import SCREEN_SIZE
 from astro.astro_sprite import AstroSprite
-from astro.ship import Ship
+from astro.ship import Ship, PlayerShip, EnemyShip
 from astro.projectile import Projectile
 
 pygame.init()
@@ -16,6 +16,13 @@ class AstroSpriteTest(AstroSprite):
 
     default_size = (1, 1)
     imagepath = ''
+
+    @property
+    def class_name(self):
+        name = super().class_name
+        if name.lower().endswith('test'):
+            name = name[:-4]
+        return name
 
     def _load_image(self, rel_path):
         image = pygame.Surface(self.size)
@@ -46,6 +53,18 @@ class AstroSpriteTest(AstroSprite):
 class ShipTest(AstroSpriteTest, Ship):
     default_size = (50, 50)
     engine_glow_imagepath = None
+
+    defaults = {'max_hp': 100}
+
+class PlayerShipTest(ShipTest, PlayerShip):
+    default_size = (50, 50)
+    engine_glow_imagepath = None
+
+class EnemyShipTest(ShipTest, EnemyShip):
+    default_size = (50, 50)
+    engine_glow_imagepath = None
+
+    defaults = {'max_hp': 100}
 
 class ProjectileTest(AstroSpriteTest, Projectile):
     default_size = (10, 10)

@@ -63,6 +63,10 @@ class Configurable(metaclass=ConfigurableMeta):
     def __init__(self, key):
         self.key = key
 
+    @property
+    def class_name(self):
+        return self.__class__.__name__
+
     def _setup(self, _config):
         """Initializes this object using a dictionary loaded from a config file.
 
