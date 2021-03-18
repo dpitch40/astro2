@@ -54,6 +54,8 @@ class ProjectileTest(AstroSpriteTest, Projectile):
     def create(cls, firer=None, friendly=True, size=None, startx=SCREEN_SIZE[0]/2,
         starty=SCREEN_SIZE[1]/2, speedx=0, speedy=0, key=None, config=None):
         if firer is None:
-            firer = ShipTest.create(startx=startx, starty=starty, speedx=speedx, speedy=speedy)
+            kwargs = {'startx': startx, 'starty': starty, 'speedx': speedx, 'speedy': speedy}
+            kwargs.update(config.pop('firer_kwargs', {}))
+            firer = ShipTest.create(**kwargs)
 
         return cls._create(size, key, config, firer=firer, friendly=friendly)
