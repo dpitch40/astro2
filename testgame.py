@@ -9,6 +9,7 @@ from astro import SCREEN_SIZE, GROUPS, MAX_FPS, COLLIDABLE_PAIRS, CONFIG_DIR, CO
 import astro.keys
 from astro.configurable import load_from_yaml
 from astro.ship import PlayerShip, EnemyShip
+from astro.hud import HUD
 
 # Imports to make sure all configurable classes have been initialized
 import astro.weapon
@@ -58,12 +59,13 @@ def main():
     pygame.display.flip()
 
     load_all()
-    ship = PlayerShip.instance('testship')
+    player_ship = PlayerShip.instance('testship')
     enemy_ship = EnemyShip.instance('testenemyship')
-    init_game(ship)
-    ship.place()
+    init_game(player_ship)
+    player_ship.place()
     enemy_ship.place(0.5, 0.25)
     clock = pygame.time.Clock()
+    hud = HUD(screen, player_ship)
 
     while True:
         clock.tick(MAX_FPS)
@@ -79,6 +81,7 @@ def main():
         screen.blit(background, (0, 0))
         for group in GROUPS:
             group.draw(screen)
+        hud.draw()
         pygame.display.flip()
 
 if __name__ == '__main__':
