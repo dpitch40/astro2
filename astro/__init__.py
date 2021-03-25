@@ -14,7 +14,8 @@ OFF_SCREEN_CUTOFF = 500
 MAX_FPS = 60
 
 # Order in which to load configs
-CONFIG_ORDER = ['projectiles',
+CONFIG_ORDER = ['behaviors',
+                'projectiles',
                 'shields',
                 'weapons',
                 'ships']
@@ -39,6 +40,9 @@ GROUPS = [
           PICKUPS,
           OBJECTS,
          ]
+
+FRIENDLIES = {FRIENDLY_SHIPS, FRIENDLY_PROJECTILES}
+ENEMIES = {ENEMY_SHIPS, ENEMY_PROJECTILES}
 
 COLLIDABLE_PAIRS = [(FRIENDLY_SHIPS, ENEMY_PROJECTILES),
                     (ENEMY_SHIPS, FRIENDLY_PROJECTILES),

@@ -127,6 +127,7 @@ class Configurable(metaclass=ConfigurableMeta):
         config.update(overrides)
         copied = self.__class__(self.key)
         copied._setup(config)
+        copied.initialize()
 
         return copied
 

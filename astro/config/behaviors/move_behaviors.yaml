@@ -1,0 +1,7 @@
+---
+Patrol[back_and_forth]:
+  dests:
+    - [0.25, 0.25]
+    - [0.75, 0.25]
+Homing[basic_homing]:
+  test: 1

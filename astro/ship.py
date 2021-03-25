@@ -144,6 +144,8 @@ class EnemyShip(Ship):
     def initialize(self):
         super().initialize()
 
+        self.move_behavior = self.move_behavior.copy()
+        self.fire_behavior = self.fire_behavior.copy()
         self.move_behavior.init_ship(self)
         self.fire_behavior.init_ship(self)
 

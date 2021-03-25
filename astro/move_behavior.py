@@ -1,5 +1,6 @@
 from astro.configurable import Configurable
 from astro.util import magnitude, convert_proportional_coordinate_list
+from astro import ENEMIES, FRIENDLY_SHIPS, ENEMY_SHIPS
 
 class MoveBehavior(Configurable):
     defaults = {'reached_dest_threshold': 10,
@@ -53,3 +54,31 @@ class Patrol(MoveBehavior):
             dest = self._dests[self.dest_i]
 
         self.ship.accelerate_toward_point(elapsed, *dest)
+
+class Homing(MoveBehavior):
+    def __init__(self, key):
+        super().__init__(key)
+
+    def initialize(self):
+        super().initialize()
+        self.target = None
+
+    def acquire_target(self):
+        if set(self.ship.groups) & ENEMIES:
+            target_group = FRIENDLY_SHIPS
+        else:
+            target_group = ENEMY_SHIPS
+        # TODO: Improve this
+        target = None
+        try:
+            target = next(iter(target_group))
+        except StopIteration:
+            pass
+        return target
+
+    def _update_velocity(self, elapsed):
+        if self.target is None or not self.target.alive():
+            self.target = self.acquire_target()
+        
+        if self.target is not None:
+            self.ship.accelerate_toward_point(elapsed, self.target.x, self.target.y, decelerate=False)

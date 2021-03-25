@@ -6,7 +6,7 @@ PlayerShip[testship]:
     acceleration: 2000
     max_speed: 500
     weapons:
-      - Weapon(testgun)
+      - Weapon(homing_gun)
     shield: Shield(testshield)
 EnemyShip[testenemyship]:
     max_hp: 10
@@ -16,7 +16,7 @@ EnemyShip[testenemyship]:
     weapons:
       - Weapon(enemygun)
     move_behavior:
-      Patrol[back_and_forth]:
+      Patrol(back_and_forth):
         dests:
           - [0.25, 0.25]
           - [0.75, 0.25]

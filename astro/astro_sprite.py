@@ -91,11 +91,16 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         # TODO: Create images for all four facing directions
         # TODO: Cache images in memory to avoid reloading them every time
         self.image = self._load_image(self.imagepath)
-        self.rect = self.image.get_rect()
-        self.mask = pygame.mask.from_surface(self.image)
-        self.mask_rect = self.mask.get_bounding_rects()[0]
-        self.mask_rect_offsetx = self.mask_rect.centerx - self.rect.centerx
-        self.mask_rect_offsety = self.mask_rect.centery - self.rect.centery
+        self.rect, self.mask, self.mask_rect = self.generate_rect_and_mask(self.image)
+
+    def generate_rect_and_mask(self, image):
+        rect = image.get_rect()
+        mask = pygame.mask.from_surface(image)
+        mask_rect = mask.get_bounding_rects()[0]
+        mask_rect_offsetx = mask_rect.centerx - rect.centerx
+        mask_rect_offsety = mask_rect.centery - rect.centery
+
+        return rect, mask, mask_rect
 
     def destroy(self):
         """Removes this object from the game.
@@ -171,14 +176,16 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
             self.speedx += dx * max_accel / dv
             self.speedy += dy * max_accel / dv
 
-    def accelerate_toward_point(self, elapsed, targetx, targety):
+    def accelerate_toward_point(self, elapsed, targetx, targety, decelerate=True):
         # Move towards the target point
         # Requires self.acceleration and self.max_speed to be defined
         dx = targetx - self.x
         dy = targety - self.y
 
         distance = magnitude(dx, dy)
-        target_speed = self.max_speed * min(1.0, distance / self.stopping_distance)
+        target_speed = self.max_speed
+        if decelerate:
+            target_speed *= min(1.0, distance / self.stopping_distance)
         target_speedx = dx * target_speed / distance
         target_speedy = dy * target_speed / distance
 
