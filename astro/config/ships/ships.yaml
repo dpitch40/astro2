@@ -7,6 +7,7 @@ PlayerShip[testship]:
     max_speed: 500
     weapons:
       - Weapon(testgun)
+    shield: Shield(testshield)
 EnemyShip[testenemyship]:
     max_hp: 10
     imagepath: ships/test_ship.png

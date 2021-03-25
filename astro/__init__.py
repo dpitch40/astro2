@@ -15,6 +15,7 @@ MAX_FPS = 60
 
 # Order in which to load configs
 CONFIG_ORDER = ['projectiles',
+                'shields',
                 'weapons',
                 'ships']
 

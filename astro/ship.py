@@ -1,6 +1,8 @@
 """Defines a class for ships, and subclasses for player-controlled and hostile ships.
 """
 
+import pygame
+
 from astro import FRIENDLY_SHIPS, ENEMY_SHIPS
 from astro.astro_sprite import AstroSprite
 
@@ -11,6 +13,7 @@ class Ship(AstroSprite):
     def __init__(self, key):
         super().__init__(key)
         self.weapons = list()
+        self.shield = None
 
     def initialize(self):
         super().initialize()
@@ -32,22 +35,39 @@ class Ship(AstroSprite):
         else:
             self.moving_image, self.static_image = None, None
 
+        if self.shield is not None:
+            self.shield_image = pygame.Surface(self.rect.size)
+            pygame.draw.ellipse(self.shield_image, (180, 180, 255, 128), self.shield_image.get_rect())
+
     def tick(self, now, elapsed):
         self.update_velocity(elapsed)
 
         super().tick(now, elapsed)
 
+        if self.shield is not None:
+            self.shield.tick(now, elapsed)
+
         for weapon in self.weapons:
             weapon.tick(now, elapsed)
 
-        # TODO
+        self.update_image()
+
+    def update_image(self):
+        # if self.shield is not None:
+        #     pygame.draw.ellipse(self.image, (220, 220, 255, int(64 * self.shield.integrity_proportion)),
+        #         self.image.get_rect())
+
+        # self.image = self.image.conve
+        pass
 
     def damage(self, damage_amount):
-        pre_hp = self.hp
-        self.hp -= damage_amount
-        print(f'HP of {self} reduced from {pre_hp} to {self.hp}')
-        if self.hp <= 0:
-            self.destroy()
+        if self.shield is not None:
+            damage_absorbed = self.shield.damage(damage_amount)
+            damage_amount -= damage_absorbed
+        if damage_amount > 0:
+            self.hp -= damage_amount
+            if self.hp <= 0:
+                self.destroy()
 
     def collide_with_projectile(self, projectile):
         self.damage(projectile.damage)
@@ -82,10 +102,13 @@ class PlayerShip(Ship):
     def update_moving_image(self):
         """Updates the ship's image based on whether it is moving.
         """
+    def update_image(self):
         if (self.dirx or self.diry) and self.image is self.static_image:
             self.image = self.moving_image
         elif not self.dirx and not self.diry and self.image is self.moving_image:
             self.image = self.static_image
+
+        super().update_image()
 
     # Methods linked to player input
 

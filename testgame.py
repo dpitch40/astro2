@@ -13,6 +13,7 @@ from astro.hud import HUD
 
 # Imports to make sure all configurable classes have been initialized
 import astro.weapon
+import astro.shield
 import astro.projectile
 import astro.move_behavior
 import astro.fire_behavior
@@ -81,6 +82,11 @@ def main():
         screen.blit(background, (0, 0))
         for group in GROUPS:
             group.draw(screen)
+
+        # Draw shield
+        player_ship.shield_image.set_alpha(int(128 * player_ship.shield.integrity_proportion))
+        screen.blit(player_ship.shield_image, player_ship.rect)
+
         hud.draw()
         pygame.display.flip()
 

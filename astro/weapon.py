@@ -1,17 +1,15 @@
 """Implements a class for weapons.
 """
 
-from astro.configurable import Configurable
-from astro.timekeeper import Timekeeper
+from astro.item import TimekeeperItem
 
-class Weapon(Configurable, Timekeeper):
+class Weapon(TimekeeperItem):
     """A ship-mounted weapon.
     """
     required_fields = ('rate_of_fire', 'projectiles')
 
     def __init__(self, key):
-        Configurable.__init__(self, key)
-        Timekeeper.__init__(self)
+        TimekeeperItem.__init__(self, key)
         self.is_firing = False
         self.last_fired = 0.0
 
