@@ -63,7 +63,7 @@ def main():
     enemy_ship = EnemyShip.instance('testenemyship')
     init_game(player_ship)
     player_ship.place()
-    enemy_ship.place(0.5, 0.25)
+    enemy_ship.place(0.25, -300)
     clock = pygame.time.Clock()
     hud = HUD(screen, player_ship)
 

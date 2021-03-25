@@ -17,7 +17,7 @@ EnemyShip[testenemyship]:
     move_behavior:
       Patrol[back_and_forth]:
         dests:
-          - [0.75, 0.25]
           - [0.25, 0.25]
+          - [0.75, 0.25]
     fire_behavior:
       FireConstantly[fire_constantly]: {}
