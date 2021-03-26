@@ -4,6 +4,7 @@
 import pygame
 
 from astro import FRIENDLY_SHIPS, ENEMY_SHIPS
+from astro.image import load_image
 from astro.astro_sprite import AstroSprite
 
 class Ship(AstroSprite):
@@ -29,7 +30,9 @@ class Ship(AstroSprite):
         # Optionally, load the engine glow image
         if hasattr(self, 'engine_glow_imagepath'):
             self.static_image = self.image
-            engine_glow = self._load_image(self.engine_glow_imagepath)
+            engine_glow = load_image(self.engine_glow_imagepath)[0]
+            if self.inverted:
+                engine_glow = pygame.transform.flip(engine_glow, False, True)
             self.moving_image = self.image.copy()
             self.moving_image.blit(engine_glow, (0, 0))
         else:

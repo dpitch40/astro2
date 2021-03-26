@@ -6,8 +6,10 @@ import math
 import pygame
 
 from astro.astro_sprite import AstroSprite
+from astro.image import load_image
 from astro import FRIENDLY_PROJECTILES, ENEMY_PROJECTILES
 from astro.timekeeper import Timekeeper
+from astro.util import frange, angle_distance
 
 class Projectile(AstroSprite, Timekeeper):
     """A projectile fired by a weapon.
@@ -15,6 +17,8 @@ class Projectile(AstroSprite, Timekeeper):
 
     required_fields = ('imagepath', 'speed', 'damage')
     defaults = {"angle": 0}
+
+    FACING_DIRECTIONS = 8
 
     def initialize(self):
         super().initialize()
@@ -27,25 +31,8 @@ class Projectile(AstroSprite, Timekeeper):
         """Loads the image file for this object and initializes its image and rectangle
             attributes as expected by pygame.sprite.Sprite.
         """
-        # TODO: Cache images in memory to avoid reloading them every time
-        self.down_image = self._load_image(self.imagepath)
-        self.right_image = pygame.transform.rotate(self.down_image, 90)
-        self.up_image = pygame.transform.rotate(self.down_image, 180)
-        self.left_image = pygame.transform.rotate(self.down_image, 270)
-
-        self.down_rect, self.down_mask, self.down_mask_rect = \
-            self.generate_rect_and_mask(self.down_image)
-        self.right_rect, self.right_mask, self.right_mask_rect = \
-            self.generate_rect_and_mask(self.right_image)
-        self.up_rect, self.up_mask, self.up_mask_rect = \
-            self.generate_rect_and_mask(self.up_image)
-        self.left_rect, self.left_mask, self.left_mask_rect = \
-            self.generate_rect_and_mask(self.left_image)
-
-        self.image = self.down_image
-        self.rect = self.down_rect
-        self.mask = self.down_mask
-        self.mask_rect = self.down_mask_rect
+        self.image, self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
+            self.mask_rect_offsety = self._load_image(self.imagepath, directions=self.FACING_DIRECTIONS)
 
 
     def place(self, firer, friendly):
@@ -63,44 +50,32 @@ class Projectile(AstroSprite, Timekeeper):
     def tick(self, now, elapsed):
         super().tick(now, elapsed)
 
-        direction = math.atan2(self.speedy, self.speedx)
-        if math.pi / 4 < direction < 3 * math.pi / 4:
-            # Up
-            if self.image is not self.up_image:
-                self.image = self.up_image
-                self.up_rect.center = self.rect.center
-                self.rect = self.up_rect
-                self.mask = self.up_mask
-                self.up_mask_rect.center = self.mask_rect.center
-                self.mask_rect = self.up_mask_rect
-        elif -math.pi / 4 < direction < math.pi / 4:
-            # Right
-            if self.image is not self.right_image:
-                self.image = self.right_image
-                self.right_rect.center = self.rect.center
-                self.rect = self.right_rect
-                self.mask = self.right_mask
-                self.right_mask_rect.center = self.mask_rect.center
-                self.mask_rect = self.right_mask_rect
-                self.mask_rect = self.up_mask_rect
-        elif -3 * math.pi / 4 < direction < -math.pi / 4:
-            # Down
-            if self.image is not self.down_image:
-                self.image = self.down_image
-                self.down_rect.center = self.rect.center
-                self.rect = self.down_rect
-                self.mask = self.down_mask
-                self.down_mask_rect.center = self.mask_rect.center
-                self.mask_rect = self.down_mask_rect
-        else:
-            # Down
-            if self.image is not self.left_image:
-                self.image = self.left_image
-                self.left_rect.center = self.rect.center
-                self.rect = self.left_rect
-                self.mask = self.left_mask
-                self.left_mask_rect.center = self.mask_rect.center
-                self.mask_rect = self.left_mask_rect
+        self.update_facing_direction()
+
+    def update_facing_direction(self):
+        direction = math.degrees(math.atan2(self.speedy, self.speedx))
+        # Transform angle so 0 = facing down instead of right,
+        # and positive angle increasesgo counterclockwise instead of clockwise
+        direction = (90 - direction) % 360
+        angles = [(-90 + a) % 360 for a in frange(0, 360, 360 / self.FACING_DIRECTIONS)]
+        min_i, min_distance = 0, 360
+        for i, angle in enumerate(angles):
+            distance = angle_distance(direction, angle)
+            if distance < min_distance:
+                min_i, min_distance = i, distance
+        angle = angles[min_i]
+        key = self.imagepath + str(round(angle))
+
+        image, rect, mask, mask_rect, mask_rect_offsetx, mask_rect_offsety = self._load_image(key)
+
+        if image is not self.image:
+            # Switch images
+            center = self.rect.center
+            self.image, self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
+                self.mask_rect_offsety = image, rect, mask, mask_rect, mask_rect_offsetx, \
+                mask_rect_offsety
+            self.rect.center = center
+            self.update_mask_pos()
 
     def update_velocity(self, elapsed):
         if hasattr(self, 'move_behavior'):

@@ -3,6 +3,7 @@ import uuid
 import pygame
 
 from astro import SCREEN_SIZE
+from astro.image import generate_rect_and_mask
 from astro.astro_sprite import AstroSprite
 from astro.ship import Ship, PlayerShip, EnemyShip
 from astro.projectile import Projectile
@@ -24,10 +25,15 @@ class AstroSpriteTest(AstroSprite):
             name = name[:-4]
         return name
 
-    def _load_image(self, rel_path):
-        image = pygame.Surface(self.size)
-        image.fill(pygame.Color(0, 0, 0))
-        return image.convert()
+    def load_image(self):
+        self.image = pygame.Surface(self.size)
+        self.image.fill(pygame.Color(0, 0, 0))
+        self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
+            self.mask_rect_offsety = generate_rect_and_mask(self.image)
+
+    def _load_image(self, *args, **kwargs):
+        return self.image, self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
+            self.mask_rect_offsety
 
     @classmethod
     def create(cls, size=None, startx=SCREEN_SIZE[0]/2, starty=SCREEN_SIZE[1]/2,

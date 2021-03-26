@@ -1,11 +1,10 @@
 """Defines a superclass for all objects that appear onscreen in the game, i.e. ships, projectiles...
 """
 
-import os.path
-
 import pygame
 
-from astro import ASSET_DIR, SCREEN_SIZE, OFF_SCREEN_CUTOFF
+from astro import SCREEN_SIZE, OFF_SCREEN_CUTOFF
+from astro.image import load_image
 from astro.configurable import Configurable, ConfigurableMeta
 from astro.collidable import Collidable, CollidableMeta
 from astro.timekeeper import Timekeeper
@@ -72,35 +71,15 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         self.y = self.rect.centery
         self.add(self.groups)
 
-    def _load_image(self, rel_path):
-        """Backend method for loading an image, inverting it if appropriate, and converting it.
-        """
-        full_path = os.path.join(ASSET_DIR, rel_path)
-        if not os.path.isfile(full_path):
-            raise FileNotFoundError(f'Image not found: {full_path}')
-
-        image = pygame.image.load(full_path)
-        if self.inverted:
-            image = pygame.transform.flip(image, False, True)
-        return image.convert_alpha()
+    def _load_image(self, *args, **kwargs):
+        return load_image(*args, **kwargs)
 
     def load_image(self):
         """Loads the image file for this object and initializes its image and rectangle
             attributes as expected by pygame.sprite.Sprite.
         """
-        # TODO: Create images for all four facing directions
-        # TODO: Cache images in memory to avoid reloading them every time
-        self.image = self._load_image(self.imagepath)
-        self.rect, self.mask, self.mask_rect = self.generate_rect_and_mask(self.image)
-
-    def generate_rect_and_mask(self, image):
-        rect = image.get_rect()
-        mask = pygame.mask.from_surface(image)
-        mask_rect = mask.get_bounding_rects()[0]
-        mask_rect_offsetx = mask_rect.centerx - rect.centerx
-        mask_rect_offsety = mask_rect.centery - rect.centery
-
-        return rect, mask, mask_rect
+        self.image, self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
+            self.mask_rect_offsety = self._load_image(self.imagepath, self.inverted)
 
     def destroy(self):
         """Removes this object from the game.

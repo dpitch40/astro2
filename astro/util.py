@@ -20,3 +20,19 @@ def convert_proportional_coordinate_list(coords):
 
 def magnitude(x, y):
     return math.sqrt(x ** 2 + y ** 2)
+
+def angle_distance(angle1, angle2):
+    return min(abs(angle2 - angle1), abs(angle2 - angle1 - 360), abs(angle2 - angle1 + 360))
+
+def frange(start, stop=None, step=None):
+    """Floating-point version of range.
+    """
+    if stop is None:
+        start, stop = 0.0, start
+    if step is None:
+        step = 1.0
+
+    current = start
+    while current < stop:
+        yield current
+        current += step
