@@ -85,10 +85,6 @@ def main():
         for group in GROUPS:
             group.draw(screen)
 
-        # Draw shield
-        player_ship.shield_image.set_alpha(int(128 * player_ship.shield.integrity_proportion))
-        screen.blit(player_ship.shield_image, player_ship.rect)
-
         hud.draw()
         pygame.display.flip()
 

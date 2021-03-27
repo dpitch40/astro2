@@ -9,18 +9,25 @@ from astro.astro_sprite import AstroSprite
 
 class Ship(AstroSprite):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons', 'max_hp')
+    defaults = {'shield': None}
     confined = True
 
     def __init__(self, key):
         super().__init__(key)
         self.weapons = list()
-        self.shield = None
+
+    def destroy(self):
+        super().destroy()
+        if self.shield is not None:
+            self.shield.destroy()
 
     def initialize(self):
         super().initialize()
 
         for weapon in self.weapons:
             weapon.owner = self
+        if self.shield is not None:
+            self.shield.owner = self
 
         self.hp = self.max_hp
 
@@ -38,17 +45,19 @@ class Ship(AstroSprite):
         else:
             self.moving_image, self.static_image = None, None
 
+    def place(self, *args, **kwargs):
+        super().place(*args, **kwargs)
         if self.shield is not None:
-            self.shield_image = pygame.Surface(self.rect.size)
-            pygame.draw.ellipse(self.shield_image, (180, 180, 255, 128), self.shield_image.get_rect())
+            self.shield.place(self.rect.centerx, self.rect.centery)
 
     def tick(self, now, elapsed):
         self.update_velocity(elapsed)
 
         super().tick(now, elapsed)
 
+        # Keep shield centered on self
         if self.shield is not None:
-            self.shield.tick(now, elapsed)
+            self.shield.rect.center = self.rect.center
 
         for weapon in self.weapons:
             weapon.tick(now, elapsed)
@@ -56,11 +65,6 @@ class Ship(AstroSprite):
         self.update_image()
 
     def update_image(self):
-        # if self.shield is not None:
-        #     pygame.draw.ellipse(self.image, (220, 220, 255, int(64 * self.shield.integrity_proportion)),
-        #         self.image.get_rect())
-
-        # self.image = self.image.conve
         pass
 
     def damage(self, damage_amount):

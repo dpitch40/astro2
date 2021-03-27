@@ -2,15 +2,24 @@
 """
 import time
 
-from astro.item import TimekeeperItem
+import pygame
 
-class Shield(TimekeeperItem):
+from astro import SHIELDS
+from astro.astro_sprite import AstroSprite
+from astro.item import TimekeeperItem
+from astro.image import generate_rect_and_mask
+
+class Shield(AstroSprite, TimekeeperItem):
     """A ship-mounted weapon.
     """
     required_fields = ('capacity', 'recharge_rate', 'recharge_delay')
-
+    defaults = {'color': (180, 180, 255),
+                'max_alpha': 128,
+                'imagepath': None}
+    groups = [SHIELDS]
 
     def __init__(self, key):
+        AstroSprite.__init__(self, key)
         TimekeeperItem.__init__(self, key)
         self.is_recharging = False
 
@@ -31,6 +40,15 @@ class Shield(TimekeeperItem):
             self.integrity = 0
             return absorbed
 
+    def _load_image(self, *args, **kwargs):
+        if self.imagepath is not None:
+            return super()._load_image(*args, **kwargs)
+        else:
+            image = pygame.Surface(self.owner.rect.size)
+            color = self.color + (self.max_alpha,)
+            pygame.draw.ellipse(image, color, image.get_rect())
+            return (image,) + generate_rect_and_mask(image)
+
     def initialize(self):
         super().initialize()
         self.integrity = self.capacity
@@ -50,3 +68,6 @@ class Shield(TimekeeperItem):
                                  self.capacity)
             if self.integrity == self.capacity:
                 self.is_recharging = False
+
+        # Set alpha proportional to integrity
+        self.image.set_alpha(int(128 * self.integrity_proportion))

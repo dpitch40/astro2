@@ -28,6 +28,7 @@ FRIENDLY_PROJECTILES = pygame.sprite.RenderPlain()
 ENEMY_PROJECTILES = pygame.sprite.RenderPlain()
 PICKUPS = pygame.sprite.RenderPlain()
 OBJECTS = pygame.sprite.RenderPlain()
+SHIELDS = pygame.sprite.RenderPlain()
 BACKGROUND_OBJECTS = pygame.sprite.RenderPlain()
 
 # All groups in update order
@@ -39,6 +40,7 @@ GROUPS = [
           ENEMY_PROJECTILES,
           PICKUPS,
           OBJECTS,
+          SHIELDS,
          ]
 
 FRIENDLIES = {FRIENDLY_SHIPS, FRIENDLY_PROJECTILES}
