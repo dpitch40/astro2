@@ -184,7 +184,6 @@ class Configurable(metaclass=ConfigurableMeta):
         base_instance, _ = cls._lookup[key]
         if copy:
             inst = base_instance.copy(**overrides)
-            inst.initialize()
         else:
             inst = base_instance
         return inst
