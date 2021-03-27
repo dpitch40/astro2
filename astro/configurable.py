@@ -109,6 +109,16 @@ class Configurable(metaclass=ConfigurableMeta):
             if k not in cls.fields:
                 cls.fields.append(k)
 
+    def copy_value(self, value):
+        if isinstance(value, dict):
+            return {k: self.copy_value(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            return [self.copy_value(v) for v in value]
+        elif isinstance(value, Configurable):
+            return value.copy()
+        else:
+            return value
+
     def copy(self, **overrides):
         """Creates and returns a new instance of this instance's class.
 
@@ -123,7 +133,7 @@ class Configurable(metaclass=ConfigurableMeta):
         """
         _, base_config = self._lookup[self.key]
         config = base_config.copy()
-        config.update({f: getattr(self, f) for f in self.fields if hasattr(self, f)})
+        config.update({f: self.copy_value(getattr(self, f)) for f in self.fields if hasattr(self, f)})
         config.update(overrides)
         copied = self.__class__(self.key)
         copied._setup(config)

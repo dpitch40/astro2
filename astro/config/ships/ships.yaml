@@ -21,4 +21,4 @@ EnemyShip[testenemyship]:
           - [0.25, 0.25]
           - [0.75, 0.25]
     fire_behavior:
-      FireConstantly[fire_constantly]: {}
+      FireConstantly(fire_constantly)
