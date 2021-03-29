@@ -15,7 +15,8 @@ class Shield(AstroSprite, TimekeeperItem):
     required_fields = ('capacity', 'recharge_rate', 'recharge_delay')
     defaults = {'color': (180, 180, 255),
                 'max_alpha': 128,
-                'imagepath': None}
+                'imagepath': None,
+                'size_delta': 0}
     groups = []
 
     def __init__(self, key):
@@ -44,7 +45,10 @@ class Shield(AstroSprite, TimekeeperItem):
         if self.imagepath is not None:
             return super()._load_image(*args, **kwargs)
         else:
-            image = pygame.Surface(self.owner.rect.size, flags=pygame.SRCALPHA)
+            sizex, sizey = self.owner.rect.size
+            sizex += self.size_delta
+            sizey += self.size_delta
+            image = pygame.Surface((sizex, sizey), flags=pygame.SRCALPHA)
             color = self.color + (self.max_alpha,)
             pygame.draw.ellipse(image, color, image.get_rect())
             return (image,) + generate_rect_and_mask(image)
