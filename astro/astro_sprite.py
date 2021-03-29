@@ -148,12 +148,13 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         dx = targetx - self.speedx
         dy = targety - self.speedy
         dv = magnitude(dx, dy)
-        max_accel = self.acceleration * elapsed
-        if dv < max_accel:
-            self.speedx, self.speedy = targetx, targety
-        else:
-            self.speedx += dx * max_accel / dv
-            self.speedy += dy * max_accel / dv
+        if dv:
+            max_accel = self.acceleration * elapsed
+            if dv < max_accel:
+                self.speedx, self.speedy = targetx, targety
+            else:
+                self.speedx += dx * max_accel / dv
+                self.speedy += dy * max_accel / dv
 
     def accelerate_toward_point(self, elapsed, targetx, targety, decelerate=True):
         # Move towards the target point
@@ -162,13 +163,14 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         dy = targety - self.y
 
         distance = magnitude(dx, dy)
-        target_speed = self.max_speed
-        if decelerate:
-            target_speed *= min(1.0, distance / self.stopping_distance)
-        target_speedx = dx * target_speed / distance
-        target_speedy = dy * target_speed / distance
+        if distance:
+            target_speed = self.max_speed
+            if decelerate:
+                target_speed *= min(1.0, distance / self.stopping_distance)
+            target_speedx = dx * target_speed / distance
+            target_speedy = dy * target_speed / distance
 
-        return self.accelerate_toward(elapsed, target_speedx, target_speedy)
+            return self.accelerate_toward(elapsed, target_speedx, target_speedy)
 
     def check_bounds(self):
         """Checks the object's position in relation to the screen edge.
