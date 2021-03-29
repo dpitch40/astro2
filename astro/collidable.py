@@ -1,3 +1,5 @@
+import pygame
+
 from astro import logger
 
 _collidable_class_lookup = dict()
@@ -13,12 +15,13 @@ class CollidableMeta(type):
         return result
 
 class Collidable(metaclass=CollidableMeta):
-    def collide_with(self, other):
+    def collide_with(self, other, use_mask=False):
         this_class = self.class_name.lower()
         other_class = other.class_name.lower()
-        if hasattr(self, f'collide_with_{other_class}'):
-            return getattr(self, f'collide_with_{other_class}')(other)
-        elif hasattr(other, f'collide_with_{this_class}'):
-            return getattr(other, f'collide_with_{this_class}')(self)
-        else:
-            logger.warning(f'Collisions not defined between {this_class} and {other_class}')
+        if not use_mask or pygame.sprite.collide_mask(self, other):
+            if hasattr(self, f'collide_with_{other_class}'):
+                return getattr(self, f'collide_with_{other_class}')(other)
+            elif hasattr(other, f'collide_with_{this_class}'):
+                return getattr(other, f'collide_with_{this_class}')(self)
+            else:
+                logger.warning(f'Collisions not defined between {this_class} and {other_class}')

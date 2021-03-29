@@ -46,11 +46,11 @@ GROUPS = [
 FRIENDLIES = {FRIENDLY_SHIPS, FRIENDLY_PROJECTILES}
 ENEMIES = {ENEMY_SHIPS, ENEMY_PROJECTILES}
 
-COLLIDABLE_PAIRS = [(FRIENDLY_SHIPS, ENEMY_PROJECTILES),
-                    (ENEMY_SHIPS, FRIENDLY_PROJECTILES),
-                    (FRIENDLY_SHIPS, ENEMY_SHIPS),
-                    (FRIENDLY_SHIPS, PICKUPS),
-                    (FRIENDLY_SHIPS, OBJECTS),
-                    (ENEMY_SHIPS, OBJECTS),
-                    (FRIENDLY_PROJECTILES, OBJECTS),
-                    (ENEMY_PROJECTILES, OBJECTS)]
+COLLIDABLE_PAIRS = [(FRIENDLY_SHIPS, ENEMY_PROJECTILES, True),
+                    (ENEMY_SHIPS, FRIENDLY_PROJECTILES, False),
+                    (FRIENDLY_SHIPS, ENEMY_SHIPS, True),
+                    (FRIENDLY_SHIPS, PICKUPS, False),
+                    (FRIENDLY_SHIPS, OBJECTS, True),
+                    (ENEMY_SHIPS, OBJECTS, False),
+                    (FRIENDLY_PROJECTILES, OBJECTS, False),
+                    (ENEMY_PROJECTILES, OBJECTS, False)]

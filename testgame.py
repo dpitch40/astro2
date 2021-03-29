@@ -20,10 +20,10 @@ import astro.fire_behavior
 
 def check_collisions():
     # TODO: Use masks, at least some of the time
-    for group1, group2 in COLLIDABLE_PAIRS:
+    for group1, group2, use_mask in COLLIDABLE_PAIRS:
         for sprite, colliders in pygame.sprite.groupcollide(group1, group2, False, False).items():
             for collider in colliders:
-                sprite.collide_with(collider)
+                sprite.collide_with(collider, use_mask)
 
 def load_all():
     for d in CONFIG_ORDER:
