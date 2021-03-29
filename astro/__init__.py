@@ -28,7 +28,8 @@ FRIENDLY_PROJECTILES = pygame.sprite.RenderPlain()
 ENEMY_PROJECTILES = pygame.sprite.RenderPlain()
 PICKUPS = pygame.sprite.RenderPlain()
 OBJECTS = pygame.sprite.RenderPlain()
-SHIELDS = pygame.sprite.RenderPlain()
+FRIENDLY_SHIELDS = pygame.sprite.RenderPlain()
+ENEMY_SHIELDS = pygame.sprite.RenderPlain()
 BACKGROUND_OBJECTS = pygame.sprite.RenderPlain()
 
 # All groups in update order
@@ -40,7 +41,8 @@ GROUPS = [
           ENEMY_PROJECTILES,
           PICKUPS,
           OBJECTS,
-          SHIELDS,
+          FRIENDLY_SHIELDS,
+          ENEMY_SHIELDS,
          ]
 
 FRIENDLIES = {FRIENDLY_SHIPS, FRIENDLY_PROJECTILES}
@@ -48,6 +50,8 @@ ENEMIES = {ENEMY_SHIPS, ENEMY_PROJECTILES}
 
 COLLIDABLE_PAIRS = [(FRIENDLY_SHIPS, ENEMY_PROJECTILES, True),
                     (ENEMY_SHIPS, FRIENDLY_PROJECTILES, False),
+                    (FRIENDLY_SHIELDS, ENEMY_PROJECTILES, True),
+                    (ENEMY_SHIELDS, FRIENDLY_PROJECTILES, False),
                     (FRIENDLY_SHIPS, ENEMY_SHIPS, True),
                     (FRIENDLY_SHIPS, PICKUPS, False),
                     (FRIENDLY_SHIPS, OBJECTS, True),

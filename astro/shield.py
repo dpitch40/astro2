@@ -4,7 +4,7 @@ import time
 
 import pygame
 
-from astro import SHIELDS
+from astro import FRIENDLY_SHIELDS, ENEMY_SHIELDS, FRIENDLY_SHIPS
 from astro.astro_sprite import AstroSprite
 from astro.item import TimekeeperItem
 from astro.image import generate_rect_and_mask
@@ -16,12 +16,17 @@ class Shield(AstroSprite, TimekeeperItem):
     defaults = {'color': (180, 180, 255),
                 'max_alpha': 128,
                 'imagepath': None}
-    groups = [SHIELDS]
+    groups = []
 
     def __init__(self, key):
         AstroSprite.__init__(self, key)
         TimekeeperItem.__init__(self, key)
         self.is_recharging = False
+
+    def collide_with_projectile(self, projectile):
+        if self.integrity > 0:
+            self.damage(projectile.damage)
+            projectile.destroy()
 
     def damage(self, damage_amount):
         """Simulates the shield taking damage.
@@ -31,20 +36,15 @@ class Shield(AstroSprite, TimekeeperItem):
 
         if damage_amount > 0:
             self.last_damaged = time.time()
+            self.is_recharging = False
 
-        if damage_amount <= self.integrity:
-            self.integrity -= damage_amount
-            return damage_amount
-        else:
-            absorbed = self.integrity
-            self.integrity = 0
-            return absorbed
+        self.integrity = max(0, self.integrity - damage_amount)
 
     def _load_image(self, *args, **kwargs):
         if self.imagepath is not None:
             return super()._load_image(*args, **kwargs)
         else:
-            image = pygame.Surface(self.owner.rect.size)
+            image = pygame.Surface(self.owner.rect.size, flags=pygame.SRCALPHA)
             color = self.color + (self.max_alpha,)
             pygame.draw.ellipse(image, color, image.get_rect())
             return (image,) + generate_rect_and_mask(image)
@@ -53,6 +53,11 @@ class Shield(AstroSprite, TimekeeperItem):
         super().initialize()
         self.integrity = self.capacity
         self.last_damaged = time.time()
+
+    def place(self, *args, **kwargs):
+        self.groups = [FRIENDLY_SHIELDS] if FRIENDLY_SHIPS in self.owner.groups else \
+            [ENEMY_SHIELDS]
+        super().place(*args, **kwargs)
 
     @property
     def integrity_proportion(self):
@@ -70,4 +75,4 @@ class Shield(AstroSprite, TimekeeperItem):
                 self.is_recharging = False
 
         # Set alpha proportional to integrity
-        self.image.set_alpha(int(128 * self.integrity_proportion))
+        self.image.set_alpha(int(255 * self.integrity_proportion))

@@ -16,3 +16,10 @@ Weapon[enemygun]:
   rate_of_fire: 0.5
   projectiles:
     - Projectile(testproj)
+Weapon[slowgun]:
+  rate_of_fire: 0.125
+  projectiles:
+    - Projectile(testproj):
+        speed: 10
+        relative_to_firer_velocity: false
+        damage: 6

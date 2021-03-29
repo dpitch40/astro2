@@ -68,13 +68,9 @@ class Ship(AstroSprite):
         pass
 
     def damage(self, damage_amount):
-        if self.shield is not None:
-            damage_absorbed = self.shield.damage(damage_amount)
-            damage_amount -= damage_absorbed
-        if damage_amount > 0:
-            self.hp -= damage_amount
-            if self.hp <= 0:
-                self.destroy()
+        self.hp -= damage_amount
+        if self.hp <= 0:
+            self.destroy()
 
     def collide_with_projectile(self, projectile):
         self.damage(projectile.damage)
