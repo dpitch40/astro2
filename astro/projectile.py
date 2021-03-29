@@ -16,7 +16,7 @@ class Projectile(AstroSprite, Timekeeper):
     """
 
     required_fields = ('imagepath', 'speed', 'damage')
-    defaults = {"angle": 0}
+    defaults = {"angle": 0, 'relative_to_firer_velocity': True}
 
     FACING_DIRECTIONS = 8
 
@@ -42,9 +42,13 @@ class Projectile(AstroSprite, Timekeeper):
         # Also firing from hardpoint positions and not the center of the firer
         self.inverted = friendly
         self.groups = [FRIENDLY_PROJECTILES] if friendly else [ENEMY_PROJECTILES]
-        super().place(firer.rect.centerx, firer.rect.centery,
-                      speedx=math.sin(math.radians(self.angle)) * self.speed + firer.speedx,
-                      speedy=math.cos(math.radians(self.angle)) * self.speed * (-1 if friendly else 1) + firer.speedy)
+        speedx = math.sin(math.radians(self.angle)) * self.speed
+        angle = self.angle + (180 if friendly else 0)
+        speedy = math.cos(math.radians(angle)) * self.speed
+        if self.relative_to_firer_velocity:
+            speedx += firer.speedx
+            speedy += firer.speedy
+        super().place(firer.rect.centerx, firer.rect.centery, speedx=speedx, speedy=speedy)
 
 
     def tick(self, now, elapsed):
