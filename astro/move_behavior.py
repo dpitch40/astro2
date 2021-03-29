@@ -40,18 +40,28 @@ class Patrol(MoveBehavior):
     """
 
     required_fields = ('dests',)
+    defaults = {'pause_time': 0}
+    defaults.update(MoveBehavior.defaults)
 
     def initialize(self):
         super().initialize()
         self._dests = convert_proportional_coordinate_list(self.dests)
         self.dest_i = 0
+        self.pause_timer = self.pause_time
 
     def _update_velocity(self, elapsed):
         dest = self._dests[self.dest_i]
         if self.reached_dest(*dest):
-            # Cycle to next destination
-            self.dest_i = (self.dest_i + 1) % len(self._dests)
-            dest = self._dests[self.dest_i]
+            if self.pause_timer is not None:
+                self.pause_timer -= elapsed
+                if self.pause_timer <= 0:
+                    self.pause_timer = None
+
+            if self.pause_timer is None:
+                # Cycle to next destination
+                self.dest_i = (self.dest_i + 1) % len(self._dests)
+                dest = self._dests[self.dest_i]
+                self.pause_timer = self.pause_time
 
         self.ship.accelerate_toward_point(elapsed, *dest)
 
