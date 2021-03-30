@@ -3,6 +3,7 @@
 
 import pygame
 
+import astro
 from astro import FRIENDLY_SHIPS, ENEMY_SHIPS
 from astro.image import load_image
 from astro.astro_sprite import AstroSprite
@@ -31,6 +32,10 @@ class Ship(AstroSprite):
 
         self.hp = self.max_hp
 
+    @property
+    def integrity_proportion(self):
+        return self.hp / self.max_hp
+
     def load_image(self):
         super().load_image()
 
@@ -54,10 +59,6 @@ class Ship(AstroSprite):
         self.update_velocity(elapsed)
 
         super().tick(now, elapsed)
-
-        # Keep shield centered on self
-        if self.shield is not None:
-            self.shield.rect.center = self.rect.center
 
         for weapon in self.weapons:
             weapon.tick(now, elapsed)
@@ -142,7 +143,13 @@ class PlayerShip(Ship):
 class EnemyShip(Ship):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons',
                        'move_behavior', 'fire_behavior')
+    defaults = {'shield': None,  'big_health_bar': False}
     groups = [ENEMY_SHIPS]
+
+    def destroy(self):
+        super().destroy()
+        if self.big_health_bar:
+            astro.HUD.big_health_bar_ship = None
 
     def initialize(self):
         super().initialize()
@@ -151,6 +158,11 @@ class EnemyShip(Ship):
         self.fire_behavior = self.fire_behavior.copy()
         self.move_behavior.init_ship(self)
         self.fire_behavior.init_ship(self)
+
+    def place(self, *args, **kwargs):
+        super().place(*args, **kwargs)
+        if self.big_health_bar:
+            astro.HUD.big_health_bar_ship = self
 
     def tick(self, now, elapsed):
         super().tick(now, elapsed)

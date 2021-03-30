@@ -80,3 +80,8 @@ class Shield(AstroSprite, TimekeeperItem):
 
         # Set alpha proportional to integrity
         self.image.set_alpha(int(255 * self.integrity_proportion))
+        self.update_position(elapsed)
+
+    def update_position(self, elapsed):
+        # Keep shield centered on owner ship
+        self.rect.center = self.owner.rect.center

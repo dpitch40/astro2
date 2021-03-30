@@ -22,3 +22,4 @@ EnemyShip[testenemyship]:
           - [0.75, 0.25]
     fire_behavior:
       FireConstantly(fire_constantly)
+    big_health_bar: true

@@ -61,14 +61,14 @@ def main():
 
     load_all()
     player_ship = PlayerShip.instance('testship')
+    hud = astro.HUD = HUD(screen, player_ship)
     enemy_ship = EnemyShip.instance('testenemyship', copy=True)
     enemy_ship2 = EnemyShip.instance('testenemyship', copy=True)
     init_game(player_ship)
     player_ship.place()
     enemy_ship.place(0.25, -300)
-    enemy_ship2.place(0.75, -300)
+    # enemy_ship2.place(0.75, -300)
     clock = pygame.time.Clock()
-    hud = HUD(screen, player_ship)
 
     while True:
         clock.tick(MAX_FPS)
