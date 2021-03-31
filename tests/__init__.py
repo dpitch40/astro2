@@ -60,7 +60,8 @@ class ShipTest(AstroSpriteTest, Ship):
     default_size = (50, 50)
     engine_glow_imagepath = None
 
-    defaults = {'max_hp': 100}
+    defaults = Ship.defaults.copy()
+    defaults.update({'max_hp': 100})
 
 class PlayerShipTest(ShipTest, PlayerShip):
     default_size = (50, 50)
@@ -69,8 +70,6 @@ class PlayerShipTest(ShipTest, PlayerShip):
 class EnemyShipTest(ShipTest, EnemyShip):
     default_size = (50, 50)
     engine_glow_imagepath = None
-
-    defaults = {'max_hp': 100}
 
 class ProjectileTest(AstroSpriteTest, Projectile):
     default_size = (10, 10)

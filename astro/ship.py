@@ -11,12 +11,16 @@ from astro.healthbar import Healthbar
 
 class Ship(AstroSprite):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons', 'max_hp')
-    defaults = {'shield': None}
+    defaults = {'shield': None,
+                'mass': None}
     confined = True
 
     def __init__(self, key):
         super().__init__(key)
         self.weapons = list()
+
+    def calculate_mass(self):
+        return self.mask.count()
 
     def destroy(self):
         super().destroy()
@@ -55,6 +59,10 @@ class Ship(AstroSprite):
         super().place(*args, **kwargs)
         if self.shield is not None:
             self.shield.place(self.rect.centerx, self.rect.centery)
+
+        # Set mass (for collisions)
+        if self.mass is None:
+            self.mass = self.calculate_mass()
 
     def tick(self, now, elapsed):
         self.update_velocity(elapsed)
@@ -144,7 +152,8 @@ class PlayerShip(Ship):
 class EnemyShip(Ship):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons',
                        'move_behavior', 'fire_behavior')
-    defaults = {'shield': None,  'big_health_bar': False}
+    defaults = Ship.defaults.copy()
+    defaults.update({'big_health_bar': False})
     groups = [ENEMY_SHIPS]
 
     def destroy(self):
