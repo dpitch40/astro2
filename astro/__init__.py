@@ -13,7 +13,14 @@ SCREEN_SIZE = (640, 480)
 OFF_SCREEN_CUTOFF = 500
 MAX_FPS = 60
 
+HP_COLOR = (60, 255, 60)
+SHIELD_COLOR = (200, 200, 255)
+EMPTY_COLOR = (255, 64, 64)
+
 HUD = None
+ENEMY_HEALTHBARS = True
+BIG_HEALTHBAR_HEIGHT = 50
+HEALTHBAR_HEIGHT = 10
 
 # Order in which to load configs
 CONFIG_ORDER = ['behaviors',
@@ -33,6 +40,7 @@ OBJECTS = pygame.sprite.RenderPlain()
 FRIENDLY_SHIELDS = pygame.sprite.RenderPlain()
 ENEMY_SHIELDS = pygame.sprite.RenderPlain()
 BACKGROUND_OBJECTS = pygame.sprite.RenderPlain()
+HEALTHBARS = pygame.sprite.RenderPlain()
 
 # All groups in update order
 GROUPS = [
@@ -45,6 +53,7 @@ GROUPS = [
           OBJECTS,
           FRIENDLY_SHIELDS,
           ENEMY_SHIELDS,
+          HEALTHBARS,
          ]
 
 FRIENDLIES = {FRIENDLY_SHIPS, FRIENDLY_PROJECTILES}

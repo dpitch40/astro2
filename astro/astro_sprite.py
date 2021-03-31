@@ -13,7 +13,7 @@ from astro.util import magnitude, convert_prop_x, convert_prop_y
 class AstroSpriteMeta(ConfigurableMeta, CollidableMeta):
     pass
 
-class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
+class AstroSprite(Configurable, Timekeeper, Collidable, pygame.sprite.Sprite,
     metaclass=AstroSpriteMeta):
     """Class for any object that is rendered onscreen in the game.
 
@@ -92,11 +92,6 @@ class AstroSprite(pygame.sprite.Sprite, Configurable, Timekeeper, Collidable,
         """
         self._update_velocity(elapsed)
         self.update_position(elapsed)
-
-    def update(self):
-        """Called by pygame.sprite.Group.update.
-        """
-        self._tick()
 
     def update_position(self, elapsed):
         """Called each tick; updates the sprite's position based on its velocity.

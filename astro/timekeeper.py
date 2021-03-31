@@ -23,3 +23,8 @@ class Timekeeper:
             elapsed (float): The time in fractional seconds since the object was last updated.
         """
         raise NotImplementedError
+
+    def update(self):
+        """Called by pygame.sprite.Group.update.
+        """
+        self._tick()

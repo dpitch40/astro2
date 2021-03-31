@@ -4,9 +4,10 @@
 import pygame
 
 import astro
-from astro import FRIENDLY_SHIPS, ENEMY_SHIPS
+from astro import FRIENDLY_SHIPS, ENEMY_SHIPS, ENEMY_HEALTHBARS
 from astro.image import load_image
 from astro.astro_sprite import AstroSprite
+from astro.healthbar import Healthbar
 
 class Ship(AstroSprite):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons', 'max_hp')
@@ -150,6 +151,8 @@ class EnemyShip(Ship):
         super().destroy()
         if self.big_health_bar:
             astro.HUD.big_health_bar_ship = None
+        if ENEMY_HEALTHBARS:
+            self.healthbar.destroy()
 
     def initialize(self):
         super().initialize()
@@ -163,6 +166,8 @@ class EnemyShip(Ship):
         super().place(*args, **kwargs)
         if self.big_health_bar:
             astro.HUD.big_health_bar_ship = self
+        if ENEMY_HEALTHBARS:
+            self.healthbar = Healthbar(self)
 
     def tick(self, now, elapsed):
         super().tick(now, elapsed)
