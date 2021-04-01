@@ -45,14 +45,13 @@ class Collidable(metaclass=CollidableMeta):
         if not (self.speedx or self.speedy or other.speedx or other.speedy):
             return
 
+        # To compensate for limited frame rate, step back through time to the moment the masks
+        # first minimally overlapped
         step = 1 / (MAX_FPS * 4)
-
         def pos_at_t(t):
             return self.rect.centerx + self.speedx * t, self.rect.centery + self.speedy * t
-
         def other_pos_at_t(t):
             return other.rect.centerx + other.speedx * t, other.rect.centery + other.speedy * t
-
         def get_overlap_at_t(t):
             # Calculate angle of collision
             x1, y1 = pos_at_t(t)
@@ -66,7 +65,7 @@ class Collidable(metaclass=CollidableMeta):
             overlap = get_overlap_at_t(T)
         overlap = prev_overlap
 
-        # Invert angle to convert from cartesian to pixel coordinates
+        # Invert angle to convert from cartesian to pixel coordinates, and add 90 degrees
         normal_angle = math.radians(90 - overlap.angle())
         # print(overlap.count(), 90 - overlap.angle())
         c1 = self.rect.center
@@ -75,11 +74,14 @@ class Collidable(metaclass=CollidableMeta):
         a = math.atan2(c1[1] - c2[1], c1[0] - c2[0])
         if angle_distance(normal_angle, a + math.pi, True) < angle_distance(normal_angle, a, True):
             normal_angle += math.pi
-        velocity_angle = math.atan2(self.speedy, self.speedx)
+        # Angle of relative velocity
+        velocity_angle = math.atan2(self.speedy - other.speedy, self.speedx - other.speedy)
+        # Need to ensure the collision actually pushes the ships apart; the code will fail to
+        # find a solution if it doesn't
         for angle, name in [(normal_angle, 'Normal'),
                             (a, 'Dir'),
                             (math.atan2(other.speedy - self.speedy, other.speedx - self.speedx), 'Speed')]:
-            if angle_distance(angle, velocity_angle, True) > math.radians(110):
+            if angle_distance(angle, velocity_angle, True) > math.radians(100):
                 ax = math.cos(angle)
                 ay = math.sin(angle)
                 # print(name)
@@ -90,19 +92,16 @@ class Collidable(metaclass=CollidableMeta):
 
         # Calculate total kinetic energy
         tke = self.kinetic_energy + other.kinetic_energy
-        # Average elasticity of collision
-        elasticity = (self.elasticity + other.elasticity) / 2
 
+        # Find the "force" (actually average force times a short time interval) of the collision
+        # using numerical methods, aiming to conserve kinetic energy (for now)
         def v1f(F):
             return self.speedx + F * ax / self.mass, self.speedy + F * ay / self.mass
-
         def v2f(F):
             return other.speedx - F * ax / other.mass, other.speedy - F * ay / other.mass
-
         def d_tke(F):
             return tke - (0.5 * self.mass * magnitude(*v1f(F)) ** 2 + \
                           0.5 * other.mass * magnitude(*v2f(F)) ** 2)
-
         i = 1
         while True:
             val = d_tke(2 << i)
@@ -115,14 +114,21 @@ class Collidable(metaclass=CollidableMeta):
         # print('T =', T)
         # print('Before', self.x, self.y, other.x, other.y, get_overlap_at_t(0).count())
 
+        # Adjust ships' position so they no longer overlap
         self.x, self.y = pos_at_t(T)
-        self.speedx, self.speedy = v1f(f * elasticity * BOUNCINESS_MULT)
         self.sync_position()
         other.x, other.y = other_pos_at_t(T)
-        other.speedx, other.speedy = v2f(f * elasticity * BOUNCINESS_MULT)
         other.sync_position()
 
+        # Average elasticity of collision
+        elasticity = (self.elasticity + other.elasticity) / 2
+        # Adjust ships' velocity to bounce them off each other
+        self.speedx, self.speedy = v1f(f * elasticity * BOUNCINESS_MULT)
+        other.speedx, other.speedy = v2f(f * elasticity * BOUNCINESS_MULT)
+
+        # Inflict collision damage
         damage = f * (1.0 - elasticity) * COLLISION_DAMAGE_MULT
+        # Multiplier to make heavier ships sustain less damage and lighter ships more
         mass_mult = other.mass / self.mass
         self.damage(round(damage * mass_mult))
         other.damage(round(damage / mass_mult))
