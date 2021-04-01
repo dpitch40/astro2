@@ -16,7 +16,7 @@ class Projectile(AstroSprite, Timekeeper):
     """
 
     required_fields = ('imagepath', 'speed', 'damage')
-    defaults = {"angle": 0, 'relative_to_firer_velocity': True, "fuel_duration":None}
+    defaults = {"angle": 0, 'relative_to_firer_velocity': True, 'fuel_duration': None}
 
     FACING_DIRECTIONS = 8
 
