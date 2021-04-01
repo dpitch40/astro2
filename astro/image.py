@@ -12,17 +12,18 @@ CachedImage = namedtuple('CachedImage',
      'mask',
      'mask_rect',
      'mask_rect_offsetx',
-     'mask_rect_offsety'])
+     'mask_rect_offsety',
+     'mask_centroid'])
 
 IMAGE_CACHE = dict()
 
 ALLOWED_DIRECTIONS = {None, 4, 8}
 
 def _cache_image(key, image):
-    rect, mask, mask_rect, mask_rect_offsetx, mask_rect_offsety = \
+    rect, mask, mask_rect, mask_rect_offsetx, mask_rect_offsety, centroid = \
         generate_rect_and_mask(image)
     t = IMAGE_CACHE[key] = CachedImage(image, rect, mask, mask_rect,
-                                       mask_rect_offsetx, mask_rect_offsety)
+                                       mask_rect_offsetx, mask_rect_offsety, centroid)
     return t
 
 def load_image(rel_path, flip=False, directions=None):
@@ -51,8 +52,8 @@ def load_image(rel_path, flip=False, directions=None):
     else:
         image_tuple = IMAGE_CACHE[key]
 
-    image, rect, mask, mask_rect, mask_rect_offsetx, mask_rect_offsety = image_tuple
-    return image, rect.copy(), mask, mask_rect.copy(), mask_rect_offsetx, mask_rect_offsety
+    image, rect, mask, mask_rect, mask_rect_offsetx, mask_rect_offsety, centroid = image_tuple
+    return image, rect.copy(), mask, mask_rect.copy(), mask_rect_offsetx, mask_rect_offsety, centroid
 
 def generate_rect_and_mask(image):
     rect = image.get_rect()
@@ -60,5 +61,6 @@ def generate_rect_and_mask(image):
     mask_rect = mask.get_bounding_rects()[0]
     mask_rect_offsetx = mask_rect.centerx - rect.centerx
     mask_rect_offsety = mask_rect.centery - rect.centery
+    mask_centroid = mask.centroid()
 
-    return rect, mask, mask_rect, mask_rect_offsetx, mask_rect_offsety
+    return rect, mask, mask_rect, mask_rect_offsetx, mask_rect_offsety, mask_centroid

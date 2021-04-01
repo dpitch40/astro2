@@ -31,6 +31,14 @@ class Shield(AstroSprite, TimekeeperItem):
             self.damage(projectile.damage)
             projectile.destroy()
 
+    def collide_with_ship(self, other):
+        if self.integrity > 0:
+            return self.collide_with_mass(other)
+
+    def collide_with_shield(self, other):
+        if self.integrity > 0 and other.integrity > 0:
+            return self.collide_with_mass(other)
+
     def damage(self, damage_amount):
         """Simulates the shield taking damage.
 
@@ -69,6 +77,46 @@ class Shield(AstroSprite, TimekeeperItem):
     def integrity_proportion(self):
         return self.integrity / self.capacity
 
+    @property
+    def mass(self):
+        return self.owner.mass
+
+    @property
+    def x(self):
+        return self.owner.x
+    @x.setter
+    def x(self, value):
+        if hasattr(self, 'owner'):
+            self.owner.x = value
+
+    @property
+    def y(self):
+        return self.owner.y
+    @y.setter
+    def y(self, value):
+        if hasattr(self, 'owner'):
+            self.owner.y = value
+
+    @property
+    def speedx(self):
+        return self.owner.speedx
+    @speedx.setter
+    def speedx(self, value):
+        if hasattr(self, 'owner'):
+            self.owner.speedx = value
+
+    @property
+    def speedy(self):
+        return self.owner.speedy
+    @speedy.setter
+    def speedy(self, value):
+        if hasattr(self, 'owner'):
+            self.owner.speedy = value
+
+    @property
+    def kinetic_energy(self):
+        return self.owner.kinetic_energy
+
     def tick(self, now, elapsed):
         if not self.is_recharging and self.integrity < self.capacity and \
             now - self.last_damaged > self.recharge_delay:
@@ -83,6 +131,10 @@ class Shield(AstroSprite, TimekeeperItem):
         # Set alpha proportional to integrity
         self.image.set_alpha(int(255 * self.integrity_proportion))
         self.update_position(elapsed)
+
+    def sync_position(self):
+        super().sync_position()
+        self.owner.sync_position()
 
     def update_position(self, elapsed):
         # Keep shield centered on owner ship

@@ -22,6 +22,9 @@ ENEMY_HEALTHBARS = True
 BIG_HEALTHBAR_HEIGHT = 50
 HEALTHBAR_HEIGHT = 10
 
+BOUNCINESS_MULT = 5
+COLLISION_DAMAGE_MULT = 1 / 50000
+
 # Order in which to load configs
 CONFIG_ORDER = ['behaviors',
                 'projectiles',
@@ -60,11 +63,16 @@ FRIENDLIES = {FRIENDLY_SHIPS, FRIENDLY_PROJECTILES}
 ENEMIES = {ENEMY_SHIPS, ENEMY_PROJECTILES}
 
 COLLIDABLE_PAIRS = [
+                    (FRIENDLY_SHIELDS, ENEMY_SHIELDS, True),
+                    (FRIENDLY_SHIELDS, ENEMY_SHIPS, True),
+                    (FRIENDLY_SHIPS, ENEMY_SHIELDS, True),
+                    (FRIENDLY_SHIPS, ENEMY_SHIPS, True),
+
                     (FRIENDLY_SHIELDS, ENEMY_PROJECTILES, True),
                     (ENEMY_SHIELDS, FRIENDLY_PROJECTILES, False),
                     (FRIENDLY_SHIPS, ENEMY_PROJECTILES, True),
                     (ENEMY_SHIPS, FRIENDLY_PROJECTILES, False),
-                    (FRIENDLY_SHIPS, ENEMY_SHIPS, True),
+
                     (FRIENDLY_SHIPS, PICKUPS, False),
                     (FRIENDLY_SHIPS, OBJECTS, True),
                     (ENEMY_SHIPS, OBJECTS, False),

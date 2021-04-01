@@ -1,27 +1,135 @@
+import math
+
 import pygame
 
-from astro import logger
+from astro import logger, MAX_FPS, BOUNCINESS_MULT, COLLISION_DAMAGE_MULT
+from astro.util import magnitude, angle_distance, binary_search
 
 _collidable_class_lookup = dict()
 
 class CollidableMeta(type):
     """Metaclass for Collidable and its subclasses that initializes them in the lookup systems.
     """
-    def __new__(cls, name, bases, namespace):
-        # Instantiate the new class
-        result = type.__new__(cls, name, bases, dict(namespace))
-        # Add it to the Collidable (sub)class lookup dict
-        _collidable_class_lookup[name] = result
-        return result
+    def __init__(self, *args, **kwargs):
+        type.__init__(self, *args, **kwargs)
+        _collidable_class_lookup[self.__name__] = self
+        self.collidable_superclasses = list(self._collidable_superclasses())
+
+    def _collidable_superclasses(self):
+        yield self
+        for base in self.__bases__:
+            if isinstance(base, CollidableMeta) and base is not Collidable:
+                yield base
+                yield from base._collidable_superclasses()
 
 class Collidable(metaclass=CollidableMeta):
     def collide_with(self, other, use_mask=False):
         this_class = self.class_name.lower()
         other_class = other.class_name.lower()
         if not use_mask or pygame.sprite.collide_mask(self, other):
-            if hasattr(self, f'collide_with_{other_class}'):
-                return getattr(self, f'collide_with_{other_class}')(other)
-            elif hasattr(other, f'collide_with_{this_class}'):
-                return getattr(other, f'collide_with_{this_class}')(self)
-            else:
-                logger.warning(f'Collisions not defined between {this_class} and {other_class}')
+            for other_class in other.collidable_superclasses:
+                other_class = other_class.__name__.lower()
+                if hasattr(self, f'collide_with_{other_class}'):
+                    return getattr(self, f'collide_with_{other_class}')(other)
+            for this_class in other.collidable_superclasses:
+                this_class = this_class.__name__.lower()
+                if hasattr(other, f'collide_with_{this_class}'):
+                    return getattr(other, f'collide_with_{this_class}')(self)
+            
+            logger.warning(f'Collisions not defined between {this_class} and {other_class}')
+
+
+    def collide_with_mass(self, other):
+        # print()
+        # print('Speed', self.speedx, self.speedy)
+        if not (self.speedx or self.speedy or other.speedx or other.speedy):
+            return
+
+        step = 1 / (MAX_FPS * 4)
+
+        def pos_at_t(t):
+            return self.rect.centerx + self.speedx * t, self.rect.centery + self.speedy * t
+
+        def other_pos_at_t(t):
+            return other.rect.centerx + other.speedx * t, other.rect.centery + other.speedy * t
+
+        def get_overlap_at_t(t):
+            # Calculate angle of collision
+            x1, y1 = pos_at_t(t)
+            x2, y2 = other_pos_at_t(t)
+            return self.mask.overlap_mask(other.mask, (round(x2 - x1), round(y2 - y1)))
+        T = 0
+        overlap = prev_overlap = get_overlap_at_t(T)
+        while overlap.count():
+            T -= step
+            prev_overlap = overlap
+            overlap = get_overlap_at_t(T)
+        overlap = prev_overlap
+
+        # Invert angle to convert from cartesian to pixel coordinates
+        normal_angle = math.radians(90 - overlap.angle())
+        # print(overlap.count(), 90 - overlap.angle())
+        c1 = self.rect.center
+        c2 = other.rect.center
+        # Angle from other to self
+        a = math.atan2(c1[1] - c2[1], c1[0] - c2[0])
+        if angle_distance(normal_angle, a + math.pi, True) < angle_distance(normal_angle, a, True):
+            normal_angle += math.pi
+        velocity_angle = math.atan2(self.speedy, self.speedx)
+        for angle, name in [(normal_angle, 'Normal'),
+                            (a, 'Dir'),
+                            (math.atan2(other.speedy - self.speedy, other.speedx - self.speedx), 'Speed')]:
+            if angle_distance(angle, velocity_angle, True) > math.radians(110):
+                ax = math.cos(angle)
+                ay = math.sin(angle)
+                # print(name)
+                break
+        # print(math.degrees(angle_distance(math.atan2(self.speedy, self.speedx),
+        #                                   math.atan2(ay, ax), True)))
+        # print('ax, ay =', ax, ay)
+
+        # Calculate total kinetic energy
+        tke = self.kinetic_energy + other.kinetic_energy
+        # Average elasticity of collision
+        elasticity = (self.elasticity + other.elasticity) / 2
+
+        def v1f(F):
+            return self.speedx + F * ax / self.mass, self.speedy + F * ay / self.mass
+
+        def v2f(F):
+            return other.speedx - F * ax / other.mass, other.speedy - F * ay / other.mass
+
+        def d_tke(F):
+            return tke - (0.5 * self.mass * magnitude(*v1f(F)) ** 2 + \
+                          0.5 * other.mass * magnitude(*v2f(F)) ** 2)
+
+        i = 1
+        while True:
+            val = d_tke(2 << i)
+            if val < 0:
+                # print(i, d_tke(2 << (i - 1)), val)
+                f = binary_search(d_tke, 2 << (i - 1), 2 << i, 1, True)
+                break
+            i += 1
+        # print(f)
+        # print('T =', T)
+        # print('Before', self.x, self.y, other.x, other.y, get_overlap_at_t(0).count())
+
+        self.x, self.y = pos_at_t(T)
+        self.speedx, self.speedy = v1f(f * elasticity * BOUNCINESS_MULT)
+        self.sync_position()
+        other.x, other.y = other_pos_at_t(T)
+        other.speedx, other.speedy = v2f(f * elasticity * BOUNCINESS_MULT)
+        other.sync_position()
+
+        damage = f * (1.0 - elasticity) * COLLISION_DAMAGE_MULT
+        mass_mult = other.mass / self.mass
+        self.damage(round(damage * mass_mult))
+        other.damage(round(damage / mass_mult))
+
+        # print('After', self.x, self.y, other.x, other.y, get_overlap_at_t(0).count())
+        # print(self.speedx, self.speedy)
+        # if self.__class__.__name__ == 'Shield':
+        #     print(self.rect.center, self.owner.x, self.owner.y, self.owner.rect.center)
+        # print(other.speedx, other.speedy)
+        # print(self, other)

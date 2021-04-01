@@ -1,6 +1,8 @@
 """Defines a class for ships, and subclasses for player-controlled and hostile ships.
 """
 
+import math
+
 import pygame
 
 import astro
@@ -86,6 +88,9 @@ class Ship(AstroSprite):
     def collide_with_projectile(self, projectile):
         self.damage(projectile.damage)
         projectile.destroy()
+
+    def collide_with_ship(self, other):
+        return self.collide_with_mass(other)
 
 class PlayerShip(Ship):
     groups = [FRIENDLY_SHIPS]

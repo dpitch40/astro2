@@ -32,7 +32,8 @@ class Projectile(AstroSprite, Timekeeper):
             attributes as expected by pygame.sprite.Sprite.
         """
         self.image, self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
-            self.mask_rect_offsety = self._load_image(self.imagepath, directions=self.FACING_DIRECTIONS)
+            self.mask_rect_offsety, self.mask_centroid = \
+            self._load_image(self.imagepath, directions=self.FACING_DIRECTIONS)
 
 
     def place(self, firer, friendly):
@@ -70,14 +71,15 @@ class Projectile(AstroSprite, Timekeeper):
         angle = angles[min_i]
         key = self.imagepath + str(round(angle))
 
-        image, rect, mask, mask_rect, mask_rect_offsetx, mask_rect_offsety = self._load_image(key)
+        image, rect, mask, mask_rect, mask_rect_offsetx, mask_rect_offsety, mask_centroid = \
+            self._load_image(key)
 
         if image is not self.image:
             # Switch images
             center = self.rect.center
             self.image, self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
-                self.mask_rect_offsety = image, rect, mask, mask_rect, mask_rect_offsetx, \
-                mask_rect_offsety
+                self.mask_rect_offsety, self.mask_centroid = image, rect, mask, mask_rect, mask_rect_offsetx, \
+                mask_rect_offsety, mask_centroid
             self.rect.center = center
             self.update_mask_pos()
 

@@ -28,6 +28,7 @@ class AstroSprite(Configurable, Timekeeper, Collidable, pygame.sprite.Sprite,
         inverted (bool): Set to True for friendly ships and projectiles. Inverts the sprite.
     """
     required_fields = ('imagepath',)
+    defaults = {'elasticity': 0.5}
     groups = []
     inverted = False
     confined = False
@@ -81,7 +82,7 @@ class AstroSprite(Configurable, Timekeeper, Collidable, pygame.sprite.Sprite,
             attributes as expected by pygame.sprite.Sprite.
         """
         self.image, self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
-            self.mask_rect_offsety = self._load_image(self.imagepath, self.inverted)
+            self.mask_rect_offsety, self.mask_centroid = self._load_image(self.imagepath, self.inverted)
 
     def destroy(self):
         """Removes this object from the game.
@@ -95,18 +96,34 @@ class AstroSprite(Configurable, Timekeeper, Collidable, pygame.sprite.Sprite,
         self._update_velocity(elapsed)
         self.update_position(elapsed)
 
+    @property
+    def momentum(self):
+        if getattr(self, 'mass', None):
+            return self.mass * self.speedx, self.mass * self.speedy
+        else:
+            return (None, None)
+
+    @property
+    def kinetic_energy(self):
+        if getattr(self, 'mass', None):
+            return 0.5 * self.mass * (magnitude(self.speedx, self.speedy) ** 2)
+        else:
+            return None
+
     def update_position(self, elapsed):
         """Called each tick; updates the sprite's position based on its velocity.
         """
 
         self.x += elapsed * (self.speedx + self.speedx_prev) / 2
         self.y += elapsed * (self.speedy + self.speedy_prev) / 2
+        self.sync_position()
+        self.check_bounds()
 
+    def sync_position(self):
         self.rect.centerx = round(self.x)
         self.rect.centery = round(self.y)
 
         self.update_mask_pos()
-        self.check_bounds()
 
     def update_mask_pos(self, backwards=False):
         if backwards:

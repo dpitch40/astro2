@@ -29,7 +29,7 @@ class AstroSpriteTest(AstroSprite):
         self.image = pygame.Surface(self.size)
         self.image.fill(pygame.Color(0, 0, 0))
         self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
-            self.mask_rect_offsety = generate_rect_and_mask(self.image)
+            self.mask_rect_offsety, self.mask_centroid = generate_rect_and_mask(self.image)
 
     def _load_image(self, *args, **kwargs):
         return self.image, self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
