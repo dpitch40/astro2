@@ -16,7 +16,7 @@ class Projectile(AstroSprite, Timekeeper):
     """
 
     required_fields = ('imagepath', 'speed', 'damage')
-    defaults = {"angle": 0, 'relative_to_firer_velocity': True}
+    defaults = {"angle": 0, 'relative_to_firer_velocity': True, 'fuel_duration': None}
 
     FACING_DIRECTIONS = 8
 
@@ -52,6 +52,9 @@ class Projectile(AstroSprite, Timekeeper):
 
 
     def tick(self, now, elapsed):
+        if self.fuel_duration is not None:
+            self.fuel_duration -= elapsed
+
         super().tick(now, elapsed)
 
         self.update_facing_direction()
@@ -83,5 +86,5 @@ class Projectile(AstroSprite, Timekeeper):
             self.update_mask_pos()
 
     def update_velocity(self, elapsed):
-        if hasattr(self, 'move_behavior'):
+        if hasattr(self, 'move_behavior') and self.fuel_duration > 0:
             self.move_behavior.update_velocity(elapsed)
