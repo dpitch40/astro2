@@ -36,16 +36,15 @@ class Projectile(AstroSprite, Timekeeper):
             self._load_image(self.imagepath, directions=self.FACING_DIRECTIONS)
 
 
-    def place(self, firer, friendly):
+    def place(self, firer, friendly, angle=None):
         self.firer = firer
-        # TODO: Base inversion on direction rather than friendly status
-        # Also support facing right/left
         # Also firing from hardpoint positions and not the center of the firer
-        self.inverted = friendly
         self.groups = [FRIENDLY_PROJECTILES] if friendly else [ENEMY_PROJECTILES]
-        speedx = math.sin(math.radians(self.angle)) * self.speed
-        angle = self.angle + (180 if friendly else 0)
-        speedy = math.cos(math.radians(angle)) * self.speed
+        if angle is None:
+            angle = self.angle + (180 if friendly else 0)
+        angle = math.radians(angle)
+        speedx = math.sin(angle) * self.speed
+        speedy = math.cos(angle) * self.speed
         if self.relative_to_firer_velocity:
             speedx += firer.speedx
             speedy += firer.speedy

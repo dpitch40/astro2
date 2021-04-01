@@ -1,3 +1,5 @@
+import math
+
 from tests import ProjectileTest as Projectile, PlayerShipTest as PlayerShip
 
 def test_that_slow_projectiles_still_move():
@@ -17,14 +19,14 @@ def test_that_slow_projectiles_still_move():
 
 def test_that_projectile_speed_is_relative_to_firer():
     proj_from_static_firer = Projectile.create(config={'speed': 500})
-    assert proj_from_static_firer.speedx == 0
-    assert proj_from_static_firer.speedy == -500
+    assert round(proj_from_static_firer.speedx) == 0
+    assert round(proj_from_static_firer.speedy) == -500
 
     proj_from_moving_firer = Projectile.create(config={'speed': 500,
                                                        'firer_kwargs': {'speedx': 100,
                                                                         'speedy': 100}})
-    assert proj_from_moving_firer.speedx == 100
-    assert proj_from_moving_firer.speedy == -400
+    assert round(proj_from_moving_firer.speedx) == 100
+    assert round(proj_from_moving_firer.speedy) == -400
 
 def test_collision_between_projectile_and_ship():
     proj = Projectile.create(config={'speed': 500,

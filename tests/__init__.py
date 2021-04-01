@@ -33,7 +33,7 @@ class AstroSpriteTest(AstroSprite):
 
     def _load_image(self, *args, **kwargs):
         return self.image, self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
-            self.mask_rect_offsety
+            self.mask_rect_offsety, self.mask_centroid
 
     @classmethod
     def create(cls, size=None, startx=SCREEN_SIZE[0]/2, starty=SCREEN_SIZE[1]/2,
