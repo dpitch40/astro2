@@ -1,4 +1,6 @@
 ---
+Idle[idle]:
+  a: 1
 Patrol[back_and_forth]:
   dests:
     - [0.25, 0.25]

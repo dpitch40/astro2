@@ -35,6 +35,10 @@ class MoveBehavior(Configurable):
     def _update_velocity(self, elapsed):
         pass
 
+class Idle(MoveBehavior):
+    def _update_velocity(self, elapsed):
+        self.ship.accelerate_toward(elapsed, 0, 0)
+
 class Patrol(MoveBehavior):
     """Causes the ship to move between a list of destinations in a loop.
     """

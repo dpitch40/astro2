@@ -13,10 +13,12 @@ class Shield(AstroSprite, TimekeeperItem):
     """A ship-mounted weapon.
     """
     required_fields = ('capacity', 'recharge_rate', 'recharge_delay')
-    defaults = {'color': (180, 180, 255),
-                'max_alpha': 128,
-                'imagepath': None,
-                'size_delta': 0}
+    defaults = AstroSprite.defaults.copy()
+    defaults.update({'color': (180, 180, 255),
+                     'max_alpha': 128,
+                     'imagepath': None,
+                     'size_delta': 0,
+                     'elasticity': 1.0})
     groups = []
 
     def __init__(self, key):

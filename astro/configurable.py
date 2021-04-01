@@ -45,14 +45,10 @@ _undefined_objects = set()
 class ConfigurableMeta(type):
     """Metaclass for Configurable and its subclasses that initializes them in the lookup systems.
     """
-    def __new__(cls, name, bases, namespace):
-        # Instantiate the new class
-        result = type.__new__(cls, name, bases, dict(namespace))
-        # Add it to the Configurable (sub)class lookup dict
-        _configurable_class_lookup[name] = result
-        # Initialize its instance lookup dict
-        result._lookup = dict()
-        return result
+    def __init__(self, *args, **kwargs):
+        type.__init__(self, *args, **kwargs)
+        _configurable_class_lookup[self.__name__] = self
+        self._lookup = dict()
 
 class Configurable(metaclass=ConfigurableMeta):
     defaults = dict()

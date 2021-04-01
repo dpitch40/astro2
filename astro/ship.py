@@ -11,8 +11,9 @@ from astro.healthbar import Healthbar
 
 class Ship(AstroSprite):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons', 'max_hp')
-    defaults = {'shield': None,
-                'mass': None}
+    defaults = AstroSprite.defaults.copy()
+    defaults.update({'shield': None,
+                     'mass': None})
     confined = True
 
     def __init__(self, key):

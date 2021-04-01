@@ -16,10 +16,7 @@ EnemyShip[testenemyship]:
     weapons:
       - Weapon(enemygun)
     move_behavior:
-      Patrol(back_and_forth):
-        dests:
-          - [0.25, 0.25]
-          - [0.75, 0.25]
+      Patrol(back_and_forth)
     fire_behavior:
       FireConstantly(fire_constantly)
     big_health_bar: true

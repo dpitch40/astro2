@@ -11,7 +11,9 @@ from astro.timekeeper import Timekeeper
 from astro.util import magnitude, convert_prop_x, convert_prop_y
 
 class AstroSpriteMeta(ConfigurableMeta, CollidableMeta):
-    pass
+    def __init__(self, *args, **kwargs):
+        ConfigurableMeta.__init__(self, *args, **kwargs)
+        CollidableMeta.__init__(self, *args, **kwargs)
 
 class AstroSprite(Configurable, Timekeeper, Collidable, pygame.sprite.Sprite,
     metaclass=AstroSpriteMeta):
