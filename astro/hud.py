@@ -26,13 +26,13 @@ class HUD:
             self.big_health_bar_ship)
 
     def draw_shield_counter(self):
-        s = f'{round(self.player_ship.shield.integrity, 1)}/{self.player_ship.shield.capacity}'
+        s = f'{round(self.player_ship.shield.integrity)}/{self.player_ship.shield.capacity}'
         text = self.hp_font.render(s, True, SHIELD_COLOR)
         textpos = text.get_rect(topright=(SCREEN_SIZE[0], 0))
         self.screen.blit(text, textpos)
 
     def draw_hp_counter(self):
-        s = f'{self.player_ship.hp}/{self.player_ship.max_hp}'
+        s = f'{round(self.player_ship.hp)}/{self.player_ship.max_hp}'
         text = self.hp_font.render(s, True, HP_COLOR)
         textpos = text.get_rect(topright=(SCREEN_SIZE[0], text.get_height()))
         self.screen.blit(text, textpos)
