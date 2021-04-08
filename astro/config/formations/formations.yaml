@@ -9,3 +9,15 @@ Line[wave1]:
       dests:
         - [0.45, 0.25]
         - [0.55, 0.25]
+Line[wave2]:
+  width: 0.4
+  height: 1
+  dest_y: 80
+  ships:
+    - - EnemyShip(testenemyship):
+          move_behavior:
+            Patrol(back_and_forth):
+              dests:
+                - [0.25, 80]
+                - [0.75, 80]
+      - 5

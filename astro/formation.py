@@ -48,6 +48,8 @@ class Formation(Configurable, Movable):
         return ships
 
     def initialize(self):
+        if not hasattr(self, 'dest_y'):
+            self.dest_y = self.height // 2
         self.ships = self._expand_ships()
         self.acceleration = min(map(operator.attrgetter('acceleration'), self.ships))
         self.max_speed = min(map(operator.attrgetter('max_speed'), self.ships))
@@ -55,7 +57,7 @@ class Formation(Configurable, Movable):
         if self.blank_move_behavior:
             # Initialize blank move behavior to get us onscreen
             self.move_behavior = MoveBehavior(None)
-            self.move_behavior.initial_dest = (self.center_x, self.height // 2)
+            self.move_behavior.initial_dest = (self.center_x, self.dest_y)
             self.move_behavior.initialize()
         self._reached_dest = False
 
@@ -91,13 +93,16 @@ class Formation(Configurable, Movable):
             offsetx, offsety = self.ship_offsets[i]
             ship.place(round(self.x + offsetx), round(self.y + offsety), self.speedx, self.speedy)
 
-        if not self._reached_dest and self.blank_move_behavior and \
-            self.move_behavior.reached_dest(*self.move_behavior.initial_dest):
+        if self.blank_move_behavior:
+            if not self._reached_dest and \
+                self.move_behavior.reached_dest(*self.move_behavior.initial_dest):
 
-            self._reached_dest = True
-            for i, ship in enumerate(self.ships):
-                ship.move_behavior.formation = None
-                ship.move_behavior.formation_i = None
+                self._reached_dest = True
+                for i, ship in enumerate(self.ships):
+                    ship.move_behavior.formation = None
+                    ship.move_behavior.formation_i = None
+            if self._reached_dest:
+                self.accelerate_toward(elapsed, 0, 0)
 
     def update_ship_velocity(self, elapsed, ship, i):
         # Keep ship in sync with formation

@@ -63,10 +63,14 @@ def main():
     load_all()
     player_ship = PlayerShip.instance('testship')
     hud = astro.HUD = HUD(screen, player_ship)
-    formation = Line.instance('wave1')
     init_game(player_ship)
     player_ship.place()
-    formation.deploy()
+    formations = [
+                  Line.instance('wave1'),
+                  Line.instance('wave2')
+                  ]
+    for formation in formations:
+        formation.deploy()
     # enemy_ship.place(0.25, -300)
     # enemy_ship2.place(0.75, -300)
     clock = pygame.time.Clock()
@@ -81,7 +85,8 @@ def main():
         for group in GROUPS:
             group.update()
 
-        formation.update()
+        for formation in formations:
+            formation.update()
 
         # Draw
         screen.blit(background, (0, 0))
