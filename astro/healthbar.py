@@ -35,7 +35,7 @@ class Healthbar(Timekeeper, pygame.sprite.Sprite):
         HEALTHBARS.add(self)
         self.image = pygame.Surface((self.owner.rect.width, HEALTHBAR_HEIGHT))
         self.rect = self.image.get_rect()
-        self.static_rect  = self.image.get_rect()
+        self.static_rect = self.image.get_rect()
 
     def destroy(self):
         self.kill()
