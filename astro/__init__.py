@@ -25,12 +25,15 @@ HEALTHBAR_HEIGHT = 10
 BOUNCINESS_MULT = 5
 COLLISION_DAMAGE_MULT = 1 / 50000
 
+REACHED_DEST_THRESHOLD = 10
+
 # Order in which to load configs
 CONFIG_ORDER = ['behaviors',
                 'projectiles',
                 'shields',
                 'weapons',
-                'ships']
+                'ships',
+                'formations']
 
 # Sprite groups
 

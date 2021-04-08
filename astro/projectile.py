@@ -8,10 +8,9 @@ import pygame
 from astro.astro_sprite import AstroSprite
 from astro.image import load_image
 from astro import FRIENDLY_PROJECTILES, ENEMY_PROJECTILES
-from astro.timekeeper import Timekeeper
 from astro.util import frange, angle_distance
 
-class Projectile(AstroSprite, Timekeeper):
+class Projectile(AstroSprite):
     """A projectile fired by a weapon.
     """
 

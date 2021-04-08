@@ -7,7 +7,7 @@ from astro import SCREEN_SIZE, OFF_SCREEN_CUTOFF
 from astro.image import load_image
 from astro.configurable import Configurable, ConfigurableMeta
 from astro.collidable import Collidable, CollidableMeta
-from astro.timekeeper import Timekeeper
+from astro.movable import Movable
 from astro.util import magnitude, convert_prop_x, convert_prop_y
 
 class AstroSpriteMeta(ConfigurableMeta, CollidableMeta):
@@ -15,7 +15,7 @@ class AstroSpriteMeta(ConfigurableMeta, CollidableMeta):
         ConfigurableMeta.__init__(self, *args, **kwargs)
         CollidableMeta.__init__(self, *args, **kwargs)
 
-class AstroSprite(Configurable, Timekeeper, Collidable, pygame.sprite.Sprite,
+class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
     metaclass=AstroSpriteMeta):
     """Class for any object that is rendered onscreen in the game.
 
@@ -35,7 +35,7 @@ class AstroSprite(Configurable, Timekeeper, Collidable, pygame.sprite.Sprite,
 
     def __init__(self, key):
         pygame.sprite.Sprite.__init__(self)
-        Timekeeper.__init__(self)
+        Movable.__init__(self)
         Collidable.__init__(self)
         Configurable.__init__(self, key)
 
@@ -47,9 +47,8 @@ class AstroSprite(Configurable, Timekeeper, Collidable, pygame.sprite.Sprite,
         self.y = 0
 
     def initialize(self):
-        if hasattr(self, 'max_speed') and hasattr(self, 'acceleration'):
-            # Calsulate stopping distance
-            self.stopping_distance = (self.max_speed ** 2) / (self.acceleration * 2)
+        Movable.initialize(self)
+        self.load_image()
 
     def place(self, startx, starty, speedx=0, speedy=0):
         """Adds this object to the game at the specified location.
@@ -62,16 +61,8 @@ class AstroSprite(Configurable, Timekeeper, Collidable, pygame.sprite.Sprite,
             speedx (optional int): The starting horizontal speed. Defaults to 0.
             speedy (optional int): The starting vertical speed. Defaults to 0.
         """
-        self.load_image()
-        if isinstance(startx, float) and startx >= 0 and startx <= 1:
-            startx = convert_prop_x(startx)
-        if isinstance(starty, float) and starty >= 0 and starty <= 1:
-            starty = convert_prop_y(starty)
-        self.rect.center = (startx, starty)
-        self.speedx = speedx
-        self.speedy = speedy
-        self.x = self.rect.centerx
-        self.y = self.rect.centery
+        super().place(startx, starty, speedx, speedy)
+        self.rect.center = self.x ,self.y = round(self.x), round(self.y)
         self.add(self.groups)
 
     def _load_image(self, *args, **kwargs):
@@ -89,33 +80,11 @@ class AstroSprite(Configurable, Timekeeper, Collidable, pygame.sprite.Sprite,
         """
         self.kill()
 
-    def tick(self, now, elapsed):
-        """Main function called by self.update() to update the sprite for each "tick" of the
-        simulation.
-        """
-        self._update_velocity(elapsed)
-        self.update_position(elapsed)
-
-    @property
-    def momentum(self):
-        if getattr(self, 'mass', None):
-            return self.mass * self.speedx, self.mass * self.speedy
-        else:
-            return (None, None)
-
-    @property
-    def kinetic_energy(self):
-        if getattr(self, 'mass', None):
-            return 0.5 * self.mass * (magnitude(self.speedx, self.speedy) ** 2)
-        else:
-            return None
-
     def update_position(self, elapsed):
         """Called each tick; updates the sprite's position based on its velocity.
         """
 
-        self.x += elapsed * (self.speedx + self.speedx_prev) / 2
-        self.y += elapsed * (self.speedy + self.speedy_prev) / 2
+        super().update_position(elapsed)
         self.sync_position()
         self.check_bounds()
 
@@ -132,59 +101,6 @@ class AstroSprite(Configurable, Timekeeper, Collidable, pygame.sprite.Sprite,
         else:
             self.mask_rect.centerx = self.rect.centerx + self.mask_rect_offsetx
             self.mask_rect.centery = self.rect.centery + self.mask_rect_offsety
-
-    def _update_velocity(self, elapsed):
-        self.speedx_prev = self.speedx
-        self.speedy_prev = self.speedy
-        self.update_velocity(elapsed)
-        if hasattr(self, 'max_speed'):
-            self.clamp_speed()
-
-    def update_velocity(self, elapsed):
-        """Called each tick; updates the sprite's velocity.
-
-        This defaults to doing nothing, e.g. for passively floating objects or dumbfired
-        projectiles that don't accelerate. Controlled by player input for friendly ships
-        and AI for hostile ships.
-        """
-        pass
-
-    def clamp_speed(self):
-        # Clamp speed to within the object's maximum speed
-        speed = magnitude(self.speedx, self.speedy)
-        if abs(speed) > self.max_speed:
-            self.speedx = self.speedx * self.max_speed / speed
-            self.speedy = self.speedy * self.max_speed / speed
-
-    def accelerate_toward(self, elapsed, targetx, targety):
-        # Accelerate towards the target velocity
-        # Requires self.acceleration and self.max_speed to be defined
-        dx = targetx - self.speedx
-        dy = targety - self.speedy
-        dv = magnitude(dx, dy)
-        if dv:
-            max_accel = self.acceleration * elapsed
-            if dv < max_accel:
-                self.speedx, self.speedy = targetx, targety
-            else:
-                self.speedx += dx * max_accel / dv
-                self.speedy += dy * max_accel / dv
-
-    def accelerate_toward_point(self, elapsed, targetx, targety, decelerate=True):
-        # Move towards the target point
-        # Requires self.acceleration and self.max_speed to be defined
-        dx = targetx - self.x
-        dy = targety - self.y
-
-        distance = magnitude(dx, dy)
-        if distance:
-            target_speed = self.max_speed
-            if decelerate:
-                target_speed *= min(1.0, distance / self.stopping_distance)
-            target_speedx = dx * target_speed / distance
-            target_speedy = dy * target_speed / distance
-
-            return self.accelerate_toward(elapsed, target_speedx, target_speedy)
 
     def check_bounds(self):
         """Checks the object's position in relation to the screen edge.

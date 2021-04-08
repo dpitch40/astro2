@@ -1,0 +1,11 @@
+---
+Line[wave1]:
+  width: 0.5
+  height: 1
+  ships:
+    - ['EnemyShip(testenemyship)', 5]
+  move_behavior:
+    Patrol(back_and_forth):
+      dests:
+        - [0.45, 0.25]
+        - [0.55, 0.25]

@@ -187,6 +187,3 @@ class EnemyShip(Ship):
     def tick(self, now, elapsed):
         super().tick(now, elapsed)
         self.fire_behavior.update(now, elapsed)
-
-    def update_velocity(self, elapsed):
-        self.move_behavior.update_velocity(elapsed)

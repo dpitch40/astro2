@@ -19,4 +19,3 @@ EnemyShip[testenemyship]:
       Patrol(back_and_forth)
     fire_behavior:
       FireConstantly(fire_constantly)
-    big_health_bar: true

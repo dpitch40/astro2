@@ -1,36 +1,41 @@
 from astro.configurable import Configurable
 from astro.util import magnitude, convert_proportional_coordinate_list
-from astro import ENEMIES, FRIENDLY_SHIPS, ENEMY_SHIPS
+from astro import ENEMIES, FRIENDLY_SHIPS, ENEMY_SHIPS, REACHED_DEST_THRESHOLD
 
 class MoveBehavior(Configurable):
-    defaults = {'reached_dest_threshold': 10,
-                'initial_dest': None}
+    defaults = {'initial_dest': None}
 
     def init_ship(self, ship):
         self.ship = ship
 
     def initialize(self):
+        self.formation = None
+        self.formation_i = None
         if self.initial_dest:
-            self._pre_dest = self.initial_dest
+            self.pre_dest = self.initial_dest
         else:
-            self._pre_dest = None
+            self.pre_dest = None
 
     def reached_dest(self, x, y):
         distance = magnitude(self.ship.x - x, self.ship.y - y)
-        return distance < self.reached_dest_threshold
+        return distance < REACHED_DEST_THRESHOLD
 
     def update_velocity(self, elapsed):
         """Updates the parent ship's velocity.
         """
 
-        # Entry behavior
-        if self._pre_dest:
-            if not self.reached_dest(self._pre_dest):
-                self.ship.accelerate_toward_point(elapsed, *self._pre_dest)
-            else:
-                self._pre_dest = None
+        if self.formation:
+            # Let formation control movement
+            self.formation.update_ship_velocity(elapsed, self.ship, self.formation_i)
         else:
-            self._update_velocity(elapsed)
+            # Entry behavior
+            if self.pre_dest:
+                if not self.reached_dest(*self.pre_dest):
+                    self.ship.accelerate_toward_point(elapsed, *self.pre_dest)
+                else:
+                    self.pre_dest = None
+            else:
+                self._update_velocity(elapsed)
 
     def _update_velocity(self, elapsed):
         pass

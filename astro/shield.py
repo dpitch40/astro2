@@ -64,13 +64,14 @@ class Shield(AstroSprite, TimekeeperItem):
             return (image,) + generate_rect_and_mask(image)
 
     def initialize(self):
-        super().initialize()
+        # super().initialize()
         self.integrity = self.capacity
         self.last_damaged = time.time()
 
     def place(self, *args, **kwargs):
         self.groups = [FRIENDLY_SHIELDS] if FRIENDLY_SHIPS in self.owner.groups else \
             [ENEMY_SHIELDS]
+        self.load_image()
         super().place(*args, **kwargs)
 
     @property

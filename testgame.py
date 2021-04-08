@@ -8,7 +8,8 @@ from pygame.locals import *
 from astro import SCREEN_SIZE, GROUPS, MAX_FPS, COLLIDABLE_PAIRS, CONFIG_DIR, CONFIG_ORDER
 import astro.keys
 from astro.configurable import load_from_yaml
-from astro.ship import PlayerShip, EnemyShip
+from astro.ship import PlayerShip
+from astro.formation import Line
 from astro.hud import HUD
 
 # Imports to make sure all configurable classes have been initialized
@@ -62,11 +63,11 @@ def main():
     load_all()
     player_ship = PlayerShip.instance('testship')
     hud = astro.HUD = HUD(screen, player_ship)
-    enemy_ship = EnemyShip.instance('testenemyship', copy=True)
-    enemy_ship2 = EnemyShip.instance('testenemyship', copy=True)
+    formation = Line.instance('wave1')
     init_game(player_ship)
     player_ship.place()
-    enemy_ship.place(0.25, -300)
+    formation.deploy()
+    # enemy_ship.place(0.25, -300)
     # enemy_ship2.place(0.75, -300)
     clock = pygame.time.Clock()
 
@@ -79,6 +80,8 @@ def main():
 
         for group in GROUPS:
             group.update()
+
+        formation.update()
 
         # Draw
         screen.blit(background, (0, 0))

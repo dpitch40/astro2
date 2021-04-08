@@ -3,10 +3,16 @@ import math
 from astro import SCREEN_SIZE
 
 def convert_prop_x(x):
-    return round(x * SCREEN_SIZE[0])
+    if isinstance(x, int):
+        return x
+    else:
+        return round(x * SCREEN_SIZE[0])
 
 def convert_prop_y(y):
-    return round(y * SCREEN_SIZE[1])
+    if isinstance(y, int):
+        return y
+    else:
+        return round(y * SCREEN_SIZE[1])
 
 def convert_proportional_coordinates(x, y):
     return convert_prop_x(x), convert_prop_y(y)
