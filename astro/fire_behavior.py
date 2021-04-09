@@ -1,4 +1,8 @@
+import math
+
+import astro.keys
 from astro.configurable import Configurable
+from astro.util import magnitude
 
 class FireBehavior(Configurable):
     def init_ship(self, ship):
@@ -31,7 +35,34 @@ class FireAtPlayer(FireConstantly):
     """Causes the ship to fire at the player
     """
 
-    def FireWeapon(self):
+    def FireWeapon(self, Weapon):
+        player_ship = astro.keys.PLAYER_SHIP
+
+        mode = 2
+        dx = player_ship.x - self.ship.x
+        dy = player_ship.y - self.ship.y
+        if mode == 0:
+            # Don't compensate for velocity
+            dxprime = 0
+            dyprime = 0
+        elif mode == 1:
+            # Compensate for the firing ship's velocity
+            dxprime = self.ship.speedx
+            dyprime = self.ship.speedy
+        else:
+            # Compensate for both ship's velocity (lead the target)
+            dxprime = self.ship.speedx - player_ship.speedx
+            dyprime = self.ship.speedy - player_ship.speedy
+        d = magnitude(dx, dy)
+        phi = math.atan2(dx, dy)
+
         for projectile in Weapon.projectiles:
+            a = (dy * dxprime - dx * dyprime) / (d * projectile.speed)
+            if a > 1:
+                a = 1
+            elif a < -1:
+                a = -1
+            angle = math.degrees(phi - math.asin(a))
+
             projectile = projectile.copy()
-            projectile.place(firer=Weapon.owner, friendly=Weapon.owner.inverte)
+            projectile.place(firer=Weapon.owner, friendly=Weapon.owner.inverted, angle=angle)
