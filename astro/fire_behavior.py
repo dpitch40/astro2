@@ -41,22 +41,21 @@ class FireAtPlayer(FireConstantly):
         mode = 2
         dx = player_ship.x - self.ship.x
         dy = player_ship.y - self.ship.y
-        if mode == 0:
-            # Don't compensate for velocity
-            dxprime = 0
-            dyprime = 0
-        elif mode == 1:
-            # Compensate for the firing ship's velocity
-            dxprime = self.ship.speedx
-            dyprime = self.ship.speedy
-        else:
-            # Compensate for both ship's velocity (lead the target)
-            dxprime = self.ship.speedx - player_ship.speedx
-            dyprime = self.ship.speedy - player_ship.speedy
         d = magnitude(dx, dy)
         phi = math.atan2(dx, dy)
 
         for projectile in Weapon.projectiles:
+            dxprime = dyprime = 0
+            if mode > 0:
+                if projectile.relative_to_firer_velocity:
+                    # Compensate for the firing ship's velocity
+                    dxprime += self.ship.speedx
+                    dyprime += self.ship.speedy
+                if mode == 2:
+                    # Compensate for both ship's velocity (lead the target)
+                    dxprime -= player_ship.speedx
+                    dyprime -= player_ship.speedy
+
             a = (dy * dxprime - dx * dyprime) / (d * projectile.speed)
             if a > 1:
                 a = 1
