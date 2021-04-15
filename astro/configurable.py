@@ -58,6 +58,7 @@ class Configurable(metaclass=ConfigurableMeta):
     """
     def __init__(self, key):
         self.key = key
+        self.initialized = False
 
     @property
     def class_name(self):
@@ -86,6 +87,11 @@ class Configurable(metaclass=ConfigurableMeta):
         if missing_fields:
             raise RuntimeError(f'{self.__class__.__name__} is missing fields:\n' +
                 '\n'.join(missing_fields))
+
+    def _initialize(self):
+        if not self.initialized:
+            self.initialize()
+            self.initialized = True
 
     def initialize(self):
         """Final initialization performed on an instance of a configurable just before
@@ -133,7 +139,7 @@ class Configurable(metaclass=ConfigurableMeta):
         config.update(overrides)
         copied = self.__class__(self.key)
         copied._setup(config)
-        copied.initialize()
+        copied._initialize()
 
         return copied
 
@@ -154,7 +160,7 @@ class Configurable(metaclass=ConfigurableMeta):
         inst = cls(key)
         inst._setup(config)
         inst.check_required_fields()
-        inst.initialize()
+        inst._initialize()
         # Add it and its config dict to the instabce lookup
         cls._lookup[key] = (inst, config)
         cls._set_fields(config)
@@ -222,7 +228,11 @@ def load_from_yaml(path_or_fobj):
             data = safe_load(fobj)
     else:
         data = safe_load(path_or_fobj)
-    return load_from_obj(data)
+    try:
+        return load_from_obj(data)
+    except Exception as e:
+        print('Error occurred when loading', path_or_fobj)
+        raise
 
 def load_from_obj(obj, dict_key=None):
     """Recursive helper function for loading Configurables.

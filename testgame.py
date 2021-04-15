@@ -11,6 +11,8 @@ from astro.configurable import load_from_yaml
 from astro.ship import PlayerShip
 from astro.formation import Line
 from astro.hud import HUD
+from astro.level import Level
+from astro.wave_condition import WaveCondition
 
 # Imports to make sure all configurable classes have been initialized
 import astro.weapon
@@ -65,12 +67,8 @@ def main():
     hud = astro.HUD = HUD(screen, player_ship)
     init_game(player_ship)
     player_ship.place()
-    formations = [
-                  Line.instance('wave1'),
-                  Line.instance('wave2')
-                  ]
-    for formation in formations:
-        formation.deploy()
+    level = Level.instance('level1')
+    level.start()
     # enemy_ship.place(0.25, -300)
     # enemy_ship2.place(0.75, -300)
     clock = pygame.time.Clock()
@@ -85,8 +83,7 @@ def main():
         for group in GROUPS:
             group.update()
 
-        for formation in formations:
-            formation.update()
+        level.update()
 
         # Draw
         screen.blit(background, (0, 0))

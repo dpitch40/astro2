@@ -1,4 +1,6 @@
 ---
+MoveBehavior[move_on_screen]:
+  initial_dest: [0.5, 0.25]
 Idle[idle]:
   a: 1
 Patrol[back_and_forth]:

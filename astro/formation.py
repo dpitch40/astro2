@@ -6,6 +6,7 @@ Override update_velocity for complex coordinated movements like moving in a circ
 import operator
 import random
 import collections
+import time
 
 from astro import SCREEN_SIZE
 from astro.configurable import Configurable
@@ -26,6 +27,7 @@ class Formation(Configurable, Movable):
         self.ship_offsets = list()
         self.center = None
         self._num_ships = None
+        self.more_ships = None
 
     def calculate_ship_offset(self, ship, i):
         raise NotImplementedError
@@ -37,6 +39,7 @@ class Formation(Configurable, Movable):
         """
         self.place(self.center_x, self.height // -2, 0, 0)
         self.move_behavior.init_ship(self)
+        self.deployed = time.time()
 
     def _expand_ships(self):
         ships = list()
@@ -50,15 +53,14 @@ class Formation(Configurable, Movable):
     def initialize(self):
         if not hasattr(self, 'dest_y'):
             self.dest_y = self.height // 2
-        self.ships = self._expand_ships()
-        self.acceleration = min(map(operator.attrgetter('acceleration'), self.ships))
-        self.max_speed = min(map(operator.attrgetter('max_speed'), self.ships))
+        self.more_ships = self._expand_ships()
+        self.acceleration = min(map(operator.attrgetter('acceleration'), self.more_ships))
+        self.max_speed = min(map(operator.attrgetter('max_speed'), self.more_ships))
         self.blank_move_behavior = self.move_behavior is None
         if self.blank_move_behavior:
             # Initialize blank move behavior to get us onscreen
-            self.move_behavior = MoveBehavior(None)
-            self.move_behavior.initial_dest = (self.center_x, self.dest_y)
-            self.move_behavior.initialize()
+            self.move_behavior = MoveBehavior.instance('move_on_screen', True,
+                initial_dest=(self.center_x, self.dest_y))
         self._reached_dest = False
 
         self.speedx, self.speedy = 0, 0
@@ -67,7 +69,7 @@ class Formation(Configurable, Movable):
 
         # Calculate offsets relative to formation center for all ships
         spawn_offsets = list()
-        for i, ship in enumerate(self.ships):
+        for i, ship in enumerate(self.more_ships):
             offsetx, offsety = self.calculate_ship_offset(ship, i)
             self.ship_offsets.append((offsetx, offsety))
             ship.move_behavior.formation = self
@@ -77,13 +79,21 @@ class Formation(Configurable, Movable):
             spawn_offsets.append((spawn_offset, ship, i))
         # Will be a deque of (offset, ship) 2-tuples in increasing offset order
         self.spawn_offsets = collections.deque(sorted(spawn_offsets, key=operator.itemgetter(0)))
+        self.to_be_deployed = self.num_ships
         Movable.initialize(self)
 
     @property
     def num_ships(self):
         if self._num_ships is None:
-            self._num_ships = sum(c for s, c in self.ships)
+            if self.more_ships is not None:
+                self._num_ships = len(self.more_ships)
+            else:
+                self._num_ships = sum(c for s, c in self.ships)
         return self._num_ships
+
+    @property
+    def ships_remaining(self):
+        return self.to_be_deployed + len([s for s in self.more_ships if s.alive()])
 
     def tick(self, now, elapsed):
         super().tick(now, elapsed)
@@ -92,13 +102,14 @@ class Formation(Configurable, Movable):
             _, ship, i = self.spawn_offsets.popleft()
             offsetx, offsety = self.ship_offsets[i]
             ship.place(round(self.x + offsetx), round(self.y + offsety), self.speedx, self.speedy)
+            self.to_be_deployed -= 1
 
         if self.blank_move_behavior:
             if not self._reached_dest and \
                 self.move_behavior.reached_dest(*self.move_behavior.initial_dest):
 
                 self._reached_dest = True
-                for i, ship in enumerate(self.ships):
+                for i, ship in enumerate(self.more_ships):
                     ship.move_behavior.formation = None
                     ship.move_behavior.formation_i = None
             if self._reached_dest:
