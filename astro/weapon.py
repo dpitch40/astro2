@@ -24,10 +24,18 @@ class Weapon(TimekeeperItem):
         Creates a new instance of the weapon's projectile
         """
 
-        for projectile in self.projectiles:
-            projectile = projectile.copy()
-            projectile.place(firer=self.owner, friendly=self.owner.inverted)
+        if hasattr(self, "FireBehavior"):
+            self.FireBehavior.FireWeapon(self)
+
+        else:
+
+            for projectile in self.projectiles:
+                projectile = projectile.copy()
+                projectile.place(firer=self.owner, friendly=self.owner.inverted)
         self.last_fired = now
+
+    def is_ready_to_fire(self, now):
+        return now - self.last_fired > self.shot_interval
 
     def start_firing(self):
         """Tells the weapon to start firing.
@@ -42,5 +50,5 @@ class Weapon(TimekeeperItem):
     def tick(self, now, elapsed):
         if self.is_firing:
             # Check if this weapon is ready to fire again
-            if now - self.last_fired > self.shot_interval:
+            if self.is_ready_to_fire(now):
                 self.fire(now)

@@ -18,4 +18,4 @@ EnemyShip[testenemyship]:
     move_behavior:
       Patrol(back_and_forth)
     fire_behavior:
-      FireConstantly(fire_constantly)
+      FireAtPlayer(fire_at_player)
