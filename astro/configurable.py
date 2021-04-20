@@ -51,8 +51,12 @@ class ConfigurableMeta(type):
         self._lookup = dict()
 
 class Configurable(metaclass=ConfigurableMeta):
-    defaults = dict()
+    # Fields that must be specified in the configuration
     required_fields = ()
+    # Default values for fields that may optionally be specified in the configuration
+    defaults = dict()
+    # Other attributes that will be copied to new instances as if they were fields
+    extra_copy_fields = list()
 
     """Superclass for objects meant to be instantiated from YAML and looked up by key.
     """
@@ -105,7 +109,7 @@ class Configurable(metaclass=ConfigurableMeta):
     @classmethod
     def _set_fields(cls, base_config):
         if not hasattr(cls, 'fields'):
-            cls.fields = set(cls.defaults.keys()) | set(cls.required_fields)
+            cls.fields = set(cls.defaults.keys()) | set(cls.required_fields) | set(cls.extra_copy_fields)
             cls.fields = sorted(cls.fields)
         for k in base_config.keys():
             if k not in cls.fields:

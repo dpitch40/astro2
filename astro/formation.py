@@ -16,6 +16,7 @@ from astro.move_behavior import MoveBehavior
 
 class Formation(Configurable, Movable):
     required_fields = ('ships', 'width', 'height')
+    extra_copy_fields = ['blank_move_behavior']
     defaults = {'move_behavior': None,
                 'fire_behavior': None,
                 'center_x': SCREEN_SIZE[0] // 2}
@@ -56,7 +57,8 @@ class Formation(Configurable, Movable):
         self.more_ships = self._expand_ships()
         self.acceleration = min(map(operator.attrgetter('acceleration'), self.more_ships))
         self.max_speed = min(map(operator.attrgetter('max_speed'), self.more_ships))
-        self.blank_move_behavior = self.move_behavior is None
+        if not hasattr(self, 'blank_move_behavior'):
+            self.blank_move_behavior = self.move_behavior is None
         if self.blank_move_behavior:
             # Initialize blank move behavior to get us onscreen
             self.move_behavior = MoveBehavior.instance('move_on_screen', True,
