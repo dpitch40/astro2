@@ -134,3 +134,22 @@ TriangleDefaults[ABC]:
     def_ = TriangleDefaults.instance('ABC', copy=True, side1=3, side2=2)
     assert def_ is not abc
     assert def_.perimeter() == 6
+
+def test_anonymous_config():
+    data = """---
+ShipTest[Fighter2]:
+    max_speed: 500
+    acceleration: 1000
+    HP: 100
+    weapons:
+        - WeaponTest():
+            rate_of_fire: 11.0
+            projectiles:
+                - ProjectileTest[]:
+                      speed: 2000
+                      damage: 7
+"""
+    fighter = load_from_yaml(StringIO(data))
+    assert fighter.weapons[0].rate_of_fire == 11.0
+    assert len(fighter.weapons[0].projectiles) == 1
+    assert fighter.weapons[0].projectiles[0].damage == 7

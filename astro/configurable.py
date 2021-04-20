@@ -36,8 +36,8 @@ import re
 from yaml import safe_load
 
 # Regex for identifying references to Configurables
-configurable_re = re.compile(r"^(\w+)\[(\w+)\]$")
-configurable_copy_re = re.compile(r"^(\w+)\((\w+)\)$")
+configurable_re = re.compile(r"^(\w+)\[(\w*)\]$")
+configurable_copy_re = re.compile(r"^(\w+)\((\w*)\)$")
 # Mapping allowign lookup of Configurable subclasses by name
 _configurable_class_lookup = dict()
 _undefined_objects = set()
@@ -171,6 +171,14 @@ class Configurable(metaclass=ConfigurableMeta):
         return inst
 
     @classmethod
+    def anonymous_instance(cls, config):
+        inst = cls(None)
+        inst._setup(config)
+        inst.check_required_fields()
+        inst._initialize()
+        return inst
+
+    @classmethod
     def instance(cls, key, copy=False, **overrides):
         """Returns an instance of the Configurable identified by a key.
 
@@ -280,9 +288,10 @@ def load_configurable(class_, key, copy, d=None):
     if copy is False and no config dictionary is passed, references a previously defined instance.
     Otherwise, returns a copy, using the config dictionary (if any) to override base values.
     """
-    if copy:
-        overrides = {} if not d else d
-        return class_.instance(key, copy, **overrides)
+    if key == '':
+        return class_.anonymous_instance(d if d else {})
+    elif copy:
+        return class_.instance(key, copy, **(d if d else {}))
     else:
         if d is not None:
             # Define the base instance
