@@ -51,13 +51,18 @@ class ConfigurableMeta(type):
         self._lookup = dict()
 
 class Configurable(metaclass=ConfigurableMeta):
-    defaults = dict()
+    # Fields that must be specified in the configuration
     required_fields = ()
+    # Default values for fields that may optionally be specified in the configuration
+    defaults = dict()
+    # Other attributes that will be copied to new instances as if they were fields
+    extra_copy_fields = list()
 
     """Superclass for objects meant to be instantiated from YAML and looked up by key.
     """
     def __init__(self, key):
         self.key = key
+        self.initialized = False
 
     @property
     def class_name(self):
@@ -87,6 +92,11 @@ class Configurable(metaclass=ConfigurableMeta):
             raise RuntimeError(f'{self.__class__.__name__} is missing fields:\n' +
                 '\n'.join(missing_fields))
 
+    def _initialize(self):
+        if not self.initialized:
+            self.initialize()
+            self.initialized = True
+
     def initialize(self):
         """Final initialization performed on an instance of a configurable just before
            it is returned.
@@ -99,7 +109,7 @@ class Configurable(metaclass=ConfigurableMeta):
     @classmethod
     def _set_fields(cls, base_config):
         if not hasattr(cls, 'fields'):
-            cls.fields = set(cls.defaults.keys()) | set(cls.required_fields)
+            cls.fields = set(cls.defaults.keys()) | set(cls.required_fields) | set(cls.extra_copy_fields)
             cls.fields = sorted(cls.fields)
         for k in base_config.keys():
             if k not in cls.fields:
@@ -133,7 +143,7 @@ class Configurable(metaclass=ConfigurableMeta):
         config.update(overrides)
         copied = self.__class__(self.key)
         copied._setup(config)
-        copied.initialize()
+        copied._initialize()
 
         return copied
 
@@ -154,7 +164,7 @@ class Configurable(metaclass=ConfigurableMeta):
         inst = cls(key)
         inst._setup(config)
         inst.check_required_fields()
-        inst.initialize()
+        inst._initialize()
         # Add it and its config dict to the instabce lookup
         cls._lookup[key] = (inst, config)
         cls._set_fields(config)
@@ -222,7 +232,11 @@ def load_from_yaml(path_or_fobj):
             data = safe_load(fobj)
     else:
         data = safe_load(path_or_fobj)
-    return load_from_obj(data)
+    try:
+        return load_from_obj(data)
+    except Exception as e:
+        print('Error occurred when loading', path_or_fobj)
+        raise
 
 def load_from_obj(obj, dict_key=None):
     """Recursive helper function for loading Configurables.

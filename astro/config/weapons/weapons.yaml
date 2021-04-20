@@ -9,7 +9,7 @@ Weapon[testgun]:
     - Projectile(testproj):
         angle: 60
 Weapon[homing_gun]:
-  rate_of_fire: 2.0
+  rate_of_fire: 10.0
   projectiles:
     - Projectile(homing_proj)
 Weapon[enemygun]:

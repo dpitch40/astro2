@@ -33,7 +33,8 @@ CONFIG_ORDER = ['behaviors',
                 'shields',
                 'weapons',
                 'ships',
-                'formations']
+                'formations',
+                'levels',]
 
 # Sprite groups
 

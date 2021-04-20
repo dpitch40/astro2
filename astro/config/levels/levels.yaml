@@ -1,0 +1,11 @@
+---
+Level[level1]:
+  waves:
+    - condition: null
+      formations:
+        - Line(wave2)
+    - condition:
+        LastWaveDefeated[condition]:
+          delay: 5.0
+      formations:
+        - Line(wave1)
