@@ -1,11 +1,11 @@
 ---
 Projectile[testproj]:
-  imagepath: projectiles/test_projectile.png
+  imagepath: projectiles/blue_blast.png
   speed: 500
   damage: 1
 
 Projectile[homing_proj]:
-  imagepath: projectiles/test_projectile.png
+  imagepath: projectiles/blue_blast.png
   speed: 300
   acceleration: 500
   max_speed: 300
