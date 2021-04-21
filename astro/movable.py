@@ -1,6 +1,8 @@
 """Superclass for objects that move around onscreen.
 """
 
+import math
+
 from astro.timekeeper import Timekeeper
 from astro.util import magnitude, convert_prop_x, convert_prop_y
 
@@ -41,6 +43,10 @@ class Movable(Timekeeper):
         self.update_position(elapsed)
 
     @property
+    def cur_speed(self):
+        return magnitude(self.speedx, self.speedy)
+
+    @property
     def momentum(self):
         if getattr(self, 'mass', None):
             return self.mass * self.speedx, self.mass * self.speedy
@@ -50,9 +56,13 @@ class Movable(Timekeeper):
     @property
     def kinetic_energy(self):
         if getattr(self, 'mass', None):
-            return 0.5 * self.mass * (magnitude(self.speedx, self.speedy) ** 2)
+            return 0.5 * self.mass * self.cur_speed ** 2
         else:
             return None
+
+    @property
+    def direction(self):
+        return math.atan2(self.speedy, self.speedx)
 
     def update_position(self, elapsed):
         """Called each tick; updates the sprite's position based on its velocity.
@@ -80,7 +90,7 @@ class Movable(Timekeeper):
 
     def clamp_speed(self):
         # Clamp speed to within the object's maximum speed
-        speed = magnitude(self.speedx, self.speedy)
+        speed = self.cur_speed
         if abs(speed) > self.max_speed:
             self.speedx = self.speedx * self.max_speed / speed
             self.speedy = self.speedy * self.max_speed / speed

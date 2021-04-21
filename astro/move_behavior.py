@@ -1,5 +1,8 @@
+import math
+import operator
+
 from astro.configurable import Configurable
-from astro.util import magnitude, convert_proportional_coordinate_list
+from astro.util import magnitude, convert_proportional_coordinate_list, angle_distance
 from astro import ENEMIES, FRIENDLY_SHIPS, ENEMY_SHIPS, REACHED_DEST_THRESHOLD
 
 class MoveBehavior(Configurable):
@@ -9,6 +12,7 @@ class MoveBehavior(Configurable):
         self.ship = ship
 
     def initialize(self):
+        super().initialize()
         self.formation = None
         self.formation_i = None
         if self.initial_dest:
@@ -75,6 +79,9 @@ class Patrol(MoveBehavior):
         self.ship.accelerate_toward_point(elapsed, *dest)
 
 class Homing(MoveBehavior):
+    defaults = {'target_acquisition_angle': 40}
+    defaults.update(MoveBehavior.defaults)
+
     def __init__(self, key):
         super().__init__(key)
 
@@ -87,13 +94,29 @@ class Homing(MoveBehavior):
             target_group = FRIENDLY_SHIPS
         else:
             target_group = ENEMY_SHIPS
-        # TODO: Improve this
-        target = None
-        try:
-            target = next(iter(target_group))
-        except StopIteration:
-            pass
-        return target
+
+        if not target_group:
+            return None
+
+        if self.ship.speed:
+            direction = self.ship.direction
+            angles = sorted([(angle_distance(self.angle_to_target(s), direction, True), s)
+                for s in target_group])
+            targets_ahead = [(a, s) for a, s in angles if a < math.radians(self.target_acquisition_angle / 2)]
+            if targets_ahead:
+                # Choose the closest target within the cone hat is
+                # self.target_acquisition_angle degrees wide
+                target_group = map(operator.itemgetter(1), targets_ahead)
+            else:
+                # Choose target closest to ahead
+                return angles[0][1]
+
+        # Acquire based solely on distance
+        key_func = lambda s: magnitude(self.ship.x - s.x, self.ship.y - s.y)
+        return sorted(target_group, key=key_func)[0]
+
+    def angle_to_target(self, target):
+        return math.atan2(target.y - self.ship.y, target.x - self.ship.x)
 
     def _update_velocity(self, elapsed):
         if self.target is None or not self.target.alive():
