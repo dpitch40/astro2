@@ -262,7 +262,7 @@ def load_from_obj(obj, dict_key=None):
         result = dict()
         for k, v in obj.items():
             loaded = load_from_obj(v, dict_key=k)
-            if isinstance(loaded, Configurable):
+            if isinstance(loaded, Configurable) and loaded.key:
                 result[loaded.key] = loaded
             else:
                 result[k] = loaded
