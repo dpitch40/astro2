@@ -5,10 +5,8 @@ Line[wave1]:
   ships:
     - ['EnemyShip(testenemyship)', 5]
   move_behavior:
-    Patrol(back_and_forth):
-      dests:
-        - [0.45, 0.25]
-        - [0.55, 0.25]
+    RandomPatrol(back_and_forth):
+      pause_time: 1
 Line[wave2]:
   width: 0.4
   height: 1
@@ -16,7 +14,7 @@ Line[wave2]:
   ships:
     - - EnemyShip(testenemyship):
           move_behavior:
-            Patrol(back_and_forth):
+            FixedPatrol(back_and_forth):
               dests:
                 - [0.25, 80]
                 - [0.75, 80]
@@ -28,7 +26,7 @@ Grid[wave3]:
   columns: 10
   dest_y: 0.25
   move_behavior:
-    Patrol(back_and_forth):
+    FixedPatrol(back_and_forth):
       dests:
         - [0.4, 0.25]
         - [0.6, 0.25]

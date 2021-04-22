@@ -16,7 +16,7 @@ EnemyShip[testenemyship]:
     weapons:
       - Weapon(enemygun)
     move_behavior:
-      Patrol(back_and_forth)
+      FixedPatrol(back_and_forth)
     fire_behavior:
       FireAtPlayer(fire_at_player)
 EnemyShip[invader_green]:
@@ -28,7 +28,7 @@ EnemyShip[invader_green]:
     weapons:
       - Weapon(green_laser)
     move_behavior:
-      Patrol(back_and_forth)
+      FixedPatrol(back_and_forth)
     fire_behavior:
       FireConstantly(fire_constantly)
 EnemyShip[invader_red]:
@@ -40,7 +40,7 @@ EnemyShip[invader_red]:
     weapons:
       - Weapon(red_laser)
     move_behavior:
-      Patrol(back_and_forth)
+      FixedPatrol(back_and_forth)
     fire_behavior:
       FireConstantly(fire_constantly)
 EnemyShip[invader_blue]:
@@ -52,6 +52,6 @@ EnemyShip[invader_blue]:
     weapons:
       - Weapon(blue_laser)
     move_behavior:
-      Patrol(back_and_forth)
+      FixedPatrol(back_and_forth)
     fire_behavior:
       FireConstantly(fire_constantly)

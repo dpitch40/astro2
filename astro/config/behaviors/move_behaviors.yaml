@@ -3,10 +3,13 @@ MoveBehavior[move_on_screen]:
   initial_dest: [0.5, 0.25]
 Idle[idle]:
   a: 1
-Patrol[back_and_forth]:
+FixedPatrol[back_and_forth]:
   dests:
     - [0.25, 0.25]
     - [0.75, 0.25]
   pause_time: 2
 Homing[basic_homing]:
   test: 1
+RandomPatrol[back_and_forth]:
+  width: 0.5
+  height: 0.5

@@ -1,8 +1,10 @@
 import math
 import operator
+import random
 
 from astro.configurable import Configurable
-from astro.util import magnitude, convert_proportional_coordinate_list, angle_distance
+from astro.util import magnitude, convert_proportional_coordinate_list, angle_distance, \
+    convert_prop_x, convert_prop_y
 from astro import ENEMIES, FRIENDLY_SHIPS, ENEMY_SHIPS, REACHED_DEST_THRESHOLD
 
 class MoveBehavior(Configurable):
@@ -49,6 +51,41 @@ class Idle(MoveBehavior):
         self.ship.accelerate_toward(elapsed, 0, 0)
 
 class Patrol(MoveBehavior):
+    """Causes the ship to move between a series of destinations.
+    """
+
+    required_fields = ()
+    defaults = {'pause_time': 0}
+    defaults.update(MoveBehavior.defaults)
+
+    def initialize(self):
+        super().initialize()
+        self.pause_timer = self.pause_time
+        self.cur_dest = None
+
+    def _update_velocity(self, elapsed):
+        if self.cur_dest is None:
+            self.cur_dest = self.next_destination()
+
+        if self.reached_dest(*self.cur_dest):
+            if self.pause_timer is not None:
+                self.pause_timer -= elapsed
+                if self.pause_timer <= 0:
+                    self.pause_timer = None
+
+            if self.pause_timer is None:
+                # Cycle to next destination
+                self.cur_dest = self.next_destination()
+                self.pause_timer = self.pause_time
+
+        self.ship.accelerate_toward_point(elapsed, *self.cur_dest)
+
+    def next_destination(self):
+        """Chooses and returns the next destination.
+        """
+        raise NotImplemented
+
+class FixedPatrol(Patrol):
     """Causes the ship to move between a list of destinations in a loop.
     """
 
@@ -60,23 +97,29 @@ class Patrol(MoveBehavior):
         super().initialize()
         self._dests = convert_proportional_coordinate_list(self.dests)
         self.dest_i = 0
-        self.pause_timer = self.pause_time
 
-    def _update_velocity(self, elapsed):
+    def next_destination(self):
         dest = self._dests[self.dest_i]
-        if self.reached_dest(*dest):
-            if self.pause_timer is not None:
-                self.pause_timer -= elapsed
-                if self.pause_timer <= 0:
-                    self.pause_timer = None
+        self.dest_i = (self.dest_i + 1) % len(self._dests)
+        return dest
 
-            if self.pause_timer is None:
-                # Cycle to next destination
-                self.dest_i = (self.dest_i + 1) % len(self._dests)
-                dest = self._dests[self.dest_i]
-                self.pause_timer = self.pause_time
+class RandomPatrol(Patrol):
+    """Causes the ship to move to a series of random destinations..
+    """
 
-        self.ship.accelerate_toward_point(elapsed, *dest)
+    required_fields = ('width', 'height')
+    defaults = {'pause_time': 0}
+    defaults.update(MoveBehavior.defaults)
+
+    def initialize(self):
+        super().initialize()
+        width = convert_prop_x(self.width)
+        self.max_x = convert_prop_x(0.5) + convert_prop_y(self.width) / 2
+        self.min_x = convert_prop_x(0.5) - convert_prop_y(self.width) / 2
+        self.max_y = convert_prop_y(self.height)
+
+    def next_destination(self):
+        return (random.randint(self.min_x, self.max_x), random.randint(0, self.max_y))
 
 class Homing(MoveBehavior):
     defaults = {'target_acquisition_angle': 40}
