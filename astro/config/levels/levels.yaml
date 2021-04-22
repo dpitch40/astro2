@@ -3,9 +3,13 @@ Level[level1]:
   waves:
     - condition: null
       formations:
-        - Line(wave2)
+        - Line(wave1)
     - condition:
-        LastWaveDefeated[condition]:
+        LastWaveDefeated():
           delay: 5.0
       formations:
-        - Line(wave1)
+        - Line(wave2)
+    - condition:
+        LastWaveDefeated()
+      formations:
+        - Grid(wave3)

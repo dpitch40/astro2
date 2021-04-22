@@ -3,6 +3,21 @@ Projectile[testproj]:
   imagepath: projectiles/blue_blast.png
   speed: 500
   damage: 1
+Projectile[green_beam]:
+  imagepath: projectiles/green_beam.png
+  speed: 400
+  damage: 1
+  relative_to_firer_velocity: false
+Projectile[red_beam]:
+  imagepath: projectiles/red_beam.png
+  speed: 400
+  damage: 1
+  relative_to_firer_velocity: false
+Projectile[blue_beam]:
+  imagepath: projectiles/blue_beam.png
+  speed: 400
+  damage: 1
+  relative_to_firer_velocity: false
 
 Projectile[homing_proj]:
   imagepath: projectiles/blue_blast.png

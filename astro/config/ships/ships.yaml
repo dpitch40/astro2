@@ -19,3 +19,36 @@ EnemyShip[testenemyship]:
       Patrol(back_and_forth)
     fire_behavior:
       FireAtPlayer(fire_at_player)
+EnemyShip[invader_green]:
+    max_hp: 1
+    imagepath: ships/invader_green.png
+    acceleration: 1000
+    max_speed: 150
+    weapons:
+      - Weapon(green_laser)
+    move_behavior:
+      Patrol(back_and_forth)
+    fire_behavior:
+      FireConstantly(fire_constantly)
+EnemyShip[invader_red]:
+    max_hp: 1
+    imagepath: ships/invader_red.png
+    acceleration: 1000
+    max_speed: 150
+    weapons:
+      - Weapon(red_laser)
+    move_behavior:
+      Patrol(back_and_forth)
+    fire_behavior:
+      FireConstantly(fire_constantly)
+EnemyShip[invader_blue]:
+    max_hp: 1
+    imagepath: ships/invader_blue.png
+    acceleration: 1000
+    max_speed: 150
+    weapons:
+      - Weapon(blue_laser)
+    move_behavior:
+      Patrol(back_and_forth)
+    fire_behavior:
+      FireConstantly(fire_constantly)

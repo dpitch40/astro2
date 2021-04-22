@@ -21,3 +21,18 @@ Line[wave2]:
                 - [0.25, 80]
                 - [0.75, 80]
       - 5
+Grid[wave3]:
+  width: 0.6
+  height: 0.3
+  rows: 3
+  columns: 10
+  dest_y: 0.25
+  move_behavior:
+    Patrol(back_and_forth):
+      dests:
+        - [0.4, 0.25]
+        - [0.6, 0.25]
+  ships:
+    - ['EnemyShip(invader_green)', 10]
+    - ['EnemyShip(invader_red)', 10]
+    - ['EnemyShip(invader_blue)', 10]

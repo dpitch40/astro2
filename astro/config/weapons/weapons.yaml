@@ -23,3 +23,15 @@ Weapon[slowgun]:
         speed: 10
         relative_to_firer_velocity: false
         damage: 6
+Weapon[green_laser]:
+  rate_of_fire: 0.25
+  projectiles:
+    - Projectile(green_beam)
+Weapon[red_laser]:
+  rate_of_fire: 0.25
+  projectiles:
+    - Projectile(red_beam)
+Weapon[blue_laser]:
+  rate_of_fire: 0.25
+  projectiles:
+    - Projectile(blue_beam)
