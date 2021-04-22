@@ -24,6 +24,7 @@ EnemyShip[invader_green]:
     imagepath: ships/invader_green.png
     acceleration: 1000
     max_speed: 150
+    enable_small_health_bar: false
     weapons:
       - Weapon(green_laser)
     move_behavior:
@@ -35,6 +36,7 @@ EnemyShip[invader_red]:
     imagepath: ships/invader_red.png
     acceleration: 1000
     max_speed: 150
+    enable_small_health_bar: false
     weapons:
       - Weapon(red_laser)
     move_behavior:
@@ -46,6 +48,7 @@ EnemyShip[invader_blue]:
     imagepath: ships/invader_blue.png
     acceleration: 1000
     max_speed: 150
+    enable_small_health_bar: false
     weapons:
       - Weapon(blue_laser)
     move_behavior:

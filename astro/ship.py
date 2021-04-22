@@ -159,14 +159,14 @@ class EnemyShip(Ship):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons',
                        'move_behavior', 'fire_behavior')
     defaults = Ship.defaults.copy()
-    defaults.update({'big_health_bar': False})
+    defaults.update({'big_health_bar': False, 'enable_small_health_bar': True})
     groups = [ENEMY_SHIPS]
 
     def destroy(self):
         super().destroy()
         if self.big_health_bar:
             astro.HUD.big_health_bar_ship = None
-        if ENEMY_HEALTHBARS:
+        if ENEMY_HEALTHBARS and self.enable_small_health_bar:
             self.healthbar.destroy()
 
     def initialize(self):
@@ -181,7 +181,7 @@ class EnemyShip(Ship):
         super().place(*args, **kwargs)
         if self.big_health_bar:
             astro.HUD.big_health_bar_ship = self
-        if ENEMY_HEALTHBARS:
+        if ENEMY_HEALTHBARS and self.enable_small_health_bar:
             self.healthbar = Healthbar(self)
 
     def tick(self, now, elapsed):
