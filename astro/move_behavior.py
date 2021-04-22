@@ -100,8 +100,9 @@ class Homing(MoveBehavior):
 
         if self.ship.speed:
             direction = self.ship.direction
+
             angles = sorted([(angle_distance(self.angle_to_target(s), direction, True), s)
-                for s in target_group])
+                for s in target_group], key=operator.itemgetter(0))
             targets_ahead = [(a, s) for a, s in angles if a < math.radians(self.target_acquisition_angle / 2)]
             if targets_ahead:
                 # Choose the closest target within the cone hat is
