@@ -18,7 +18,6 @@ Projectile[blue_beam]:
   speed: 400
   damage: 1
   relative_to_firer_velocity: false
-
 Projectile[homing_proj]:
   imagepath: projectiles/blue_blast.png
   speed: 300
@@ -27,3 +26,4 @@ Projectile[homing_proj]:
   damage: 2
   move_behavior: Homing(basic_homing)
   fuel_duration: 3
+  piercing: -1

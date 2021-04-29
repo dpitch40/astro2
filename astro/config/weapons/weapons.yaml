@@ -1,4 +1,10 @@
 ---
+Weapon[homing_hose]:
+  rate_of_fire: 1
+  projectiles:
+    - Projectile(homing_proj):
+        damage: 0.5
+        fuel_duration: 100
 Weapon[testgun]:
   rate_of_fire: 4.0
   projectiles:
@@ -12,12 +18,6 @@ Weapon[homing_gun]:
   rate_of_fire: 10.0
   projectiles:
     - Projectile(homing_proj)
-Weapon[homing_hose]:
-  rate_of_fire: 50.0
-  projectiles:
-    - Projectile(homing_proj):
-        damage: 0.5
-        fuel_duration: 1.5
 Weapon[enemygun]:
   rate_of_fire: 0.5
   projectiles:
