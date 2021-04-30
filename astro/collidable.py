@@ -26,17 +26,34 @@ class Collidable(metaclass=CollidableMeta):
     def collide_with(self, other, use_mask=False):
         this_class = self.class_name.lower()
         other_class = other.class_name.lower()
-        if not use_mask or pygame.sprite.collide_mask(self, other):
+        collided = not use_mask or pygame.sprite.collide_mask(self, other)
+        if collided:
             for other_class in other.collidable_superclasses:
                 other_class = other_class.__name__.lower()
                 if hasattr(self, f'collide_with_{other_class}'):
-                    return getattr(self, f'collide_with_{other_class}')(other)
-            for this_class in other.collidable_superclasses:
+                    getattr(self, f'collide_with_{other_class}')(other)
+                    return collided
+            for this_class in self.collidable_superclasses:
                 this_class = this_class.__name__.lower()
                 if hasattr(other, f'collide_with_{this_class}'):
-                    return getattr(other, f'collide_with_{this_class}')(self)
-            
+                    getattr(other, f'collide_with_{this_class}')(self)
+                    return collided
             logger.warning(f'Collisions not defined between {this_class} and {other_class}')
+        return collided
+
+
+    def stop_colliding_with(self, other):
+        this_class = self.class_name.lower()
+        other_class = other.class_name.lower()
+        for other_class in other.collidable_superclasses:
+            other_class = other_class.__name__.lower()
+            if hasattr(self, f'stop_colliding_with_{other_class}'):
+                return getattr(self, f'stop_colliding_with_{other_class}')(other)
+        for this_class in self.collidable_superclasses:
+            this_class = this_class.__name__.lower()
+            if hasattr(other, f'stop_colliding_with_{this_class}'):
+                return getattr(other, f'stop_colliding_with_{this_class}')(self)
+        # Don't log a warning if not found
 
 
     def collide_with_mass(self, other):
