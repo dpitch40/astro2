@@ -15,12 +15,13 @@ class Projectile(AstroSprite):
     """
 
     required_fields = ('imagepath', 'speed', 'damage')
-    defaults = {"angle": 0, 'relative_to_firer_velocity': True, 'fuel_duration': None}
+    defaults = {"angle": 0, 'relative_to_firer_velocity': True, 'fuel_duration': None, "piercing":1}
 
     FACING_DIRECTIONS = 8
 
     def initialize(self):
         super().initialize()
+        self.colliding_with = None
 
         if hasattr(self, 'move_behavior'):
             self.move_behavior = self.move_behavior.copy()
@@ -49,6 +50,11 @@ class Projectile(AstroSprite):
             speedy += firer.speedy
         super().place(firer.rect.centerx, firer.rect.centery, speedx=speedx, speedy=speedy)
 
+    def stop_colliding_with_ship(self, ship):
+        self.colliding_with = None
+        # If homing, reacquire target
+        if hasattr(self, 'move_behavior') and hasattr(self.move_behavior, 'acquire_target'):
+            self.move_behavior.acquire_target()
 
     def tick(self, now, elapsed):
         if self.fuel_duration is not None:

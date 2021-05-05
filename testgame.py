@@ -21,12 +21,28 @@ import astro.projectile
 import astro.move_behavior
 import astro.fire_behavior
 
+colliding_pairs = set()
+
 def check_collisions():
-    # TODO: Use masks, at least some of the time
+    collided_this_frame = set()
+
     for group1, group2, use_mask in COLLIDABLE_PAIRS:
         for sprite, colliders in pygame.sprite.groupcollide(group1, group2, False, False).items():
             for collider in colliders:
-                sprite.collide_with(collider, use_mask)
+                collided = sprite.collide_with(collider, use_mask)
+                if collided:
+                    if sprite.alive() and collider.alive():
+                        # Track the collision
+                        collided_this_frame.add((sprite, collider))
+                        colliding_pairs.add((sprite, collider))
+                    else:
+                        # Stop tracking the collision if at least one object is dead
+                        colliding_pairs.discard((sprite, collider))
+
+    no_longer_colliding = colliding_pairs - collided_this_frame
+    for sprite, collider in no_longer_colliding:
+        sprite.stop_colliding_with(collider)
+        colliding_pairs.discard((sprite, collider))
 
 def load_all():
     for d in CONFIG_ORDER:

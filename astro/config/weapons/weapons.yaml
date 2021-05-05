@@ -1,4 +1,15 @@
 ---
+Weapon[homing_hose]:
+  rate_of_fire: 30
+  projectiles:
+    - Projectile(homing_proj):
+        damage: 1
+Weapon[yondus_arrow]:
+  rate_of_fire: 0.5
+  projectiles:
+    - Projectile(homing_proj):
+        damage: 4
+        fuel_duration: 100
 Weapon[testgun]:
   rate_of_fire: 4.0
   projectiles:

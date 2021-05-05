@@ -86,9 +86,13 @@ class Ship(AstroSprite):
             self.destroy()
 
     def collide_with_projectile(self, projectile):
-        if projectile.alive():
+        if projectile.alive() and projectile.colliding_with is not self:
             self.damage(projectile.damage)
-            projectile.destroy()
+            if projectile.piercing > 1 or projectile.piercing < 0:
+                projectile.piercing -= 1
+                projectile.colliding_with = self
+            else:
+                projectile.destroy()
 
     def collide_with_ship(self, other):
         return self.collide_with_mass(other)

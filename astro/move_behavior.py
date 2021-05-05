@@ -138,13 +138,11 @@ class Homing(MoveBehavior):
         else:
             target_group = ENEMY_SHIPS
 
-        if not target_group:
-            return None
-
-        if self.ship.speed:
+        if target_group and self.ship.speed:
             direction = self.ship.direction
+
             angles = sorted([(angle_distance(self.angle_to_target(s), direction, True), s)
-                for s in target_group])
+                for s in target_group], key=operator.itemgetter(0))
             targets_ahead = [(a, s) for a, s in angles if a < math.radians(self.target_acquisition_angle / 2)]
             if targets_ahead:
                 # Choose the closest target within the cone hat is
@@ -152,18 +150,22 @@ class Homing(MoveBehavior):
                 target_group = map(operator.itemgetter(1), targets_ahead)
             else:
                 # Choose target closest to ahead
-                return angles[0][1]
+                self.target = angles[0][1]
+                return
 
-        # Acquire based solely on distance
-        key_func = lambda s: magnitude(self.ship.x - s.x, self.ship.y - s.y)
-        return sorted(target_group, key=key_func)[0]
+        if not target_group:
+            self.target = None
+        else:
+            # Acquire based solely on distance
+            key_func = lambda s: magnitude(self.ship.x - s.x, self.ship.y - s.y)
+            self.target = sorted(target_group, key=key_func)[0]
 
     def angle_to_target(self, target):
         return math.atan2(target.y - self.ship.y, target.x - self.ship.x)
 
     def _update_velocity(self, elapsed):
         if self.target is None or not self.target.alive():
-            self.target = self.acquire_target()
+            self.acquire_target()
         
         if self.target is not None:
             self.ship.accelerate_toward_point(elapsed, self.target.x, self.target.y, decelerate=False)
