@@ -2,7 +2,7 @@ import math
 
 import pygame
 
-from astro import logger, MAX_FPS, BOUNCINESS_MULT, COLLISION_DAMAGE_MULT
+from astro import logger, MAX_FPS, BOUNCINESS_MULT, COLLISION_DAMAGE_MULT, COLLIDABLE_PAIRS
 from astro.util import magnitude, angle_distance, binary_search
 
 _collidable_class_lookup = dict()
@@ -156,3 +156,26 @@ class Collidable(metaclass=CollidableMeta):
         #     print(self.rect.center, self.owner.x, self.owner.y, self.owner.rect.center)
         # print(other.speedx, other.speedy)
         # print(self, other)
+
+colliding_pairs = set()
+
+def check_collisions():
+    collided_this_frame = set()
+
+    for group1, group2, use_mask in COLLIDABLE_PAIRS:
+        for sprite, colliders in pygame.sprite.groupcollide(group1, group2, False, False).items():
+            for collider in colliders:
+                collided = sprite.collide_with(collider, use_mask)
+                if collided:
+                    if sprite.alive() and collider.alive():
+                        # Track the collision
+                        collided_this_frame.add((sprite, collider))
+                        colliding_pairs.add((sprite, collider))
+                    else:
+                        # Stop tracking the collision if at least one object is dead
+                        colliding_pairs.discard((sprite, collider))
+
+    no_longer_colliding = colliding_pairs - collided_this_frame
+    for sprite, collider in no_longer_colliding:
+        sprite.stop_colliding_with(collider)
+        colliding_pairs.discard((sprite, collider))

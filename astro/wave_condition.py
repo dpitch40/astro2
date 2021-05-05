@@ -18,6 +18,10 @@ class WaveCondition(Configurable):
     def _ready(self, now, elapsed, current_formations):
         raise NotImplementedError
 
+class AlwaysTrue(WaveCondition):
+    def _ready(self, now, elapsed, current_formations):
+        return True
+
 class Timer(WaveCondition):
     required_fields = ('time',)
 

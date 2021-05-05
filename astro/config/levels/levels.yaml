@@ -1,7 +1,9 @@
 ---
 Level[level1]:
   waves:
-    - condition: null
+    - condition:
+        AlwaysTrue():
+          delay: 2.0
       formations:
         - Line(wave1)
     - condition:

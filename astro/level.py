@@ -39,7 +39,7 @@ class Level(Configurable, Timekeeper):
         return wave_info['condition'].ready(now, elapsed, self.current_formations)
 
     def start(self):
-        self.deploy_wave()
+        pass
 
     def tick(self, now, elapsed):
         if self.done():

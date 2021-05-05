@@ -82,3 +82,13 @@ COLLIDABLE_PAIRS = [
                     (ENEMY_SHIPS, OBJECTS, False),
                     (FRIENDLY_PROJECTILES, OBJECTS, False),
                     (ENEMY_PROJECTILES, OBJECTS, False)]
+
+# Fonts
+
+class Fonts:
+    mono_fontnames = ['dejavusansmono', 'ubuntumono', 'liberationmono', 'couriernew']
+
+    def init(self):
+        self.mono_font = pygame.font.match_font(self.mono_fontnames)
+
+FONTS = Fonts()
