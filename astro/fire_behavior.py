@@ -22,6 +22,15 @@ class FireBehavior(Configurable):
             projectile = projectile.copy()
             projectile.place(firer=Weapon.owner, friendly=Weapon.owner.inverted)
 
+class FireNever(FireBehavior):
+    """Causes the ship to fire as never as possible.
+    """
+
+    def update(self, now, elapsed):
+        for weapon in self.weapons:
+            if weapon.is_firing:
+                weapon.stop_firing()
+
 class FireConstantly(FireBehavior):
     """Causes the ship to fire as often as possible.
     """

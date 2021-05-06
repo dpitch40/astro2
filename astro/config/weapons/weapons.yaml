@@ -46,3 +46,7 @@ Weapon[blue_laser]:
   rate_of_fire: 0.25
   projectiles:
     - Projectile(blue_beam)
+Weapon[stop_firing_gun]:
+  rate_of_fire: 1
+  projectiles:
+    - BehaviorAlteringProjectile(stop_firing_proj)

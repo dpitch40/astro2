@@ -85,15 +85,6 @@ class Ship(AstroSprite):
         if self.hp <= 0:
             self.destroy()
 
-    def collide_with_projectile(self, projectile):
-        if projectile.alive() and projectile.colliding_with is not self:
-            self.damage(projectile.damage)
-            if projectile.piercing > 1 or projectile.piercing < 0:
-                projectile.piercing -= 1
-                projectile.colliding_with = self
-            else:
-                projectile.destroy()
-
     def collide_with_ship(self, other):
         return self.collide_with_mass(other)
 
@@ -164,7 +155,11 @@ class EnemyShip(Ship):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons',
                        'move_behavior', 'fire_behavior')
     defaults = Ship.defaults.copy()
-    defaults.update({'big_health_bar': False, 'enable_small_health_bar': True})
+    defaults.update({'big_health_bar': False, 'enable_small_health_bar': True,
+                     'overridden_move_behavior': None,
+                     'overridden_move_behavior_duration': None,
+                     'overridden_fire_behavior': None,
+                     'overridden_fire_behavior_duration': None})
     groups = [ENEMY_SHIPS]
 
     def destroy(self):
@@ -190,5 +185,18 @@ class EnemyShip(Ship):
             self.healthbar = Healthbar(self)
 
     def tick(self, now, elapsed):
+        if self.overridden_move_behavior_duration is not None:
+            self.overridden_move_behavior_duration -= elapsed
+            if self.overridden_move_behavior_duration < 0:
+                self.move_behavior = self.overridden_move_behavior
+                self.overridden_move_behavior = None
+                self.overridden_move_behavior_duration = None
+        if self.overridden_fire_behavior_duration is not None:
+            self.overridden_fire_behavior_duration -= elapsed
+            if self.overridden_fire_behavior_duration < 0:
+                self.fire_behavior = self.overridden_fire_behavior
+                self.overridden_fire_behavior = None
+                self.overridden_fire_behavior_duration = None
+
         super().tick(now, elapsed)
         self.fire_behavior.update(now, elapsed)

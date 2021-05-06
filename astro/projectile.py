@@ -15,7 +15,7 @@ class Projectile(AstroSprite):
     """
 
     required_fields = ('imagepath', 'speed', 'damage')
-    defaults = {"angle": 0, 'relative_to_firer_velocity': True, 'fuel_duration': None, "piercing":1}
+    defaults = {"angle": 0, 'relative_to_firer_velocity': True, 'fuel_duration': None, "piercing": 1}
 
     FACING_DIRECTIONS = 8
 
@@ -49,6 +49,15 @@ class Projectile(AstroSprite):
             speedx += firer.speedx
             speedy += firer.speedy
         super().place(firer.rect.centerx, firer.rect.centery, speedx=speedx, speedy=speedy)
+
+    def collide_with_ship(self, ship):
+        if self.alive() and self.colliding_with is not ship:
+            ship.damage(self.damage)
+            if self.piercing > 1 or self.piercing < 0:
+                self.piercing -= 1
+                self.colliding_with = ship
+            else:
+                self.destroy()
 
     def stop_colliding_with_ship(self, ship):
         self.colliding_with = None
@@ -93,3 +102,22 @@ class Projectile(AstroSprite):
     def update_velocity(self, elapsed):
         if hasattr(self, 'move_behavior') and self.fuel_duration > 0:
             self.move_behavior.update_velocity(elapsed)
+
+class BehaviorAlteringProjectile(Projectile):
+    required_fields = Projectile.required_fields + ('effect_duration',)
+    defaults = {'move_behavior_to_apply': None,
+                'fire_behavior_to_apply': None}
+    defaults.update(Projectile.defaults)
+
+    def collide_with_ship(self, ship):
+        super().collide_with_ship(ship)
+        if self.move_behavior_to_apply is not None:
+            ship.overridden_move_behavior = ship.move_behavior
+            ship.overridden_move_behavior_duration = self.effect_duration
+            ship.move_behavior = self.move_behavior_to_apply.copy()
+            ship.move_behavior.init_ship(ship)
+        if self.fire_behavior_to_apply is not None:
+            ship.overridden_fire_behavior = ship.fire_behavior
+            ship.overridden_fire_behavior_duration = self.effect_duration
+            ship.fire_behavior = self.fire_behavior_to_apply.copy()
+            ship.fire_behavior.init_ship(ship)
