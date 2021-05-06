@@ -3,6 +3,8 @@ from logging import getLogger
 
 import pygame
 
+from astro.configurable import load_from_yaml
+
 logger = getLogger('astro')
 
 # TODO: Improve game config system--in-game options menu for many of these
@@ -35,6 +37,13 @@ CONFIG_ORDER = ['behaviors',
                 'ships',
                 'formations',
                 'levels',]
+
+def load_all():
+    for d in CONFIG_ORDER:
+        dirpath = os.path.join(CONFIG_DIR, d)
+        for fname in os.listdir(dirpath):
+            if os.path.splitext(fname)[1].lower() == '.yaml':
+                load_from_yaml(os.path.join(dirpath, fname))
 
 # Sprite groups
 

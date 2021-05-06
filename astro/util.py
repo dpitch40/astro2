@@ -1,5 +1,7 @@
 import math
 
+import pygame
+
 from astro import SCREEN_SIZE
 
 def convert_prop_x(x):
@@ -23,6 +25,11 @@ def convert_proportional_coordinate_list(coords):
     """
 
     return [convert_proportional_coordinates(x, y) for x, y in coords]
+
+def proportional_rect(pos, size):
+    size = convert_proportional_coordinates(*size)
+    pos = convert_proportional_coordinates(*pos)
+    return pygame.Rect(pos, size)
 
 def magnitude(x, y):
     return math.sqrt(x ** 2 + y ** 2)

@@ -42,7 +42,7 @@ Grid[wave4]:
   columns: 10
   dest_y: 0.25
   move_behavior:
-    Patrol(back_and_forth):
+    FixedPatrol(back_and_forth):
       dests:
         - [0.4, 0.25]
         - [0.6, 0.25]
