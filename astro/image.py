@@ -58,7 +58,11 @@ def load_image(rel_path, flip=False, directions=None):
 def generate_rect_and_mask(image):
     rect = image.get_rect()
     mask = pygame.mask.from_surface(image)
-    mask_rect = mask.get_bounding_rects()[0]
+    bounding_rects = mask.get_bounding_rects()
+    if bounding_rects:
+        mask_rect = mask.get_bounding_rects()[0]
+    else:
+        mask_rect = pygame.Rect(rect.centerx, rect.centery, 0, 0)
     mask_rect_offsetx = mask_rect.centerx - rect.centerx
     mask_rect_offsety = mask_rect.centery - rect.centery
     mask_centroid = mask.centroid()

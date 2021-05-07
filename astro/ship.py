@@ -10,6 +10,7 @@ from astro import FRIENDLY_SHIPS, ENEMY_SHIPS, ENEMY_HEALTHBARS
 from astro.image import load_image
 from astro.astro_sprite import AstroSprite
 from astro.healthbar import Healthbar
+from astro.explosion import Explosion
 
 class Ship(AstroSprite):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons', 'max_hp')
@@ -29,6 +30,12 @@ class Ship(AstroSprite):
         super().destroy()
         if self.shield is not None:
             self.shield.destroy()
+
+        self.explode()
+
+    def explode(self):
+        explosion = Explosion(self)
+        explosion.place(self.rect.centerx, self.rect.centery, self.speedx, self.speedy)
 
     def initialize(self):
         super().initialize()

@@ -29,6 +29,9 @@ COLLISION_DAMAGE_MULT = 1 / 50000
 
 REACHED_DEST_THRESHOLD = 10
 
+EXPLOSION_SIZE_SCALE = 1
+EXPLOSION_DURATION_SCALE = 1
+
 # Order in which to load configs
 CONFIG_ORDER = ['behaviors',
                 'projectiles',
@@ -53,6 +56,7 @@ FRIENDLY_PROJECTILES = pygame.sprite.RenderPlain()
 ENEMY_PROJECTILES = pygame.sprite.RenderPlain()
 PICKUPS = pygame.sprite.RenderPlain()
 OBJECTS = pygame.sprite.RenderPlain()
+EXPLOSIONS = pygame.sprite.RenderPlain()
 FRIENDLY_SHIELDS = pygame.sprite.RenderPlain()
 ENEMY_SHIELDS = pygame.sprite.RenderPlain()
 BACKGROUND_OBJECTS = pygame.sprite.RenderPlain()
@@ -69,6 +73,7 @@ GROUPS = [
           OBJECTS,
           FRIENDLY_SHIELDS,
           ENEMY_SHIELDS,
+          EXPLOSIONS,
           HEALTHBARS,
          ]
 

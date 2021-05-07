@@ -6,7 +6,7 @@ PlayerShip[testship]:
     acceleration: 2000
     max_speed: 500
     weapons:
-      - Weapon(stop_firing_gun)
+      - Weapon(homing_hose)
     shield: Shield(testshield)
 EnemyShip[testenemyship]:
     max_hp: 10
