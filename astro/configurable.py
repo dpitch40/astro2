@@ -202,6 +202,31 @@ class Configurable(metaclass=ConfigurableMeta):
             inst = base_instance
         return inst
 
+    def __repr__(self):
+        if hasattr(self, 'name'):
+            return f'{self.class_name}({self.name})'
+        else:
+            return f'{self.class_name}({self.key}): {super().__repr__()}'
+
+    def serialize(self):
+        d = dict()
+        for f in self.fields:
+            if hasattr(self, f):
+                value = getattr(self, f)
+                d[f] = self._serialize(value)
+        return d
+
+    @staticmethod
+    def _serialize(value):
+        if isinstance(value, Configurable):
+            return {f'{value.class_name}({value.key})': value.serialize()}
+        elif isinstance(value, dict):
+            return {Configurable._serialize(k): Configurable._serialize(v) for k, v in value.items()}
+        elif isinstance(value, (list, tuple)):
+            return [Configurable._serialize(v) for v in value]
+        else:
+            return value
+
 def _check_for_configurable(s):
     """Checks if a string identifies an instance of a Configurable.
 

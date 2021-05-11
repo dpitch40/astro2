@@ -106,3 +106,5 @@ class Fonts:
         self.mono_font = pygame.font.match_font(self.mono_fontnames)
 
 FONTS = Fonts()
+
+PLAYER = None

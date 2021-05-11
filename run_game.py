@@ -1,8 +1,10 @@
 import pygame
 from pygame.locals import *
 
+import astro
 from astro import SCREEN_SIZE, load_all, FONTS
 from gui import gui_loop, Screen
+from astro.player import Player
 
 # Import UI modules
 import gui.main_menu # pylint:disable=unused-import
@@ -22,6 +24,7 @@ import astro.formation # pylint:disable=unused-import
 def main():
     pygame.init()
     FONTS.init()
+    astro.PLAYER = Player()
     screen = pygame.display.set_mode(SCREEN_SIZE)
     Screen.set_screen(screen)
     pygame.display.set_caption('Astro test')
