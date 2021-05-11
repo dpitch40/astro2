@@ -111,9 +111,9 @@ class Configurable(metaclass=ConfigurableMeta):
         if not hasattr(cls, 'fields'):
             cls.fields = set(cls.defaults.keys()) | set(cls.required_fields) | set(cls.extra_copy_fields)
             cls.fields = sorted(cls.fields)
-        for k in base_config.keys():
-            if k not in cls.fields:
-                cls.fields.append(k)
+            for k in base_config.keys():
+                if k not in cls.fields:
+                    cls.fields.append(k)
 
     def copy_value(self, value):
         if isinstance(value, dict):
@@ -172,6 +172,7 @@ class Configurable(metaclass=ConfigurableMeta):
 
     @classmethod
     def anonymous_instance(cls, config):
+        cls._set_fields(config)
         inst = cls(None)
         inst._setup(config)
         inst.check_required_fields()
