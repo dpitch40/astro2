@@ -12,7 +12,7 @@ from astro.image import generate_rect_and_mask
 class Shield(AstroSprite, TimekeeperItem):
     """A ship-mounted weapon.
     """
-    required_fields = ('capacity', 'recharge_rate', 'recharge_delay')
+    required_fields = TimekeeperItem.required_fields + ('capacity', 'recharge_rate', 'recharge_delay')
     defaults = AstroSprite.defaults.copy()
     defaults.update({'color': (180, 180, 255),
                      'max_alpha': 128,

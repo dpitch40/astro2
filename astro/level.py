@@ -2,7 +2,7 @@ from astro.configurable import Configurable
 from astro.timekeeper import Timekeeper
 
 class Level(Configurable, Timekeeper):
-    required_keys = ('waves',)
+    required_fields = ('name', 'waves', 'shop_items')
 
     def __init__(self, key):
         Configurable.__init__(self, key)
@@ -10,6 +10,7 @@ class Level(Configurable, Timekeeper):
         self.wave_i = 0
 
     def initialize(self):
+        super().initialize()
         self.num_waves = len(self.waves)
         self.current_formations = list()
 

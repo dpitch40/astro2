@@ -8,6 +8,7 @@ from gui import gui_loop, Screen
 import gui.main_menu # pylint:disable=unused-import
 import gui.game # pylint:disable=unused-import
 import gui.shop # pylint:disable=unused-import
+import gui.pre_game # pylint:disable=unused-import
 
 # Imports to make sure all configurable classes have been initialized
 import astro.weapon # pylint:disable=unused-import

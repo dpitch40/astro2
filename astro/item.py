@@ -5,7 +5,7 @@ from astro.configurable import Configurable
 from astro.timekeeper import Timekeeper
 
 class Item(Configurable):
-    pass
+    required_fields = ('name', 'cost')
 
 class TimekeeperItem(Item, Timekeeper):
     def __init__(self, key):

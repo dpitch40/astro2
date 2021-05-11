@@ -24,6 +24,9 @@ def handle_ingame_events():
 class GameScreen(Screen):
     mapped_action = Action.GAME
 
+    def __init__(self, level):
+        self.level = level
+
     def run(self):
         pygame.mouse.set_visible(False)
 
@@ -50,8 +53,7 @@ class GameScreen(Screen):
         hud = astro.HUD = HUD(self.screen, player_ship)
         set_player_ship(player_ship)
         player_ship.place()
-        level = Level.instance('level1')
-        level.start()
+        self.level.start()
         # enemy_ship.place(0.25, -300)
         # enemy_ship2.place(0.75, -300)
 
@@ -65,7 +67,7 @@ class GameScreen(Screen):
             for group in GROUPS:
                 group.update()
 
-            level.update()
+            self.level.update()
 
             # Draw
             self.screen.blit(background, (0, 0))

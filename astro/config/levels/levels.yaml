@@ -1,5 +1,10 @@
 ---
 Level[level1]:
+  name: 'Level 1: The Testening'
+  shop_items:
+    - Weapon(testgun)
+    - Weapon(yondus_arrow)
+    - Shield(testshield)
   waves:
     - condition:
         AlwaysTrue():

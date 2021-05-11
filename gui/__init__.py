@@ -13,7 +13,7 @@ class Action(enum.Enum):
     MAIN_MENU = 1
     GAME = 2
     SHOP = 3
-
+    PRE_GAME = 4
 
 class ScreenMeta(type):
     def __init__(self, *args, **kwargs):
@@ -26,6 +26,9 @@ class Screen(metaclass=ScreenMeta):
     screen = None
     mapped_action = None
 
+    def __init__(self):
+        pass
+
     @classmethod
     def set_screen(cls, screen):
         cls.screen = screen
@@ -36,7 +39,8 @@ class Screen(metaclass=ScreenMeta):
 class MenuScreen(Screen):
     title = None
 
-    def __init__(self, *params):
+    def __init__(self):
+        super().__init__()
         self.manager = pygame_gui.UIManager(SCREEN_SIZE)
         pygame.mouse.set_visible(True)
         self.setup()
@@ -51,22 +55,31 @@ class MenuScreen(Screen):
 
     def button_loop(self, button_mapping):
         while not NEXT_ACTION.selected:
-            elapsed = self.clock.tick(MAX_FPS / 2)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    NEXT_ACTION.set_next_action(Action.QUIT, None)
-                elif event.type == pygame.USEREVENT:
-                    if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+            elapsed = self.loop_inner(button_mapping)
+            self.update_display(elapsed)
+
+    def loop_inner(self, button_mapping):
+        elapsed = self.clock.tick(MAX_FPS / 2)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                NEXT_ACTION.set_next_action(Action.QUIT, None)
+            elif event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element in button_mapping:
                         action, params = button_mapping[event.ui_element]
                         if callable(action):
                             action(*params)
                         else:
                             NEXT_ACTION.set_next_action(action, params)
-                self.manager.process_events(event)
+            self.manager.process_events(event)
 
-            self.manager.update(elapsed / 1000)
-            self.manager.draw_ui(self.screen)
-            pygame.display.update()
+        return elapsed
+
+    def update_display(self, elapsed):
+        self.manager.update(elapsed / 1000)
+        self.manager.draw_ui(self.screen)
+        pygame.display.update()
+
 
 class NextAction:
     def __init__(self, action=Action.MAIN_MENU, params=None):
@@ -86,8 +99,9 @@ class NextAction:
 
 def respond_to_action(screen):
     action = NEXT_ACTION.action
+    params = NEXT_ACTION.params
     NEXT_ACTION.reset_next_action()
-    _screen_lookup[action](*(NEXT_ACTION.params)).run()
+    _screen_lookup[action](*params).run()
 
 def gui_loop(screen):
     while NEXT_ACTION.action is not Action.QUIT:

@@ -6,7 +6,7 @@ from astro.item import TimekeeperItem
 class Weapon(TimekeeperItem):
     """A ship-mounted weapon.
     """
-    required_fields = ('rate_of_fire', 'projectiles')
+    required_fields = TimekeeperItem.required_fields + ('rate_of_fire', 'projectiles')
 
     def __init__(self, key):
         TimekeeperItem.__init__(self, key)

@@ -1,16 +1,22 @@
 ---
 Weapon[homing_hose]:
+  name: Homing Hose
+  cost: 1
   rate_of_fire: 30
   projectiles:
     - Projectile(homing_proj):
         damage: 1
 Weapon[yondus_arrow]:
+  name: Yondu's Arrow
+  cost: 1
   rate_of_fire: 0.5
   projectiles:
     - Projectile(homing_proj):
         damage: 4
         fuel_duration: 100
 Weapon[testgun]:
+  name: Test Gun
+  cost: 1
   rate_of_fire: 4.0
   projectiles:
     - Projectile(testproj):
@@ -20,14 +26,20 @@ Weapon[testgun]:
     - Projectile(testproj):
         angle: 60
 Weapon[homing_gun]:
+  name: Homing Gun
+  cost: 1
   rate_of_fire: 10.0
   projectiles:
     - Projectile(homing_proj)
 Weapon[enemygun]:
+  name: Enemy Gun
+  cost: 1
   rate_of_fire: 0.5
   projectiles:
     - Projectile(testproj)
 Weapon[slowgun]:
+  name: Slow Gun
+  cost: 1
   rate_of_fire: 0.125
   projectiles:
     - Projectile(testproj):
@@ -35,18 +47,26 @@ Weapon[slowgun]:
         relative_to_firer_velocity: false
         damage: 6
 Weapon[green_laser]:
+  name: Green Laser
+  cost: 1
   rate_of_fire: 0.25
   projectiles:
     - Projectile(green_beam)
 Weapon[red_laser]:
+  name: Red Laser
+  cost: 1
   rate_of_fire: 0.25
   projectiles:
     - Projectile(red_beam)
 Weapon[blue_laser]:
+  name: Blue Laser
+  cost: 1
   rate_of_fire: 0.25
   projectiles:
     - Projectile(blue_beam)
 Weapon[stop_firing_gun]:
+  name: Stop Firing Guno
+  cost: 1
   rate_of_fire: 1
   projectiles:
     - BehaviorAlteringProjectile(stop_firing_proj)
