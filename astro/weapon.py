@@ -54,9 +54,9 @@ class Weapon(TimekeeperItem):
                 self.fire(now)
 
     def damage_string(self):
-        list = []
+        damages = list()
 
         for projectile in self.projectiles:
-            list.append(str(projectile.damage))
+            damages.append(str(projectile.damage))
 
-        return " | ".join(list)
+        return " + ".join(damages)

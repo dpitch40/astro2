@@ -36,11 +36,11 @@ class ShopScreen(MenuScreen):
     def draw_item_display(self, item):
         if self.item_display is not None:
             self.item_display.kill()
-        self.item_display = UITextBox(self.genorate_item_string(item),
+        self.item_display = UITextBox(self.generate_item_string(item),
             relative_rect=proportional_rect((0.1, 0.35), (250, 75)),
             manager=self.manager, wrap_to_height=True)
 
-    def genorate_item_string(self, item):
+    def generate_item_string(self, item):
         lines = [f'Name: {item.name}',  f'Cost: {item.cost}']
 
         if isinstance(item, Weapon):
