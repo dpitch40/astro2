@@ -1,7 +1,7 @@
 ---
 Weapon[homing_hose]:
   name: Homing Hose
-  cost: 1
+  cost: 10000000000000000000000000000000000000
   rate_of_fire: 30
   projectiles:
     - Projectile(homing_proj):
@@ -49,7 +49,7 @@ Weapon[slowgun]:
 Weapon[green_laser]:
   name: Green Laser
   cost: 1
-  rate_of_fire: 0.25
+  rate_of_fire: 3
   projectiles:
     - Projectile(green_beam)
 Weapon[red_laser]:

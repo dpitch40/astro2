@@ -9,6 +9,8 @@ from gui import Action, MenuScreen
 from gui.util import button_list
 from astro.util import proportional_rect
 from astro.player import active_player
+from astro.weapon import Weapon
+from astro.shield import Shield
 
 class ShopScreen(MenuScreen):
     mapped_action = Action.SHOP
@@ -18,17 +20,40 @@ class ShopScreen(MenuScreen):
         super().__init__()
         self.level = level
         self.money_display = None
+        self.item_display = None
         self.player = active_player()
 
     def draw_money_display(self):
         if self.money_display is not None:
             self.money_display.kill()
-        self.money_display = UITextBox(f'Money: {self.player.money}ξ',
+        self.money_display = UITextBox(f'Money: {self.player.money}§',
             relative_rect=proportional_rect((0.1, 0.25), (150, 25)),
             manager=self.manager, wrap_to_height=True)
 
     def item_selected(self, item):
-        print(f'{item} selected')
+        self.draw_item_display(item)
+
+    def draw_item_display(self, item):
+        if self.item_display is not None:
+            self.item_display.kill()
+        self.item_display = UITextBox(self.genorate_item_string(item),
+            relative_rect=proportional_rect((0.1, 0.35), (250, 75)),
+            manager=self.manager, wrap_to_height=True)
+
+    def genorate_item_string(self, item):
+        lines = [f'Name: {item.name}',  f'Cost: {item.cost}']
+
+        if isinstance(item, Weapon):
+            lines.append(f'Damage: {item.damage_string()}')
+            lines.append(f'Rate Of Fire: {item.rate_of_fire}')
+
+        if isinstance(item, Shield):
+            lines.append(f'Capacity: {item.capacity}')
+            lines.append(f'Recharge Rate: {item.recharge_rate}')
+            lines.append(f'Recharge Delay: {item.recharge_delay}')
+
+        return '<br/>'.join(lines)
+
 
     def run(self):
         buttons, button_mapping = button_list(self.manager, 

@@ -52,3 +52,11 @@ class Weapon(TimekeeperItem):
             # Check if this weapon is ready to fire again
             if self.is_ready_to_fire(now):
                 self.fire(now)
+
+    def damage_string(self):
+        list = []
+
+        for projectile in self.projectiles:
+            list.append(str(projectile.damage))
+
+        return " | ".join(list)
