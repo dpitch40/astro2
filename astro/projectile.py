@@ -2,6 +2,7 @@
 """
 
 import math
+import random
 
 import pygame
 
@@ -15,7 +16,8 @@ class Projectile(AstroSprite):
     """
 
     required_fields = ('imagepath', 'speed', 'damage')
-    defaults = {"angle": 0, 'relative_to_firer_velocity': True, 'fuel_duration': None, "piercing": 1}
+    defaults = {"angle": 0, 'relative_to_firer_velocity': True, 'fuel_duration': None,
+        "piercing": 1, 'angle_jitter': None}
 
     FACING_DIRECTIONS = 8
 
@@ -42,6 +44,8 @@ class Projectile(AstroSprite):
         self.groups = [FRIENDLY_PROJECTILES] if friendly else [ENEMY_PROJECTILES]
         if angle is None:
             angle = self.angle + (180 if friendly else 0)
+        if self.angle_jitter is not None:
+            angle += random.uniform(-self.angle_jitter, self.angle_jitter)
         angle = math.radians(angle)
         speedx = math.sin(angle) * self.speed
         speedy = math.cos(angle) * self.speed
