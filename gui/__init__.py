@@ -47,11 +47,12 @@ class MenuScreen(Screen):
 
     def setup(self):
         font = pygame.font.Font(FONTS.mono_font, 48)
-        title_msg = font.render(self.title, 1, (255, 255, 255))
-        title_pos = title_msg.get_rect(midtop=(SCREEN_SIZE[0] / 2, SCREEN_SIZE[1] / 12))
+        self.title_msg = font.render(self.title, 1, (255, 255, 255))
+        self.title_pos = self.title_msg.get_rect(midtop=(SCREEN_SIZE[0] / 2, SCREEN_SIZE[1] / 12))
 
+    def draw_screen_and_title(self):
         self.screen.fill((0, 0, 0))
-        self.screen.blit(title_msg, title_pos)
+        self.screen.blit(self.title_msg, self.title_pos)
 
     def button_loop(self, button_mapping):
         while not NEXT_ACTION.selected:
@@ -77,6 +78,7 @@ class MenuScreen(Screen):
 
     def update_display(self, elapsed):
         self.manager.update(elapsed / 1000)
+        self.draw_screen_and_title()
         self.manager.draw_ui(self.screen)
         pygame.display.update()
 
