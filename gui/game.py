@@ -22,7 +22,7 @@ def handle_ingame_events():
             NEXT_ACTION.set_next_action(Action.QUIT, None)
 
 class GameScreen(Screen):
-    mapped_action = Action.GAME
+    mapped_action = None
     fps = MAX_FPS
 
     def __init__(self, screen, level):
@@ -32,16 +32,45 @@ class GameScreen(Screen):
         self.background = pygame.Surface(self.screen.get_size()).convert()
         self.background.fill((0, 0, 0))
 
-    def set_player_ship(self, ship):
-        self.player_ship = ship
-        astro.keys.PLAYER_SHIP = ship
+    def set_player_ship(self):
+        self.player_ship = astro.keys.PLAYER_SHIP = PlayerShip.instance('testship')
 
     def setup(self):
         pygame.mouse.set_visible(False)
 
-        self.set_player_ship(PlayerShip.instance('testship'))
-        self.hud = astro.HUD = HUD(self, self.player_ship)
+        self.set_player_ship()
         self.player_ship.place(self)
+
+    def update_display(self, elapsed):
+        self.screen.blit(self.background, (0, 0))
+        for group in GROUPS:
+            group.draw(self.screen)
+
+        if hasattr(self, 'hud'):
+            self.hud.draw()
+        super().update_display(elapsed)
+
+    def update(self, elapsed=None):
+        elapsed = super().update(elapsed)
+
+        handle_ingame_events()
+
+        check_collisions()
+
+        for group in GROUPS:
+            group.update()
+
+        self.level.update()
+
+        return elapsed
+
+class MainGameScreen(GameScreen):
+    mapped_action = Action.GAME
+
+    def setup(self):
+        super().setup()
+        self.hud = astro.HUD = HUD(self, self.player_ship)
+
         self.level.start()
         self.counting_down = True
         self.countdown_remaining = 3.0
@@ -54,23 +83,19 @@ class GameScreen(Screen):
         self.number_font = pygame.font.Font(FONTS.mono_font, 36)
 
     def update_display(self, elapsed):
-        self.screen.blit(self.background, (0, 0))
         if self.counting_down:
+            self.screen.blit(self.background, (0, 0))
             self.screen.blit(self.deploying_msg, self.deploying_pos)
             countdown_num = str(int(math.ceil(self.countdown_remaining)))
             number_msg = self.number_font.render(f"{countdown_num}...", 1, (255, 255, 255))
             number_pos = number_msg.get_rect(midtop=(self.screen_size[0] / 2, self.screen_size[1] / 2 + 10))
             self.screen.blit(number_msg, number_pos)
+            super(GameScreen, self).update_display(elapsed)
         else:
-            for group in GROUPS:
-                group.draw(self.screen)
-
-            if hasattr(self, 'hud'):
-                self.hud.draw()
-        super().update_display(elapsed)
+            super().update_display(elapsed)
 
     def update(self, elapsed=None):
-        elapsed = super().update(elapsed)
+        elapsed = super(GameScreen, self).update(elapsed)
 
         if self.counting_down:
             self.countdown_remaining -= elapsed / 1000
@@ -78,15 +103,6 @@ class GameScreen(Screen):
                 self.counting_down = False
 
         if not self.counting_down:
-            self.clock.tick(MAX_FPS)
-
-            handle_ingame_events()
-
-            check_collisions()
-
-            for group in GROUPS:
-                group.update()
-
-            self.level.update()
+            elapsed = super().update(elapsed)
 
         return elapsed
