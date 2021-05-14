@@ -2,7 +2,7 @@ import math
 
 import astro.keys
 from astro.configurable import Configurable
-from astro.util import magnitude, lead_target
+from astro.util import magnitude
 
 class FireBehavior(Configurable):
     def init_ship(self, ship):
@@ -54,9 +54,7 @@ class FireAtPlayer(FireConstantly):
         phi = math.atan2(dx, dy)
 
         for projectile in Weapon.projectiles:
-            angle = lead_target(self.ship.x, self.ship.y,
-                player_ship.x, player_ship.y,
-                self.ship.speedx, self.ship.speedy,
+            angle = self.ship.lead_target(player_ship.x, player_ship.y,
                 player_ship.speedx, player_ship.speedy,
                 projectile.speed, 2, projectile.relative_to_firer_velocity)
 

@@ -50,7 +50,7 @@ class GameScreen(Screen):
         player_ship = PlayerShip.instance('testship')
         hud = astro.HUD = HUD(self, player_ship)
         self.set_player_ship(player_ship)
-        player_ship.place(screen)
+        player_ship.place(self)
         self.level.start()
 
         while not NEXT_ACTION.selected:

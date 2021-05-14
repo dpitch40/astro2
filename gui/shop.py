@@ -54,7 +54,7 @@ class ShopScreen(MenuScreen):
 
 
     def run(self):
-        buttons, button_mapping = self.button_list(self.manager,
+        buttons, button_mapping = self.button_list(
             [('Back', (Action.PRE_GAME, (self.level,)))], (0.15, 0.8), (100, 25))
 
         shop_items = self.level.shop_items
