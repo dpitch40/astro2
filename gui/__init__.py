@@ -2,6 +2,7 @@ import enum
 
 import pygame
 import pygame_gui
+from pygame_gui.elements.ui_button import UIButton
 
 from astro import MAX_FPS, FONTS
 
