@@ -4,6 +4,7 @@ import pygame
 import pygame_gui
 from pygame_gui.elements.ui_button import UIButton
 
+import astro
 from astro import MAX_FPS, FONTS
 
 _screen_lookup = dict()
@@ -28,9 +29,7 @@ class Screen(metaclass=ScreenMeta):
     def __init__(self, screen):
         self.screen = screen
         self.screen_size = self.screen.get_size()
-
-    def run(self):
-        raise NotImplementedError
+        self.top_level = self.screen is astro.SCREEN
 
     # Utility methods
     def convert_prop_x(self, x):
@@ -60,14 +59,38 @@ class Screen(metaclass=ScreenMeta):
         pos = self.convert_proportional_coordinates(*pos)
         return pygame.Rect(pos, size)
 
+    # Subclasses may want to override these
+
+    def done(self):
+        return NEXT_ACTION.selected
+
+    def run(self):
+        self.setup()
+        while not self.done():
+            elapsed = self.update()
+            self.update_display(elapsed)
+
+    def setup(self):
+        pass
+
+    def update(self, elapsed=None):
+        if elapsed is None:
+            elapsed = self.clock.tick(self.fps)
+        return elapsed
+
+    def update_display(self, elapsed):
+        if self.top_level:
+            pygame.display.flip()
+
 class MenuScreen(Screen):
     title = None
+    fps = MAX_FPS // 2
 
     def __init__(self, screen):
         super().__init__(screen)
         self.manager = pygame_gui.UIManager(self.screen_size)
         pygame.mouse.set_visible(True)
-        self.setup()
+        self.button_mapping = dict()
 
     def setup(self):
         font = pygame.font.Font(FONTS.mono_font, 48)
@@ -100,20 +123,15 @@ class MenuScreen(Screen):
         self.screen.fill((0, 0, 0))
         self.screen.blit(self.title_msg, self.title_pos)
 
-    def button_loop(self, button_mapping):
-        while not NEXT_ACTION.selected:
-            elapsed = self.loop_inner(button_mapping)
-            self.update_display(elapsed)
-
-    def loop_inner(self, button_mapping):
-        elapsed = self.clock.tick(MAX_FPS / 2)
+    def update(self, elapsed=None):
+        elapsed = super().update(elapsed)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 NEXT_ACTION.set_next_action(Action.QUIT, None)
             elif event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                    if event.ui_element in button_mapping:
-                        action, params = button_mapping[event.ui_element]
+                    if event.ui_element in self.button_mapping:
+                        action, params = self.button_mapping[event.ui_element]
                         if callable(action):
                             action(*params)
                         else:
@@ -126,7 +144,7 @@ class MenuScreen(Screen):
         self.manager.update(elapsed / 1000)
         self.draw_screen_and_title()
         self.manager.draw_ui(self.screen)
-        pygame.display.update()
+        super().update_display(elapsed)
 
 class NextAction:
     def __init__(self, action=Action.MAIN_MENU, params=None):

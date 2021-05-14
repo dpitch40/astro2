@@ -52,9 +52,9 @@ class ShopScreen(MenuScreen):
 
         return '<br/>'.join(lines)
 
-
-    def run(self):
-        buttons, button_mapping = self.button_list(
+    def setup(self):
+        super().setup()
+        buttons, self.button_mapping = self.button_list(
             [('Back', (Action.PRE_GAME, (self.level,)))], (0.15, 0.8), (100, 25))
 
         shop_items = self.level.shop_items
@@ -65,6 +65,4 @@ class ShopScreen(MenuScreen):
 
         for shop_item, list_item in zip(shop_items, test_list.item_list):
             button = list_item["button_element"]
-            button_mapping[button] = (self.item_selected, (shop_item,))
-
-        self.button_loop(button_mapping)
+            self.button_mapping[button] = (self.item_selected, (shop_item,))

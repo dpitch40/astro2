@@ -11,12 +11,11 @@ class MainMenuScreen(MenuScreen):
     mapped_action = Action.MAIN_MENU
     title = "Homing Hose Simulator"
 
-    def run(self):
+    def setup(self):
+        super().setup()
         first_level = Level.instance('level1')
         first_level.screen = self
 
-        buttons, button_mapping = self.button_list(
+        buttons, self.button_mapping = self.button_list(
             [('Play Game', (Action.PRE_GAME, (first_level,))),
              ('Quit', (Action.QUIT, None))], (0.15, 300), (100, 25))
-
-        self.button_loop(button_mapping)
