@@ -168,6 +168,7 @@ class EnemyShip(Ship):
                      'overridden_fire_behavior': None,
                      'overridden_fire_behavior_duration': None})
     groups = [ENEMY_SHIPS]
+    confined = False
 
     def destroy(self):
         super().destroy()
