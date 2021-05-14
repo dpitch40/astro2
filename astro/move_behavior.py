@@ -92,8 +92,8 @@ class FixedPatrol(Patrol):
     defaults = {'pause_time': 0}
     defaults.update(MoveBehavior.defaults)
 
-    def initialize(self):
-        super().initialize()
+    def init_ship(self, ship):
+        super().init_ship(ship)
         self._dests = self.ship.screen.convert_proportional_coordinate_list(self.dests)
         self.dest_i = 0
 
@@ -110,8 +110,8 @@ class RandomPatrol(Patrol):
     defaults = {'pause_time': 0}
     defaults.update(MoveBehavior.defaults)
 
-    def initialize(self):
-        super().initialize()
+    def init_ship(self, ship):
+        super().init_ship(ship)
         width = self.ship.screen.convert_prop_x(self.width)
         self.max_x = self.ship.screen.convert_prop_x(0.5) + self.ship.screen.convert_prop_y(self.width) / 2
         self.min_x = self.ship.screen.convert_prop_x(0.5) - self.ship.screen.convert_prop_y(self.width) / 2

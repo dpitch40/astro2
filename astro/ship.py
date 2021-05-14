@@ -181,11 +181,11 @@ class EnemyShip(Ship):
 
         self.move_behavior = self.move_behavior.copy()
         self.fire_behavior = self.fire_behavior.copy()
-        self.move_behavior.init_ship(self)
-        self.fire_behavior.init_ship(self)
 
     def place(self, *args, **kwargs):
         super().place(*args, **kwargs)
+        self.move_behavior.init_ship(self)
+        self.fire_behavior.init_ship(self)
         if self.big_health_bar:
             astro.HUD.big_health_bar_ship = self
         if ENEMY_HEALTHBARS and self.enable_small_health_bar:
