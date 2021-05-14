@@ -50,6 +50,18 @@ class ConfigurableMeta(type):
         _configurable_class_lookup[self.__name__] = self
         self._lookup = dict()
 
+    @property
+    def fields(self):
+        # Prevent inheriting fields
+        if '_fields' in self.__dict__:
+            return self._fields
+        else:
+            raise AttributeError(f'fields not defined for {self.__name__}')
+
+    @fields.setter
+    def fields(self, value):
+        self._fields = value
+
 class Configurable(metaclass=ConfigurableMeta):
     # Fields that must be specified in the configuration
     required_fields = ()
@@ -114,6 +126,10 @@ class Configurable(metaclass=ConfigurableMeta):
             for k in base_config.keys():
                 if k not in cls.fields:
                     cls.fields.append(k)
+
+    @property
+    def fields(self):
+        return self.__class__.fields
 
     def copy_value(self, value):
         if isinstance(value, dict):
