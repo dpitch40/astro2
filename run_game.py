@@ -25,7 +25,7 @@ def main():
     pygame.init()
     FONTS.init()
     astro.PLAYER = Player()
-    screen = pygame.display.set_mode(SCREEN_SIZE)
+    screen = astro.SCREEN = pygame.display.set_mode(SCREEN_SIZE)
     pygame.display.set_caption('Astro test')
     load_all()
 

@@ -11,7 +11,8 @@ logger = getLogger('astro')
 
 ASSET_DIR = os.path.join(os.path.dirname(__file__), 'assets')
 CONFIG_DIR = os.path.join(os.path.dirname(__file__), 'config')
-SCREEN_SIZE = (640, 480)
+SCREEN_SIZE = (1024, 768)
+SCREEN = None
 OFF_SCREEN_CUTOFF = 200
 MAX_FPS = 60
 
