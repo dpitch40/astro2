@@ -24,13 +24,27 @@ class Formation(Configurable, Movable):
         Movable.__init__(self)
         Configurable.__init__(self, key)
 
-        self.ship_offsets = list()
         self.center = None
         self._num_ships = None
         self.more_ships = None
 
     def calculate_ship_offset(self, ship, i):
         raise NotImplementedError
+
+    def calculate_spawn_offsets(self):
+        # Calculate offsets relative to formation center for all ships
+        self.ship_offsets = list()
+        spawn_offsets = list()
+        for i, ship in enumerate(self.more_ships):
+            offsetx, offsety = self.calculate_ship_offset(ship, i)
+            self.ship_offsets.append((offsetx, offsety))
+            ship.move_behavior.formation = self
+            ship.move_behavior.formation_i = i
+            # y position of the formation at which to spawn the ship
+            spawn_offset = -ship.rect.height // 2 - offsety
+            spawn_offsets.append((spawn_offset, ship, i))
+        # Will be a deque of (offset, ship) 2-tuples in increasing offset order
+        self.spawn_offsets = collections.deque(sorted(spawn_offsets, key=operator.itemgetter(0)))
 
     def deploy(self, screen):
         """Like place, for formations.
@@ -40,11 +54,11 @@ class Formation(Configurable, Movable):
         self.place(screen, self.center_x, self.height // -2, 0, 0)
         self.move_behavior.init_ship(self)
         self.deployed = time.time()
+        self.calculate_spawn_offsets()
 
     def place(self, *args, **kwargs):
         super().place(*args, **kwargs)
-        if self.center_x is None:
-            self.center_x = self.screen_size // 2
+        self.width, self.height = self.screen.convert_proportional_coordinates(self.width, self.height)
 
     def _expand_ships(self):
         ships = list()
@@ -70,21 +84,8 @@ class Formation(Configurable, Movable):
         self._reached_dest = False
 
         self.speedx, self.speedy = 0, 0
-        self.width, self.height = self.screen.convert_proportional_coordinates(self.width, self.height)
-        self.center_x = self.screen.convert_prop_x(self.center_x)
-
-        # Calculate offsets relative to formation center for all ships
-        spawn_offsets = list()
-        for i, ship in enumerate(self.more_ships):
-            offsetx, offsety = self.calculate_ship_offset(ship, i)
-            self.ship_offsets.append((offsetx, offsety))
-            ship.move_behavior.formation = self
-            ship.move_behavior.formation_i = i
-            # y position of the formation at which to spawn the ship
-            spawn_offset = -ship.rect.height // 2 - offsety
-            spawn_offsets.append((spawn_offset, ship, i))
-        # Will be a deque of (offset, ship) 2-tuples in increasing offset order
-        self.spawn_offsets = collections.deque(sorted(spawn_offsets, key=operator.itemgetter(0)))
+        if self.center_x is None:
+            self.center_x = 1/2
         self.to_be_deployed = self.num_ships
         Movable.initialize(self)
 
@@ -146,7 +147,7 @@ class Grid(Formation):
             y += (row / (self.rows - 1)) * self.height
         else:
             y = 0
-        return int(x), int(y)
+        return x, y
 
     def initialize(self):
         self.num_slots = self.rows * self.columns
