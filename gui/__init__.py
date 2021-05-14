@@ -69,8 +69,12 @@ class Screen(metaclass=ScreenMeta):
         while not self.done():
             elapsed = self.update()
             self.update_display(elapsed)
+        self.teardown()
 
     def setup(self):
+        pass
+
+    def teardown(self):
         pass
 
     def update(self, elapsed=None):
@@ -119,7 +123,7 @@ class MenuScreen(Screen):
 
         return button, button_mapping
 
-    def draw_screen_and_title(self):
+    def draw_non_ui(self):
         self.screen.fill((0, 0, 0))
         self.screen.blit(self.title_msg, self.title_pos)
 
@@ -142,7 +146,7 @@ class MenuScreen(Screen):
 
     def update_display(self, elapsed):
         self.manager.update(elapsed / 1000)
-        self.draw_screen_and_title()
+        self.draw_non_ui()
         self.manager.draw_ui(self.screen)
         super().update_display(elapsed)
 

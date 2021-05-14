@@ -5,7 +5,8 @@ from pygame_gui.elements import UIButton
 from pygame_gui.elements.ui_selection_list import UISelectionList
 from pygame_gui.elements.ui_text_box import UITextBox
 
-from gui import Action, MenuScreen
+from . import Action, MenuScreen
+from .game import WeaponPreviewScreen
 from astro.player import active_player
 from astro.weapon import Weapon
 from astro.shield import Shield
@@ -19,6 +20,8 @@ class ShopScreen(MenuScreen):
         self.level = level
         self.money_display = None
         self.item_display = None
+        self.weapon_preview_rect = None
+        self.weapon_preview = None
         self.player = active_player()
 
     def draw_money_display(self):
@@ -30,6 +33,7 @@ class ShopScreen(MenuScreen):
 
     def item_selected(self, item):
         self.draw_item_display(item)
+        self.draw_weapon_preview(item)
 
     def draw_item_display(self, item):
         if self.item_display is not None:
@@ -52,6 +56,20 @@ class ShopScreen(MenuScreen):
 
         return '<br/>'.join(lines)
 
+    def draw_weapon_preview(self, item):
+        if self.weapon_preview is not None:
+            self.weapon_preview.teardown()
+
+        if isinstance(item, Weapon):
+            self.weapon_preview_rect = self.proportional_rect((0.1, 0.4), (350, 350))
+            subscreen = pygame.Surface(self.weapon_preview_rect.size)
+            subscreen.convert()
+            self.weapon_preview = WeaponPreviewScreen(subscreen, item)
+            self.weapon_preview.setup()
+        else:
+            self.weapon_preview = None
+            self.weapon_preview_rect = None
+
     def setup(self):
         super().setup()
         buttons, self.button_mapping = self.button_list(
@@ -66,3 +84,19 @@ class ShopScreen(MenuScreen):
         for shop_item, list_item in zip(shop_items, test_list.item_list):
             button = list_item["button_element"]
             self.button_mapping[button] = (self.item_selected, (shop_item,))
+
+    def update(self, elapsed=None):
+        elapsed = super().update(elapsed)
+        if self.weapon_preview is not None:
+            self.weapon_preview.update(elapsed)
+        return elapsed
+
+    def update_display(self, elapsed):
+        if self.weapon_preview is not None:
+            self.weapon_preview.update_display(elapsed)
+        super().update_display(elapsed)
+
+    def draw_non_ui(self):
+        super().draw_non_ui()
+        if self.weapon_preview_rect is not None:
+            self.screen.blit(self.weapon_preview.screen, self.weapon_preview_rect)

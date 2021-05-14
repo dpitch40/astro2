@@ -5,30 +5,21 @@ import pygame
 from pygame.locals import KEYDOWN, KEYUP
 
 from gui import NEXT_ACTION, Action, Screen
-from astro import MAX_FPS, FONTS, GROUPS
+from astro import MAX_FPS, FONTS, GROUPS, clear_all_groups
 import astro.keys
 from astro.ship import PlayerShip
 from astro.hud import HUD
 from astro.level import Level
 from astro.collidable import check_collisions
 
-def handle_ingame_events():
-    for event in pygame.event.get():
-        if event.type == KEYDOWN:
-            astro.keys.keydown(event.key, event.mod)
-        elif event.type == KEYUP:
-            astro.keys.keyup(event.key, event.mod)
-        elif event.type == pygame.QUIT:
-            NEXT_ACTION.set_next_action(Action.QUIT, None)
-
 class GameScreen(Screen):
     mapped_action = None
     fps = MAX_FPS
+    mouse_visible = False
 
-    def __init__(self, screen, level):
+    def __init__(self, screen):
         super().__init__(screen)
 
-        self.level = level
         self.background = pygame.Surface(self.screen.get_size()).convert()
         self.background.fill((0, 0, 0))
 
@@ -36,10 +27,13 @@ class GameScreen(Screen):
         self.player_ship = astro.keys.PLAYER_SHIP = PlayerShip.instance('testship')
 
     def setup(self):
-        pygame.mouse.set_visible(False)
+        pygame.mouse.set_visible(self.mouse_visible)
 
         self.set_player_ship()
         self.player_ship.place(self)
+
+    def teardown(self):
+        clear_all_groups()
 
     def update_display(self, elapsed):
         self.screen.blit(self.background, (0, 0))
@@ -53,19 +47,30 @@ class GameScreen(Screen):
     def update(self, elapsed=None):
         elapsed = super().update(elapsed)
 
-        handle_ingame_events()
+        self.handle_ingame_events()
 
         check_collisions()
 
         for group in GROUPS:
             group.update()
 
-        self.level.update()
-
         return elapsed
+
+    def handle_ingame_events(self):
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                astro.keys.keydown(event.key, event.mod)
+            elif event.type == KEYUP:
+                astro.keys.keyup(event.key, event.mod)
+            elif event.type == pygame.QUIT:
+                NEXT_ACTION.set_next_action(Action.QUIT, None)
 
 class MainGameScreen(GameScreen):
     mapped_action = Action.GAME
+
+    def __init__(self, screen, level):
+        super().__init__(screen)
+        self.level = level
 
     def setup(self):
         super().setup()
@@ -97,6 +102,8 @@ class MainGameScreen(GameScreen):
     def update(self, elapsed=None):
         elapsed = super(GameScreen, self).update(elapsed)
 
+        self.level.update()
+
         if self.counting_down:
             self.countdown_remaining -= elapsed / 1000
             if self.countdown_remaining <= 0:
@@ -106,3 +113,22 @@ class MainGameScreen(GameScreen):
             elapsed = super().update(elapsed)
 
         return elapsed
+
+class WeaponPreviewScreen(GameScreen):
+    mouse_visible = True
+
+    def __init__(self, screen, weapon):
+        super().__init__(screen)
+        self.weapon = weapon
+
+    def set_player_ship(self):
+        self.player_ship = astro.keys.PLAYER_SHIP = PlayerShip.instance('testship',
+            copy=True, weapons=[self.weapon.copy()])
+
+    def setup(self):
+        super().setup()
+
+        self.player_ship.start_firing()
+
+    def handle_ingame_events(self):
+        pass

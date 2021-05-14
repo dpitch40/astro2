@@ -78,6 +78,10 @@ GROUPS = [
           HEALTHBARS,
          ]
 
+def clear_all_groups():
+    for group in GROUPS:
+        group.empty()
+
 FRIENDLIES = {FRIENDLY_SHIPS, FRIENDLY_PROJECTILES}
 ENEMIES = {ENEMY_SHIPS, ENEMY_PROJECTILES}
 
