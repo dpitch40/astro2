@@ -24,7 +24,8 @@ def handle_ingame_events():
 class GameScreen(Screen):
     mapped_action = Action.GAME
 
-    def __init__(self, level):
+    def __init__(self, screen, level):
+        super().__init__(screen)
         self.level = level
 
     def run(self):

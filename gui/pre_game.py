@@ -12,10 +12,10 @@ class PreGameScreen(MenuScreen):
     mapped_action = Action.PRE_GAME
     title = "Pre-Level"
 
-    def __init__(self, level):
+    def __init__(self, screen, level):
         self.level = level
         self.title = self.level.name
-        super().__init__()
+        super().__init__(screen)
 
     def run(self):
         buttons, button_mapping = button_list(self.manager, 

@@ -16,8 +16,8 @@ class ShopScreen(MenuScreen):
     mapped_action = Action.SHOP
     title = "Shop"
 
-    def __init__(self, level):
-        super().__init__()
+    def __init__(self, screen, level):
+        super().__init__(screen)
         self.level = level
         self.money_display = None
         self.item_display = None

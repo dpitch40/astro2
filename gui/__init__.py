@@ -23,15 +23,10 @@ class ScreenMeta(type):
 
 class Screen(metaclass=ScreenMeta):
     clock = pygame.time.Clock()
-    screen = None
     mapped_action = None
 
-    def __init__(self):
-        pass
-
-    @classmethod
-    def set_screen(cls, screen):
-        cls.screen = screen
+    def __init__(self, screen):
+        self.screen = screen
 
     def run(self):
         raise NotImplementedError
@@ -39,8 +34,8 @@ class Screen(metaclass=ScreenMeta):
 class MenuScreen(Screen):
     title = None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, screen):
+        super().__init__(screen)
         self.manager = pygame_gui.UIManager(SCREEN_SIZE)
         pygame.mouse.set_visible(True)
         self.setup()
@@ -82,7 +77,6 @@ class MenuScreen(Screen):
         self.manager.draw_ui(self.screen)
         pygame.display.update()
 
-
 class NextAction:
     def __init__(self, action=Action.MAIN_MENU, params=None):
         self.set_next_action(action, params)
@@ -103,7 +97,7 @@ def respond_to_action(screen):
     action = NEXT_ACTION.action
     params = NEXT_ACTION.params
     NEXT_ACTION.reset_next_action()
-    _screen_lookup[action](*params).run()
+    _screen_lookup[action](screen, *params).run()
 
 def gui_loop(screen):
     while NEXT_ACTION.action is not Action.QUIT:
