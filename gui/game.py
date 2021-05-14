@@ -2,15 +2,12 @@ import pygame
 from pygame.locals import KEYDOWN, KEYUP
 
 from gui import NEXT_ACTION, Action, Screen
-from astro import SCREEN_SIZE, MAX_FPS, FONTS, GROUPS
+from astro import MAX_FPS, FONTS, GROUPS
 import astro.keys
 from astro.ship import PlayerShip
 from astro.hud import HUD
 from astro.level import Level
 from astro.collidable import check_collisions
-
-def set_player_ship(ship):
-    astro.keys.PLAYER_SHIP = ship
 
 def handle_ingame_events():
     for event in pygame.event.get():
@@ -36,11 +33,11 @@ class GameScreen(Screen):
 
         font = pygame.font.Font(FONTS.mono_font, 48)
         deploying_msg = font.render("Deploying", 1, (255, 255, 255))
-        deploying_pos = deploying_msg.get_rect(midbottom=(SCREEN_SIZE[0] / 2, SCREEN_SIZE[1] / 2))
+        deploying_pos = deploying_msg.get_rect(midbottom=(self.screen_size[0] / 2, self.screen_size[1] / 2))
         number_font = pygame.font.Font(FONTS.mono_font, 36)
         for number in (3, 2, 1):
             number_msg = number_font.render(f"{number}...", 1, (255, 255, 255))
-            number_pos = number_msg.get_rect(midtop=(SCREEN_SIZE[0] / 2, SCREEN_SIZE[1] / 2 + 10))
+            number_pos = number_msg.get_rect(midtop=(self.screen_size[0] / 2, self.screen_size[1] / 2 + 10))
 
             self.screen.blit(background, (0, 0))
             self.screen.blit(deploying_msg, deploying_pos)
@@ -51,12 +48,10 @@ class GameScreen(Screen):
             self.clock.tick(1)
 
         player_ship = PlayerShip.instance('testship')
-        hud = astro.HUD = HUD(self.screen, player_ship)
-        set_player_ship(player_ship)
-        player_ship.place()
+        hud = astro.HUD = HUD(self, player_ship)
+        self.set_player_ship(player_ship)
+        player_ship.place(screen)
         self.level.start()
-        # enemy_ship.place(0.25, -300)
-        # enemy_ship2.place(0.75, -300)
 
         while not NEXT_ACTION.selected:
             self.clock.tick(MAX_FPS)
@@ -77,3 +72,6 @@ class GameScreen(Screen):
 
             hud.draw()
             pygame.display.flip()
+
+    def set_player_ship(self, ship):
+        astro.keys.PLAYER_SHIP = ship

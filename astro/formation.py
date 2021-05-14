@@ -8,10 +8,9 @@ import random
 import collections
 import time
 
-from astro import SCREEN_SIZE
 from astro.configurable import Configurable
 from astro.movable import Movable
-from astro.util import convert_proportional_coordinates, magnitude, convert_prop_x
+from astro.util import magnitude
 from astro.move_behavior import MoveBehavior
 
 class Formation(Configurable, Movable):
@@ -19,7 +18,7 @@ class Formation(Configurable, Movable):
     extra_copy_fields = ['blank_move_behavior']
     defaults = {'move_behavior': None,
                 'fire_behavior': None,
-                'center_x': SCREEN_SIZE[0] // 2}
+                'center_x': None}
 
     def __init__(self, key):
         Movable.__init__(self)
@@ -33,14 +32,19 @@ class Formation(Configurable, Movable):
     def calculate_ship_offset(self, ship, i):
         raise NotImplementedError
 
-    def deploy(self):
+    def deploy(self, screen):
         """Like place, for formations.
 
         Spawns all ships in the formation and starts moving them according to configuration.
         """
-        self.place(self.center_x, self.height // -2, 0, 0)
+        self.place(screen, self.center_x, self.height // -2, 0, 0)
         self.move_behavior.init_ship(self)
         self.deployed = time.time()
+
+    def place(self, *args, **kwargs):
+        super().place(*args, **kwargs)
+        if self.center_x is None:
+            self.center_x = self.screen_size // 2
 
     def _expand_ships(self):
         ships = list()
@@ -66,8 +70,8 @@ class Formation(Configurable, Movable):
         self._reached_dest = False
 
         self.speedx, self.speedy = 0, 0
-        self.width, self.height = convert_proportional_coordinates(self.width, self.height)
-        self.center_x = convert_prop_x(self.center_x)
+        self.width, self.height = self.screen.convert_proportional_coordinates(self.width, self.height)
+        self.center_x = self.screen.convert_prop_x(self.center_x)
 
         # Calculate offsets relative to formation center for all ships
         spawn_offsets = list()
@@ -103,7 +107,7 @@ class Formation(Configurable, Movable):
         while self.spawn_offsets and self.spawn_offsets[0][0] < self.y:
             _, ship, i = self.spawn_offsets.popleft()
             offsetx, offsety = self.ship_offsets[i]
-            ship.place(round(self.x + offsetx), round(self.y + offsety), self.speedx, self.speedy)
+            ship.place(self.screen, round(self.x + offsetx), round(self.y + offsety), self.speedx, self.speedy)
             self.to_be_deployed -= 1
 
         if self.blank_move_behavior:

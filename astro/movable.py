@@ -4,7 +4,7 @@
 import math
 
 from astro.timekeeper import Timekeeper
-from astro.util import magnitude, convert_prop_x, convert_prop_y
+from astro.util import magnitude
 
 class Movable(Timekeeper):
     def __init__(self):
@@ -19,7 +19,7 @@ class Movable(Timekeeper):
             # Calsulate stopping distance
             self.stopping_distance = (self.max_speed ** 2) / (self.acceleration * 2)
 
-    def place(self, startx, starty, speedx=0, speedy=0):
+    def place(self, screen, startx, starty, speedx=0, speedy=0):
         """Adds this object to the game at the specified location.
 
         Can optionally specify an initial speed. Also adds it to its sprite groups.
@@ -30,8 +30,10 @@ class Movable(Timekeeper):
             speedx (optional int): The starting horizontal speed. Defaults to 0.
             speedy (optional int): The starting vertical speed. Defaults to 0.
         """
-        self.x = convert_prop_x(startx)
-        self.y = convert_prop_y(starty)
+        self.screen = screen
+        self.screen_size = self.screen.screen_size
+        self.x = self.screen.convert_prop_x(startx)
+        self.y = self.screen.convert_prop_y(starty)
         self.speedx = speedx
         self.speedy = speedy
 

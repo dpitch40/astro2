@@ -38,7 +38,7 @@ class Projectile(AstroSprite):
             self._load_image(self.imagepath, directions=self.FACING_DIRECTIONS)
 
 
-    def place(self, firer, friendly, angle=None):
+    def place(self, screen, firer, friendly, angle=None):
         self.firer = firer
         # Also firing from hardpoint positions and not the center of the firer
         self.groups = [FRIENDLY_PROJECTILES] if friendly else [ENEMY_PROJECTILES]
@@ -52,7 +52,7 @@ class Projectile(AstroSprite):
         if self.relative_to_firer_velocity:
             speedx += firer.speedx
             speedy += firer.speedy
-        super().place(firer.rect.centerx, firer.rect.centery, speedx=speedx, speedy=speedy)
+        super().place(screen, firer.rect.centerx, firer.rect.centery, speedx=speedx, speedy=speedy)
 
     def collide_with_ship(self, ship):
         if self.alive() and self.colliding_with is not ship:

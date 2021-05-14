@@ -20,7 +20,7 @@ class FireBehavior(Configurable):
 
         for projectile in Weapon.projectiles:
             projectile = projectile.copy()
-            projectile.place(firer=Weapon.owner, friendly=Weapon.owner.inverted)
+            projectile.place(self.ship.screen, firer=Weapon.owner, friendly=Weapon.owner.inverted)
 
 class FireNever(FireBehavior):
     """Causes the ship to fire as never as possible.
@@ -62,4 +62,4 @@ class FireAtPlayer(FireConstantly):
 
             projectile = projectile.copy()
             angle = math.degrees(angle)
-            projectile.place(firer=Weapon.owner, friendly=Weapon.owner.inverted, angle=angle)
+            projectile.place(self.ship.screen, firer=Weapon.owner, friendly=Weapon.owner.inverted, angle=angle)

@@ -35,7 +35,7 @@ class Ship(AstroSprite):
 
     def explode(self):
         explosion = Explosion(self)
-        explosion.place(self.rect.centerx, self.rect.centery, self.speedx, self.speedy)
+        explosion.place(self.screen, self.rect.centerx, self.rect.centery, self.speedx, self.speedy)
 
     def initialize(self):
         super().initialize()
@@ -68,7 +68,7 @@ class Ship(AstroSprite):
     def place(self, *args, **kwargs):
         super().place(*args, **kwargs)
         if self.shield is not None:
-            self.shield.place(self.rect.centerx, self.rect.centery)
+            self.shield.place(self.screen, self.rect.centerx, self.rect.centery)
 
         # Set mass (for collisions)
         if self.mass is None:
@@ -106,10 +106,10 @@ class PlayerShip(Ship):
         self.dirx = 0
         self.diry = 0
 
-    def place(self, startx=0.5, starty=0.75, speedx=0, speedy=0):
+    def place(self, screen, startx=0.5, starty=0.75, speedx=0, speedy=0):
         """Overrides AstroSprite.place with default starting location.
         """
-        return super().place(startx, starty, speedx, speedy)
+        return super().place(screen, startx, starty, speedx, speedy)
 
     def update_velocity(self, elapsed):
         """Updates the ship's velocity based on the currently inputted directions.

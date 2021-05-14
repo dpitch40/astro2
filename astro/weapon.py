@@ -31,7 +31,7 @@ class Weapon(TimekeeperItem):
 
             for projectile in self.projectiles:
                 projectile = projectile.copy()
-                projectile.place(firer=self.owner, friendly=self.owner.inverted)
+                projectile.place(self.owner.screen, firer=self.owner, friendly=self.owner.inverted)
         self.last_fired = now
 
     def is_ready_to_fire(self, now):

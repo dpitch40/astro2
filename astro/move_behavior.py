@@ -3,8 +3,7 @@ import operator
 import random
 
 from astro.configurable import Configurable
-from astro.util import magnitude, convert_proportional_coordinate_list, angle_distance, \
-    convert_prop_x, convert_prop_y
+from astro.util import magnitude, angle_distance
 from astro import ENEMIES, FRIENDLY_SHIPS, ENEMY_SHIPS, REACHED_DEST_THRESHOLD
 
 class MoveBehavior(Configurable):
@@ -95,7 +94,7 @@ class FixedPatrol(Patrol):
 
     def initialize(self):
         super().initialize()
-        self._dests = convert_proportional_coordinate_list(self.dests)
+        self._dests = self.ship.screen.convert_proportional_coordinate_list(self.dests)
         self.dest_i = 0
 
     def next_destination(self):
@@ -113,10 +112,10 @@ class RandomPatrol(Patrol):
 
     def initialize(self):
         super().initialize()
-        width = convert_prop_x(self.width)
-        self.max_x = convert_prop_x(0.5) + convert_prop_y(self.width) / 2
-        self.min_x = convert_prop_x(0.5) - convert_prop_y(self.width) / 2
-        self.max_y = convert_prop_y(self.height)
+        width = self.ship.screen.convert_prop_x(self.width)
+        self.max_x = self.ship.screen.convert_prop_x(0.5) + self.ship.screen.convert_prop_y(self.width) / 2
+        self.min_x = self.ship.screen.convert_prop_x(0.5) - self.ship.screen.convert_prop_y(self.width) / 2
+        self.max_y = self.ship.screen.convert_prop_y(self.height)
 
     def next_destination(self):
         return (random.randint(self.min_x, self.max_x), random.randint(0, self.max_y))

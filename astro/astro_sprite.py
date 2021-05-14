@@ -3,12 +3,12 @@
 
 import pygame
 
-from astro import SCREEN_SIZE, OFF_SCREEN_CUTOFF
+from astro import OFF_SCREEN_CUTOFF
 from astro.image import load_image
 from astro.configurable import Configurable, ConfigurableMeta
 from astro.collidable import Collidable, CollidableMeta
 from astro.movable import Movable
-from astro.util import magnitude, convert_prop_x, convert_prop_y
+from astro.util import magnitude
 
 class AstroSpriteMeta(ConfigurableMeta, CollidableMeta):
     def __init__(self, *args, **kwargs):
@@ -50,7 +50,7 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
         Movable.initialize(self)
         self.load_image()
 
-    def place(self, startx, starty, speedx=0, speedy=0):
+    def place(self, screen, startx, starty, speedx=0, speedy=0):
         """Adds this object to the game at the specified location.
 
         Can optionally specify an initial speed. Also adds it to its sprite groups.
@@ -61,7 +61,7 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
             speedx (optional int): The starting horizontal speed. Defaults to 0.
             speedy (optional int): The starting vertical speed. Defaults to 0.
         """
-        super().place(startx, starty, speedx, speedy)
+        super().place(screen, startx, starty, speedx, speedy)
         self.rect.center = self.x ,self.y = round(self.x), round(self.y)
         self.add(self.groups)
 
@@ -117,8 +117,8 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
                 if self.speedx < 0:
                     self.speedx = 0
                 self.update_mask_pos(True)
-            elif self.mask_rect.right > SCREEN_SIZE[0]:
-                self.mask_rect.right = SCREEN_SIZE[0]
+            elif self.mask_rect.right > self.screen_size[0]:
+                self.mask_rect.right = self.screen_size[0]
                 if self.speedx > 0:
                     self.speedx = 0
                 self.update_mask_pos(True)
@@ -128,8 +128,8 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
                 if self.speedy < 0:
                     self.speedy = 0
                 self.update_mask_pos(True)
-            elif self.mask_rect.bottom > SCREEN_SIZE[1]:
-                self.mask_rect.bottom = SCREEN_SIZE[1]
+            elif self.mask_rect.bottom > self.screen_size[1]:
+                self.mask_rect.bottom = self.screen_size[1]
                 if self.speedy > 0:
                     self.speedy = 0
                 self.update_mask_pos(True)
@@ -137,9 +137,9 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
             # Destroy the sprite if it goes too far offscreen
             if self.mask_rect.centerx < -OFF_SCREEN_CUTOFF:
                 self.destroy()
-            elif self.mask_rect.centerx > SCREEN_SIZE[0] + OFF_SCREEN_CUTOFF:
+            elif self.mask_rect.centerx > self.screen_size[0] + OFF_SCREEN_CUTOFF:
                 self.destroy()
             elif self.mask_rect.centery < -OFF_SCREEN_CUTOFF:
                 self.destroy()
-            elif self.mask_rect.centery > SCREEN_SIZE[1] + OFF_SCREEN_CUTOFF:
+            elif self.mask_rect.centery > self.screen_size[1] + OFF_SCREEN_CUTOFF:
                 self.destroy()

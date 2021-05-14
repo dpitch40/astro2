@@ -5,7 +5,6 @@ from pygame_gui.elements import UIButton
 from  pygame_gui.elements.ui_selection_list import UISelectionList
 
 from gui import Action, MenuScreen
-from gui.util import button_list
 from astro.level import Level
 
 class MainMenuScreen(MenuScreen):
@@ -13,9 +12,9 @@ class MainMenuScreen(MenuScreen):
     title = "Homing Hose Simulator"
 
     def run(self):
-        first_level = Level.instance('level1')
+        first_level = Level.instance('level1', screen=self.screen)
 
-        buttons, button_mapping = button_list(self.manager, 
+        buttons, button_mapping = self.button_list(self.manager,
             [('Play Game', (Action.PRE_GAME, (first_level,))),
              ('Quit', (Action.QUIT, None))], (0.15, 300), (100, 25))
 

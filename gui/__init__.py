@@ -3,8 +3,7 @@ import enum
 import pygame
 import pygame_gui
 
-from astro import MAX_FPS, SCREEN_SIZE, FONTS
-from gui.util import button_list
+from astro import MAX_FPS, FONTS
 
 _screen_lookup = dict()
 
@@ -27,23 +26,74 @@ class Screen(metaclass=ScreenMeta):
 
     def __init__(self, screen):
         self.screen = screen
+        self.screen_size = self.screen.get_size()
 
     def run(self):
         raise NotImplementedError
+
+    # Utility methods
+    def convert_prop_x(self, x):
+        if isinstance(x, int):
+            return x
+        else:
+            return round(x * self.screen_size[0])
+
+    def convert_prop_y(self, y):
+        if isinstance(y, int):
+            return y
+        else:
+            return round(y * self.screen_size[1])
+
+    def convert_proportional_coordinates(self, x, y):
+        return self.convert_prop_x(x), self.convert_prop_y(y)
+
+    def convert_proportional_coordinate_list(self, coords):
+        """Converts a list of (x, y)-tuples from floats between 0 and 1 (proportions of the screen size)
+           to pixel coordinates.
+        """
+
+        return [self.convert_proportional_coordinates(x, y) for x, y in coords]
+
+    def proportional_rect(self, pos, size):
+        size = self.convert_proportional_coordinates(*size)
+        pos = self.convert_proportional_coordinates(*pos)
+        return pygame.Rect(pos, size)
 
 class MenuScreen(Screen):
     title = None
 
     def __init__(self, screen):
         super().__init__(screen)
-        self.manager = pygame_gui.UIManager(SCREEN_SIZE)
+        self.manager = pygame_gui.UIManager(self.screen_size)
         pygame.mouse.set_visible(True)
         self.setup()
 
     def setup(self):
         font = pygame.font.Font(FONTS.mono_font, 48)
         self.title_msg = font.render(self.title, 1, (255, 255, 255))
-        self.title_pos = self.title_msg.get_rect(midtop=(SCREEN_SIZE[0] / 2, SCREEN_SIZE[1] / 12))
+        self.title_pos = self.title_msg.get_rect(midtop=(self.screen_size[0] / 2, self.screen_size[1] / 12))
+
+    def button_list(self, button_info,
+                    pos, button_size, button_spacing=1.2, vertical=True):
+        if vertical:
+            spacing = self.convert_prop_y(button_size[1]) * button_spacing
+        else:
+            spacing = self.convert_prop_x(button_size[0]) * button_spacing
+
+        x, y = self.convert_proportional_coordinates(*pos)
+        buttons = list()
+        button_mapping = dict()
+        for text, (function, params) in button_info:
+            button = UIButton(relative_rect=self.proportional_rect((round(x), round(y)), button_size),
+                                   text=text, manager=self.manager)
+            buttons.append(button)
+            button_mapping[button] = (function, params)
+            if vertical:
+                y += spacing
+            else:
+                x += spacing
+
+        return button, button_mapping
 
     def draw_screen_and_title(self):
         self.screen.fill((0, 0, 0))

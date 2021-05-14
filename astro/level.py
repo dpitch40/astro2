@@ -18,7 +18,7 @@ class Level(Configurable, Timekeeper):
         wave_info = self.waves[self.wave_i]
         for formation in wave_info['formations']:
             self.current_formations.append(formation)
-            formation.deploy()
+            formation.deploy(self.screen)
             formation.wave_i = self.wave_i
 
         self.wave_i += 1
