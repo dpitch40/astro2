@@ -11,15 +11,16 @@ class MoveBehavior(Configurable):
 
     def init_ship(self, ship):
         self.ship = ship
+        if self.initial_dest:
+            self.initial_dest = self.ship.screen.convert_proportional_coordinates(*self.initial_dest)
+            self.pre_dest = self.initial_dest
+        else:
+            self.pre_dest = None
 
     def initialize(self):
         super().initialize()
         self.formation = None
         self.formation_i = None
-        if self.initial_dest:
-            self.pre_dest = self.initial_dest
-        else:
-            self.pre_dest = None
 
     def reached_dest(self, x, y):
         distance = magnitude(self.ship.x - x, self.ship.y - y)
@@ -39,6 +40,7 @@ class MoveBehavior(Configurable):
                     self.ship.accelerate_toward_point(elapsed, *self.pre_dest)
                 else:
                     self.pre_dest = None
+                    self._update_velocity(elapsed)
             else:
                 self._update_velocity(elapsed)
 
