@@ -22,6 +22,8 @@ class ShopScreen(MenuScreen):
         self.item_display = None
         self.weapon_preview_rect = None
         self.weapon_preview = None
+        self.selected_item = None
+        self.selected_item_button = None
         self.player = active_player()
 
     def draw_money_display(self):
@@ -31,7 +33,9 @@ class ShopScreen(MenuScreen):
             relative_rect=self.proportional_rect((0.1, 0.25), (150, 25)),
             manager=self.manager, wrap_to_height=True)
 
-    def item_selected(self, item):
+    def item_selected(self, item, button):
+        self.selected_item = item
+        self.selected_item_button = button
         self.draw_item_display(item)
         self.draw_weapon_preview(item)
 
@@ -83,7 +87,7 @@ class ShopScreen(MenuScreen):
 
         for shop_item, list_item in zip(shop_items, test_list.item_list):
             button = list_item["button_element"]
-            self.button_mapping[button] = (self.item_selected, (shop_item,))
+            self.button_mapping[button] = (self.item_selected, (shop_item, button))
 
     def update(self, elapsed=None):
         elapsed = super().update(elapsed)
