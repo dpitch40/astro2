@@ -104,3 +104,7 @@ class ShopScreen(MenuScreen):
         super().draw_non_ui()
         if self.weapon_preview_rect is not None:
             self.screen.blit(self.weapon_preview.screen, self.weapon_preview_rect)
+
+    def teardown(self):
+        if self.weapon_preview:
+            self.weapon_preview.teardown()
