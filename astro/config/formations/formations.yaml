@@ -7,6 +7,7 @@ Line[wave1]:
   move_behavior:
     RandomPatrol(around):
       pause_time: 1
+      width: 0.5
 Line[wave2]:
   width: 0.4
   height: 1

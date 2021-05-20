@@ -8,25 +8,44 @@ import random
 import collections
 import time
 
+import pygame
+
+from astro import OBJECTS
 from astro.configurable import Configurable
 from astro.movable import Movable
+from astro.astro_sprite import AstroSprite
 from astro.util import magnitude
 from astro.move_behavior import MoveBehavior
+from astro.image import generate_rect_and_mask
 
-class Formation(Configurable, Movable):
+# class Formation(Configurable, Movable):
+class Formation(AstroSprite):
     required_fields = ('ships', 'width', 'height')
     extra_copy_fields = ['blank_move_behavior']
     defaults = {'move_behavior': None,
                 'fire_behavior': None,
                 'center_x': None}
+    groups = [OBJECTS]
 
     def __init__(self, key):
-        Movable.__init__(self)
-        Configurable.__init__(self, key)
+        # Movable.__init__(self)
+        # Configurable.__init__(self, key)
+        super().__init__(key)
 
         self.center = None
         self._num_ships = None
         self.more_ships = None
+
+    def load_image(self):
+        radius = 16
+        image = pygame.Surface((radius,radius))
+        color = (0, 255, 0)
+        pygame.draw.circle(image, color, (radius/2, radius/2), radius/2)
+        image.convert()
+        self.image = image
+
+        self.rect, self.mask, self.mask_rect, self.mask_rect_offsetx, \
+            self.mask_rect_offsety, self.mask_centroid = generate_rect_and_mask(self.image)
 
     def calculate_ship_offset(self, ship, i):
         raise NotImplementedError
@@ -87,7 +106,8 @@ class Formation(Configurable, Movable):
         if self.center_x is None:
             self.center_x = 1/2
         self.to_be_deployed = self.num_ships
-        Movable.initialize(self)
+        # Movable.initialize(self)
+        super().initialize()
 
     @property
     def num_ships(self):

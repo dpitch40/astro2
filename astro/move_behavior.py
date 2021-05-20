@@ -105,7 +105,13 @@ class FixedPatrol(Patrol):
         return dest
 
 class RandomPatrol(Patrol):
-    """Causes the ship to move to a series of random destinations..
+    """Causes the ship to move to a series of random destinations.
+
+    Arguments:
+        width: Width of the "box" that the ship will randomly travel within, centered on the center
+            of the screen.
+        height: Height of the "box" the ship will randomly travel within, starting from the top of the
+            screen.
     """
 
     required_fields = ('width', 'height')
@@ -114,13 +120,18 @@ class RandomPatrol(Patrol):
 
     def init_ship(self, ship):
         super().init_ship(ship)
-        width = self.ship.screen.convert_prop_x(self.width)
-        self.max_x = self.ship.screen.convert_prop_x(0.5) + self.ship.screen.convert_prop_y(self.width) / 2
-        self.min_x = self.ship.screen.convert_prop_x(0.5) - self.ship.screen.convert_prop_y(self.width) / 2
-        self.max_y = self.ship.screen.convert_prop_y(self.height)
+        self.width = self.ship.screen.convert_prop_x(self.width)
+        self.height = self.ship.screen.convert_prop_y(self.height)
+        self.max_x = self.ship.screen.convert_prop_x(0.5) + self.ship.screen.convert_prop_x(self.width) // 2
+        self.min_x = self.ship.screen.convert_prop_x(0.5) - self.ship.screen.convert_prop_x(self.width) // 2
+        self.min_y = self.ship.screen.convert_prop_y(0.0)
+        self.max_y = self.height
+        print(self.min_x, self.max_x, self.min_y, self.max_y)
 
     def next_destination(self):
-        return (random.randint(self.min_x, self.max_x), random.randint(0, self.max_y))
+        dest = (random.randint(self.min_x, self.max_x), random.randint(self.min_y, self.max_y))
+        print(dest)
+        return dest
 
 class Homing(MoveBehavior):
     defaults = {'target_acquisition_angle': 40}
