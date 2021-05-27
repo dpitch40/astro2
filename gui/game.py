@@ -102,14 +102,13 @@ class MainGameScreen(GameScreen):
     def update(self, elapsed=None):
         elapsed = super(GameScreen, self).update(elapsed)
 
-        self.level.update()
-
         if self.counting_down:
             self.countdown_remaining -= elapsed / 1000
             if self.countdown_remaining <= 0:
                 self.counting_down = False
 
         if not self.counting_down:
+            self.level.update()
             elapsed = super().update(elapsed)
 
         return elapsed

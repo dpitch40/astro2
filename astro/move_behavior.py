@@ -126,11 +126,9 @@ class RandomPatrol(Patrol):
         self.min_x = self.ship.screen.convert_prop_x(0.5) - self.ship.screen.convert_prop_x(self.width) // 2
         self.min_y = self.ship.screen.convert_prop_y(0.0)
         self.max_y = self.height
-        print(self.min_x, self.max_x, self.min_y, self.max_y)
 
     def next_destination(self):
         dest = (random.randint(self.min_x, self.max_x), random.randint(self.min_y, self.max_y))
-        print(dest)
         return dest
 
 class Homing(MoveBehavior):
