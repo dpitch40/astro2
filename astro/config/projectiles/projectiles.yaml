@@ -11,7 +11,7 @@ Projectile[green_beam]:
 Projectile[red_beam]:
   imagepath: projectiles/red_beam.png
   speed: 400
-  damage: 1
+  damage: 2
   relative_to_firer_velocity: false
 Projectile[blue_beam]:
   imagepath: projectiles/blue_beam.png

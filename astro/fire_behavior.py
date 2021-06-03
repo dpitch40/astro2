@@ -32,7 +32,7 @@ class FireNever(FireBehavior):
                 weapon.stop_firing()
 
 class FireConstantly(FireBehavior):
-    """Causes the ship to fire as often as possible.
+    """Causes the ship to fire as often as possible.'
     """
 
     def update(self, now, elapsed):

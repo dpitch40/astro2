@@ -50,7 +50,7 @@ Weapon[slowgun]:
 Weapon[green_laser]:
   name: Green Laser
   cost: 1
-  rate_of_fire: 3
+  rate_of_fire: 1
   projectiles:
     - Projectile(green_beam)
 Weapon[red_laser]:

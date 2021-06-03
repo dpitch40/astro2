@@ -77,7 +77,7 @@ class ShopScreen(MenuScreen):
     def setup(self):
         super().setup()
         buttons, self.button_mapping = self.button_list(
-            [('Back', (Action.PRE_GAME, (self.level,)))], (0.15, 0.8), (100, 25))
+            [('Back', (Action.PRE_GAME, (self.level,))), ('Buy', (self.buy, ()))], (0.15, 0.8), (100, 25))
 
         shop_items = self.level.shop_items
         list_items = [f'{item.name} ({item.cost}ξ)' for item in shop_items]
@@ -88,6 +88,18 @@ class ShopScreen(MenuScreen):
         for shop_item, list_item in zip(shop_items, test_list.item_list):
             button = list_item["button_element"]
             self.button_mapping[button] = (self.item_selected, (shop_item, button))
+
+    def buy(self):
+        if self.selected_item is not None:
+            if self.player.money >= self.selected_item.cost:
+                if isinstance(self.selected_item, Weapon):
+                    OwnedStuff = self.player.owned_weapons
+                if isinstance(self.selected_item, Shield):
+                    OwnedStuff = self.player.owned_shields
+                if not self.selected_item in OwnedStuff:
+                    self.player.money -= self.selected_item.cost
+                    OwnedStuff.append(self.selected_item)
+                    self.draw_money_display()
 
     def update(self, elapsed=None):
         elapsed = super().update(elapsed)
