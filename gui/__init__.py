@@ -121,7 +121,7 @@ class MenuScreen(Screen):
             else:
                 x += spacing
 
-        return button, button_mapping
+        return buttons, button_mapping
 
     def draw_non_ui(self):
         self.screen.fill((0, 0, 0))

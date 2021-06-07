@@ -9,7 +9,7 @@ Weapon[homing_hose]:
         angle_jitter: 10
 Weapon[yondus_arrow]:
   name: Yondu's Arrow
-  cost: 1
+  cost: 11000
   rate_of_fire: 0.5
   projectiles:
     - Projectile(homing_proj):
