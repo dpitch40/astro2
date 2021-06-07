@@ -1,6 +1,6 @@
 import math
 
-import astro.keys
+import astro
 from astro.configurable import Configurable
 from astro.util import magnitude
 
@@ -45,7 +45,7 @@ class FireAtPlayer(FireConstantly):
     """
 
     def FireWeapon(self, Weapon):
-        player_ship = astro.keys.PLAYER_SHIP
+        player_ship = astro.PLAYER.ship
 
         mode = 2
         dx = player_ship.x - self.ship.x

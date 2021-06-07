@@ -4,24 +4,24 @@
 import pygame
 from pygame.locals import *
 
-PLAYER_SHIP = None
+import astro
 
 # TODO: Make this user-configurable
 
 DOWN_ACTIONS = {
-                K_LEFT: lambda: PLAYER_SHIP.accel_left(),
-                K_RIGHT: lambda: PLAYER_SHIP.accel_right(),
-                K_UP: lambda: PLAYER_SHIP.accel_up(),
-                K_DOWN: lambda: PLAYER_SHIP.accel_down(),
-                K_SPACE: lambda: PLAYER_SHIP.start_firing()
+                K_LEFT: lambda: astro.PLAYER.ship.accel_left(),
+                K_RIGHT: lambda: astro.PLAYER.ship.accel_right(),
+                K_UP: lambda: astro.PLAYER.ship.accel_up(),
+                K_DOWN: lambda: astro.PLAYER.ship.accel_down(),
+                K_SPACE: lambda: astro.PLAYER.ship.start_firing()
                }
 
 UP_ACTIONS = {
-                K_LEFT: lambda: PLAYER_SHIP.accel_right(),
-                K_RIGHT: lambda: PLAYER_SHIP.accel_left(),
-                K_UP: lambda: PLAYER_SHIP.accel_down(),
-                K_DOWN: lambda: PLAYER_SHIP.accel_up(),
-                K_SPACE: lambda: PLAYER_SHIP.stop_firing()
+                K_LEFT: lambda: astro.PLAYER.ship.accel_right(),
+                K_RIGHT: lambda: astro.PLAYER.ship.accel_left(),
+                K_UP: lambda: astro.PLAYER.ship.accel_down(),
+                K_DOWN: lambda: astro.PLAYER.ship.accel_up(),
+                K_SPACE: lambda: astro.PLAYER.ship.stop_firing()
                }
 
 def keydown(key, mod):
