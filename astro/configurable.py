@@ -230,7 +230,8 @@ class Configurable(metaclass=ConfigurableMeta):
         for f in self.fields:
             if hasattr(self, f):
                 value = getattr(self, f)
-                d[f] = self._serialize(value)
+                if value != self.defaults.get(f, None):
+                    d[f] = self._serialize(value)
         return {f'{self.class_name}({self.key})': d}
 
     @staticmethod
