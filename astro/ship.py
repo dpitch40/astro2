@@ -11,6 +11,8 @@ from astro.image import load_image
 from astro.astro_sprite import AstroSprite
 from astro.healthbar import Healthbar
 from astro.explosion import Explosion
+from astro.weapon import Weapon
+from astro.shield import Shield
 
 class Ship(AstroSprite):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons', 'max_hp')
@@ -105,6 +107,23 @@ class PlayerShip(Ship):
         self.is_firing = False
         self.dirx = 0
         self.diry = 0
+
+    def equipped(self, item):
+        if isinstance(item, Weapon):
+            for w in self.weapons:
+                if w.key == item.key:
+                    return True
+            return False
+        else:
+            return self.shield.key == item.key
+
+    def equip(self, item):
+        # TODO
+        if isinstance(item, Weapon):
+            self.weapons = [item]
+        else:
+            self.shield = item
+        item.owner = self
 
     def place(self, screen, startx=0.5, starty=0.75, speedx=0, speedy=0):
         """Overrides AstroSprite.place with default starting location.
