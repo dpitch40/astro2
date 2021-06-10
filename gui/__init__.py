@@ -54,10 +54,26 @@ class Screen(metaclass=ScreenMeta):
 
         return [self.convert_proportional_coordinates(x, y) for x, y in coords]
 
-    def proportional_rect(self, pos, size):
+    def convert_rect_kwargs(self, **kwargs):
+        new = dict()
+        for k, v in kwargs.items():
+            if isinstance(v, tuple) and len(v) == 2:
+                new[k] = self.convert_proportional_coordinates(*v)
+            elif k in ('x', 'left', 'right', 'width', 'w', 'centerx'):
+                new[k] = self.convert_prop_x(v)
+            elif k in ('y', 'top', 'bottom', 'height', 'h', 'centery'):
+                new[k] = self.convert_prop_y(v)
+            else:
+                new[k] = v
+        return new
+
+    def proportional_rect(self, pos=(0, 0), size=(0, 0), **kwargs):
         size = self.convert_proportional_coordinates(*size)
         pos = self.convert_proportional_coordinates(*pos)
-        return pygame.Rect(pos, size)
+        r = pygame.Rect(pos, size)
+        for k, v in self.convert_rect_kwargs(**kwargs).items():
+            setattr(r, k, v)
+        return r
 
     # Subclasses may want to override these
 
@@ -95,11 +111,20 @@ class MenuScreen(Screen):
         self.manager = pygame_gui.UIManager(self.screen_size)
         pygame.mouse.set_visible(True)
         self.button_mapping = dict()
+        self.text = list()
+
+    def create_text(self, s, font_size, pos=(0, 0), color=(255, 255, 255), font=None, **rectkwargs):
+        if font is None:
+            font = FONTS.mono_font
+        font_ = pygame.font.Font(font, font_size)
+        surface = font_.render(s, 1, color)
+        if not rectkwargs:
+            rectkwargs['topleft'] = pos
+        rect = surface.get_rect(**self.convert_rect_kwargs(**rectkwargs))
+        self.text.append((surface, rect))
 
     def setup(self):
-        font = pygame.font.Font(FONTS.mono_font, 48)
-        self.title_msg = font.render(self.title, 1, (255, 255, 255))
-        self.title_pos = self.title_msg.get_rect(midtop=(self.screen_size[0] / 2, self.screen_size[1] / 12))
+        self.create_text(self.title, 48, midtop=(1/2, 1/12))
 
     def button_list(self, button_info,
                     pos, button_size, button_spacing=1.2, vertical=True):
@@ -121,15 +146,17 @@ class MenuScreen(Screen):
             else:
                 x += spacing
 
-        return button, button_mapping
+        return buttons, button_mapping
 
     def draw_non_ui(self):
         self.screen.fill((0, 0, 0))
-        self.screen.blit(self.title_msg, self.title_pos)
+        for surface, rect in self.text:
+            self.screen.blit(surface, rect)
 
     def update(self, elapsed=None):
         elapsed = super().update(elapsed)
         for event in pygame.event.get():
+            self.manager.process_events(event)
             if event.type == pygame.QUIT:
                 NEXT_ACTION.set_next_action(Action.QUIT, None)
             elif event.type == pygame.USEREVENT:
@@ -140,7 +167,6 @@ class MenuScreen(Screen):
                             action(*params)
                         else:
                             NEXT_ACTION.set_next_action(action, params)
-            self.manager.process_events(event)
 
         return elapsed
 

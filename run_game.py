@@ -13,6 +13,7 @@ import gui.shop # pylint:disable=unused-import
 import gui.pre_game # pylint:disable=unused-import
 
 # Imports to make sure all configurable classes have been initialized
+import astro.ship
 import astro.weapon # pylint:disable=unused-import
 import astro.shield # pylint:disable=unused-import
 import astro.projectile # pylint:disable=unused-import
@@ -24,10 +25,10 @@ import astro.formation # pylint:disable=unused-import
 def main():
     pygame.init()
     FONTS.init()
-    astro.PLAYER = Player()
     screen = astro.SCREEN = pygame.display.set_mode(SCREEN_SIZE)
     pygame.display.set_caption('Astro test')
     load_all()
+    astro.PLAYER = Player(astro.ship.PlayerShip.instance('testship'))
 
     gui_loop(screen)
 

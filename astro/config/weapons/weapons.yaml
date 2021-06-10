@@ -9,12 +9,12 @@ Weapon[homing_hose]:
         angle_jitter: 10
 Weapon[yondus_arrow]:
   name: Yondu's Arrow
-  cost: 1
+  cost: 11000
   rate_of_fire: 0.5
   projectiles:
     - Projectile(homing_proj):
         damage: 4
-        fuel_duration: 100
+        fuel_duration: 999
 Weapon[testgun]:
   name: Test Gun
   cost: 1
@@ -50,7 +50,7 @@ Weapon[slowgun]:
 Weapon[green_laser]:
   name: Green Laser
   cost: 1
-  rate_of_fire: 3
+  rate_of_fire: 1
   projectiles:
     - Projectile(green_beam)
 Weapon[red_laser]:

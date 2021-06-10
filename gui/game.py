@@ -5,8 +5,9 @@ import pygame
 from pygame.locals import KEYDOWN, KEYUP
 
 from gui import NEXT_ACTION, Action, Screen
-from astro import MAX_FPS, FONTS, GROUPS, clear_all_groups
+import astro
 import astro.keys
+from astro import MAX_FPS, FONTS, GROUPS, clear_all_groups
 from astro.ship import PlayerShip
 from astro.hud import HUD
 from astro.level import Level
@@ -24,7 +25,7 @@ class GameScreen(Screen):
         self.background.fill((0, 0, 0))
 
     def set_player_ship(self):
-        self.player_ship = astro.keys.PLAYER_SHIP = PlayerShip.instance('testship')
+        self.player_ship = astro.PLAYER.ship
 
     def setup(self):
         pygame.mouse.set_visible(self.mouse_visible)
@@ -121,8 +122,7 @@ class WeaponPreviewScreen(GameScreen):
         self.weapon = weapon
 
     def set_player_ship(self):
-        self.player_ship = astro.keys.PLAYER_SHIP = PlayerShip.instance('testship',
-            copy=True, weapons=[self.weapon.copy()])
+        self.player_ship = PlayerShip.instance('testship', copy=True, weapons=[self.weapon.copy()])
 
     def setup(self):
         super().setup()

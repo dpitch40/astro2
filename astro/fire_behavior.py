@@ -1,6 +1,6 @@
 import math
 
-import astro.keys
+import astro
 from astro.configurable import Configurable
 from astro.util import magnitude
 
@@ -32,7 +32,7 @@ class FireNever(FireBehavior):
                 weapon.stop_firing()
 
 class FireConstantly(FireBehavior):
-    """Causes the ship to fire as often as possible.
+    """Causes the ship to fire as often as possible.'
     """
 
     def update(self, now, elapsed):
@@ -45,7 +45,7 @@ class FireAtPlayer(FireConstantly):
     """
 
     def FireWeapon(self, Weapon):
-        player_ship = astro.keys.PLAYER_SHIP
+        player_ship = astro.PLAYER.ship
 
         mode = 2
         dx = player_ship.x - self.ship.x

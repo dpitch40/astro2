@@ -230,13 +230,14 @@ class Configurable(metaclass=ConfigurableMeta):
         for f in self.fields:
             if hasattr(self, f):
                 value = getattr(self, f)
-                d[f] = self._serialize(value)
-        return d
+                if value != self.defaults.get(f, None):
+                    d[f] = self._serialize(value)
+        return {f'{self.class_name}({self.key})': d}
 
     @staticmethod
     def _serialize(value):
         if isinstance(value, Configurable):
-            return {f'{value.class_name}({value.key})': value.serialize()}
+            return value.serialize()
         elif isinstance(value, dict):
             return {Configurable._serialize(k): Configurable._serialize(v) for k, v in value.items()}
         elif isinstance(value, (list, tuple)):
