@@ -64,6 +64,9 @@ class Player:
                 del_i = i
                 break
         del owned[del_i]
+        if self.equipped(item):
+            # Make sure they have something equipped
+            self.equip(owned[0])
         self.money += item.cost
 
     def equipped(self, item):

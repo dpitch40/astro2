@@ -143,6 +143,7 @@ class ShopScreen(MenuScreen):
         self.player.buy(self.selected_item)
         self.draw_money_display()
         self.draw_owned_item_list()
+        self.update_buttons()
         self.draw_item_display()
 
     def can_sell(self):
@@ -152,6 +153,7 @@ class ShopScreen(MenuScreen):
         self.player.sell(self.selected_item)
         self.draw_money_display()
         self.draw_owned_item_list()
+        self.update_buttons()
         self.draw_item_display()
 
     def can_equip(self):
@@ -161,6 +163,7 @@ class ShopScreen(MenuScreen):
 
     def equip(self):
         self.player.equip(self.selected_item)
+        self.update_buttons()
         self.draw_item_display()
 
     def update(self, elapsed=None):
