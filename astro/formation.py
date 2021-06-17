@@ -18,7 +18,8 @@ class Formation(Configurable, Movable):
     extra_copy_fields = ['blank_move_behavior']
     defaults = {'move_behavior': None,
                 'fire_behavior': None,
-                'center_x': None}
+                'center_x': None,
+                'dest_y': None}
 
     def __init__(self, key):
         Movable.__init__(self)
@@ -71,7 +72,7 @@ class Formation(Configurable, Movable):
 
     def initialize(self):
         Configurable.initialize(self)
-        if not hasattr(self, 'dest_y'):
+        if self.dest_y is None:
             self.dest_y = self.height // 2
         self.more_ships = self._expand_ships()
         self.acceleration = min(map(operator.attrgetter('acceleration'), self.more_ships))

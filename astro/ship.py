@@ -18,7 +18,8 @@ class Ship(AstroSprite):
     required_fields = ('imagepath', 'acceleration', 'max_speed', 'weapons', 'max_hp')
     defaults = AstroSprite.defaults.copy()
     defaults.update({'shield': None,
-                     'mass': None})
+                     'mass': None,
+                     'engine_glow_imagepath': None})
     confined = True
 
     def __init__(self, key):
@@ -57,7 +58,7 @@ class Ship(AstroSprite):
         super().load_image()
 
         # Optionally, load the engine glow image
-        if hasattr(self, 'engine_glow_imagepath'):
+        if self.engine_glow_imagepath is not None:
             self.static_image = self.image
             engine_glow = load_image(self.engine_glow_imagepath)[0]
             if self.inverted:

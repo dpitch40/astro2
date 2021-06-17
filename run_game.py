@@ -30,7 +30,6 @@ def main():
     pygame.display.set_caption('Astro test')
     load_all()
     astro.PLAYER = Player(astro.ship.PlayerShip.instance('testship'), 'level1')
-
     gui_loop(screen)
 
     pygame.quit()

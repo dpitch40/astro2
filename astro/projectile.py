@@ -17,7 +17,7 @@ class Projectile(AstroSprite):
 
     required_fields = ('imagepath', 'speed', 'damage')
     defaults = {"angle": 0, 'relative_to_firer_velocity': True, 'fuel_duration': None,
-        "piercing": 1, 'angle_jitter': None}
+        "piercing": 1, 'angle_jitter': None, 'move_behavior': None}
 
     FACING_DIRECTIONS = 8
 
@@ -25,7 +25,7 @@ class Projectile(AstroSprite):
         super().initialize()
         self.colliding_with = None
 
-        if hasattr(self, 'move_behavior'):
+        if self.move_behavior is not None:
             self.move_behavior = self.move_behavior.copy()
             self.move_behavior.init_ship(self)
 
@@ -66,7 +66,7 @@ class Projectile(AstroSprite):
     def stop_colliding_with_ship(self, ship):
         self.colliding_with = None
         # If homing, reacquire target
-        if hasattr(self, 'move_behavior') and hasattr(self.move_behavior, 'acquire_target'):
+        if self.move_behavior is not None and hasattr(self.move_behavior, 'acquire_target'):
             self.move_behavior.acquire_target()
 
     def tick(self, now, elapsed):
@@ -104,7 +104,7 @@ class Projectile(AstroSprite):
             self.update_mask_pos()
 
     def update_velocity(self, elapsed):
-        if hasattr(self, 'move_behavior') and self.fuel_duration > 0:
+        if self.move_behavior is not None and (self.fuel_duration is None or self.fuel_duration > 0):
             self.move_behavior.update_velocity(elapsed)
 
 class BehaviorAlteringProjectile(Projectile):

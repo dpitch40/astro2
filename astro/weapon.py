@@ -7,6 +7,7 @@ class Weapon(TimekeeperItem):
     """A ship-mounted weapon.
     """
     required_fields = TimekeeperItem.required_fields + ('rate_of_fire', 'projectiles')
+    defaults = {'FireBehavior': None}
 
     def __init__(self, key):
         TimekeeperItem.__init__(self, key)
@@ -24,7 +25,7 @@ class Weapon(TimekeeperItem):
         Creates a new instance of the weapon's projectile
         """
 
-        if hasattr(self, "FireBehavior"):
+        if self.FireBehavior is not None:
             self.FireBehavior.FireWeapon(self)
 
         else:
