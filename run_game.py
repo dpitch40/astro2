@@ -21,6 +21,7 @@ import astro.move_behavior # pylint:disable=unused-import
 import astro.fire_behavior # pylint:disable=unused-import
 import astro.wave_condition # pylint:disable=unused-import
 import astro.formation # pylint:disable=unused-import
+import astro.level
 
 def main():
     pygame.init()
@@ -28,7 +29,7 @@ def main():
     screen = astro.SCREEN = pygame.display.set_mode(SCREEN_SIZE)
     pygame.display.set_caption('Astro test')
     load_all()
-    astro.PLAYER = Player(astro.ship.PlayerShip.instance('testship'))
+    astro.PLAYER = Player(astro.ship.PlayerShip.instance('testship'), 'level1')
 
     gui_loop(screen)
 

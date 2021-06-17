@@ -6,6 +6,7 @@ from  pygame_gui.elements.ui_selection_list import UISelectionList
 
 from gui import Action, MenuScreen
 from astro.level import Level
+from astro.player import active_player
 
 class MainMenuScreen(MenuScreen):
     mapped_action = Action.MAIN_MENU
@@ -13,9 +14,9 @@ class MainMenuScreen(MenuScreen):
 
     def setup(self):
         super().setup()
-        first_level = Level.instance('level1')
-        first_level.screen = self
+        current_level = active_player().level
+        current_level.screen = self
 
         buttons, self.button_mapping = self.button_list(
-            [('Play Game', (Action.PRE_GAME, (first_level,))),
+            [('Play Game', (Action.PRE_GAME, (current_level,))),
              ('Quit', (Action.QUIT, None))], (0.15, 300), (100, 25))

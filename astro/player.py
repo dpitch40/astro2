@@ -7,10 +7,13 @@ from astro.configurable import load_from_obj
 from astro.weapon import Weapon
 from astro.shield import Shield
 from astro.ship import Ship
+from astro.level import Level
 
 class Player:
-    def __init__(self, ship, owned_ships=None, owned_weapons=None, owned_shields=None, money=10000):
+    def __init__(self, ship, level,
+            owned_ships=None, owned_weapons=None, owned_shields=None, money=10000):
         self.money = money
+        self.level = Level.instance(level)
         self.ship = ship
         if owned_ships is None:
             self.owned_ships = [ship]
@@ -83,15 +86,17 @@ class Player:
         player = cls()
         with open(filename, 'r') as fobj:
             state = yaml.load(fobj)
-        player.money = state['money']
-        player.owned_ships = load_from_obj(state['owned_ships'])
-        player.owned_weapons = load_from_obj(state['owned_weapons'])
-        player.owned_shields = load_from_obj(state['owned_shields'])
-        player.ship = load_from_obj(state['ship'])
-        return player
+        ship = load_from_obj(state['ship'])
+        level = state['level']
+        owned_ships = load_from_obj(state['owned_ships'])
+        owned_weapons = load_from_obj(state['owned_weapons'])
+        owned_shields = load_from_obj(state['owned_shields'])
+        money = state['money']
+        return cls(ship, level, owned_ships, owned_weapons, owned_shields, money)
 
     def save(self, filename):
         state = {'money': self.money,
+                 'level': self.level.key,
                  'owned_ships': [s.serialize() for s in self.owned_ships],
                  'owned_weapons': [s.serialize() for s in self.owned_weapons],
                  'owned_shields': [s.serialize() for s in self.owned_shields],
