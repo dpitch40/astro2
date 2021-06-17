@@ -1,12 +1,15 @@
 ---
 Weapon[homing_hose]:
   name: Homing Hose
-  cost: 10000000000000000000000000000000000000
-  rate_of_fire: 30
+  cost: 1000000000000000000000000000000
+  rate_of_fire: 60
   projectiles:
     - Projectile(homing_proj):
         damage: 1
         angle_jitter: 10
+        move_behavior: RandomHoming(random_homing)
+        fuel_duration: 10000
+        piercing: -1
 Weapon[yondus_arrow]:
   name: Yondu's Arrow
   cost: 11000
@@ -14,7 +17,7 @@ Weapon[yondus_arrow]:
   projectiles:
     - Projectile(homing_proj):
         damage: 4
-        fuel_duration: 999
+        fuel_duration: -1
 Weapon[testgun]:
   name: Test Gun
   cost: 1

@@ -143,6 +143,13 @@ class Homing(MoveBehavior):
         self.target = None
 
     def acquire_target(self):
+        target_group = self.get_target_group()
+        if not target_group:
+            self.target = None
+        else:
+            self.choose_target(target_group)
+
+    def get_target_group(self):
         if set(self.ship.groups) & ENEMIES:
             target_group = FRIENDLY_SHIPS
         else:
@@ -157,18 +164,18 @@ class Homing(MoveBehavior):
             if targets_ahead:
                 # Choose the closest target within the cone hat is
                 # self.target_acquisition_angle degrees wide
-                target_group = map(operator.itemgetter(1), targets_ahead)
+                target_group = list(map(operator.itemgetter(1), targets_ahead))
             else:
                 # Choose target closest to ahead
-                self.target = angles[0][1]
-                return
+                return [angles[0][1]]
+        return target_group
 
-        if not target_group:
-            self.target = None
-        else:
-            # Acquire based solely on distance
-            key_func = lambda s: magnitude(self.ship.x - s.x, self.ship.y - s.y)
-            self.target = sorted(target_group, key=key_func)[0]
+
+    def choose_target(self, target_group):
+
+        # Acquire based solely on distance
+        key_func = lambda s: magnitude(self.ship.x - s.x, self.ship.y - s.y)
+        self.target = sorted(target_group, key=key_func)[0]
 
     def angle_to_target(self, target):
         return math.atan2(target.y - self.ship.y, target.x - self.ship.x)
@@ -179,3 +186,8 @@ class Homing(MoveBehavior):
         
         if self.target is not None:
             self.ship.accelerate_toward_point(elapsed, self.target.x, self.target.y, decelerate=False)
+
+class RandomHoming(Homing):
+
+    def choose_target(self, target_group):
+        return random.choice(target_group)

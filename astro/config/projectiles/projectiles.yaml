@@ -26,7 +26,7 @@ Projectile[homing_proj]:
   damage: 2
   move_behavior: Homing(basic_homing)
   fuel_duration: 3
-  piercing: -1
+  piercing: 1
 BehaviorAlteringProjectile[stop_firing_proj]:
   imagepath: projectiles/purple_blast.png
   speed: 300
