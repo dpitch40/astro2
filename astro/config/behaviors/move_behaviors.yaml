@@ -8,10 +8,8 @@ FixedPatrol[back_and_forth]:
     - [0.25, 0.25]
     - [0.75, 0.25]
   pause_time: 2
-Homing[basic_homing]:
-  test: 1
-RandomHoming[random_homing]:
-  test: 1
+Homing[basic_homing]: {}
+RandomHoming[random_homing]: {}
 RandomPatrol[around]:
   width: 0.5
   height: 0.5

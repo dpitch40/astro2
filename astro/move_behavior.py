@@ -147,7 +147,7 @@ class Homing(MoveBehavior):
         if not target_group:
             self.target = None
         else:
-            self.choose_target(target_group)
+            self.target = self.choose_target(target_group)
 
     def get_target_group(self):
         if set(self.ship.groups) & ENEMIES:
@@ -172,10 +172,9 @@ class Homing(MoveBehavior):
 
 
     def choose_target(self, target_group):
-
         # Acquire based solely on distance
         key_func = lambda s: magnitude(self.ship.x - s.x, self.ship.y - s.y)
-        self.target = sorted(target_group, key=key_func)[0]
+        return sorted(target_group, key=key_func)[0]
 
     def angle_to_target(self, target):
         return math.atan2(target.y - self.ship.y, target.x - self.ship.x)
@@ -190,4 +189,5 @@ class Homing(MoveBehavior):
 class RandomHoming(Homing):
 
     def choose_target(self, target_group):
-        return random.choice(target_group)
+        choice = random.choice(target_group)
+        return choice
