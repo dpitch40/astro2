@@ -16,9 +16,10 @@ class ShopScreen(MenuScreen):
     mapped_action = Action.SHOP
     title = "Shop"
 
-    def __init__(self, screen, level):
+    def __init__(self, screen, campaign):
         super().__init__(screen)
-        self.level = level
+        self.campaign = campaign
+        self.level = campaign.current_level()
         self.money_display = None
         self.item_display = None
         self.weapon_preview_rect = None
@@ -111,7 +112,7 @@ class ShopScreen(MenuScreen):
     def setup(self):
         super().setup()
         buttons, self.button_mapping = self.button_list(
-            [('Back', (Action.PRE_GAME, (self.level,))),
+            [('Back', (Action.PRE_GAME, (self.campaign,))),
              ('Buy', (self.buy, ())),
              ('Sell', (self.sell, ())),
              ('Equip', (self.equip, ()))],

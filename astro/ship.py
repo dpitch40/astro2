@@ -70,6 +70,7 @@ class Ship(AstroSprite):
 
     def place(self, *args, **kwargs):
         super().place(*args, **kwargs)
+        self.hp = self.max_hp
         if self.shield is not None:
             self.shield.place(self.screen, self.rect.centerx, self.rect.centery)
 
