@@ -93,6 +93,7 @@ class MainGameScreen(GameScreen):
     def __init__(self, screen):
         super().__init__(screen)
         self.level = self.campaign.current_level()
+        self.level.reset()
         self.level.screen = self
 
     def setup(self):

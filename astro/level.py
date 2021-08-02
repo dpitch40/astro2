@@ -38,6 +38,13 @@ class Level(Configurable, Timekeeper):
         wave_info = self.waves[self.wave_i]
         return wave_info['condition'].ready(now, elapsed, self.current_formations)
 
+    def reset(self):
+        self.wave_i = 0
+        self.complete = False
+        for wave_info in self.waves:
+            for formation in wave_info['formations']:
+                formation.initialize()
+
     def start(self):
         pass
 

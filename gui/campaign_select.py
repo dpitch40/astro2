@@ -32,6 +32,7 @@ class CampaignSelectScreen(MenuScreen):
         if self.selected_campaign is not None:
             NEXT_ACTION.set_next_action(Action.PRE_GAME, (self.selected_campaign,))
             active_player().campaign = self.selected_campaign
+            self.selected_campaign.reset()
 
     def setup(self):
         super().setup()

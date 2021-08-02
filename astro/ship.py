@@ -117,7 +117,7 @@ class PlayerShip(Ship):
                     return True
             return False
         else:
-            return self.shield.key == item.key
+            return self.shield is not None and self.shield.key == item.key
 
     def equip(self, item):
         # TODO

@@ -10,6 +10,9 @@ class Campaign(Configurable):
     def complete(self):
         return self.level_i >= len(self.levels)
 
+    def reset(self):
+        self.level_i = 0
+
     def won_level(self):
         self.level_i += 1
 

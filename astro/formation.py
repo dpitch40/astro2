@@ -74,6 +74,7 @@ class Formation(Configurable, Movable):
         Configurable.initialize(self)
         if self.dest_y is None:
             self.dest_y = self.height // 2
+        self._num_ships = None
         self.more_ships = self._expand_ships()
         self.acceleration = min(map(operator.attrgetter('acceleration'), self.more_ships))
         self.max_speed = min(map(operator.attrgetter('max_speed'), self.more_ships))
