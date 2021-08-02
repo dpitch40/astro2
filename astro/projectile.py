@@ -17,7 +17,7 @@ class Projectile(AstroSprite):
 
     required_fields = ('imagepath', 'speed', 'damage')
     defaults = {"angle": 0, 'relative_to_firer_velocity': True, 'fuel_duration': None,
-        "piercing": 1, 'angle_jitter': None, 'move_behavior': None}
+        "piercing": 1, 'angle_jitter': None, 'move_behavior': None, 'effect': None}
 
     FACING_DIRECTIONS = 8
 
@@ -57,6 +57,8 @@ class Projectile(AstroSprite):
     def collide_with_ship(self, ship):
         if self.alive() and self.colliding_with is not ship:
             ship.damage(self.damage)
+            if self.effect is not None:
+                self.effect.apply(ship)
             if self.piercing > 1 or self.piercing < 0:
                 self.piercing -= 1
                 self.colliding_with = ship

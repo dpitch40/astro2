@@ -187,7 +187,7 @@ class EnemyShip(Ship):
                      'overridden_move_behavior_duration': None,
                      'overridden_fire_behavior': None,
                      'overridden_fire_behavior_duration': None})
-    groups = [ENEMY_SHIPS]
+    groups = None
     confined = False
 
     def destroy(self):
@@ -202,6 +202,9 @@ class EnemyShip(Ship):
 
         self.move_behavior = self.move_behavior.copy()
         self.fire_behavior = self.fire_behavior.copy()
+        self.groups = [ENEMY_SHIPS]
+        # List of [effect, remaining_duration] lists
+        self.timed_effects = list()
 
     def place(self, *args, **kwargs):
         super().place(*args, **kwargs)
@@ -211,6 +214,19 @@ class EnemyShip(Ship):
             astro.HUD.big_health_bar_ship = self
         if ENEMY_HEALTHBARS and self.enable_small_health_bar:
             self.healthbar = Healthbar(self)
+
+    def become_friendly(self):
+        self._switch_sides(ENEMY_SHIPS, FRIENDLY_SHIPS)
+
+    def become_enemy(self):
+        self._switch_sides(FRIENDLY_SHIPS, ENEMY_SHIPS)
+
+    def _switch_sides(self, from_group, to_group):
+        # For mind control
+        self.groups.remove(from_group)
+        self.groups.append(to_group)
+        self.remove(from_group)
+        self.add(to_group)
 
     def tick(self, now, elapsed):
         if self.overridden_move_behavior_duration is not None:
@@ -228,3 +244,9 @@ class EnemyShip(Ship):
 
         super().tick(now, elapsed)
         self.fire_behavior.update(now, elapsed)
+
+        for i, (effect, remaining_duration) in enumerate(self.timed_effects):
+            remaining_duration = self.timed_effects[i][1] = remaining_duration - elapsed
+            if remaining_duration < 0:
+                effect.stop(self)
+                # TODO: Remove effect from self.timed_effects

@@ -1,8 +1,10 @@
 import math
+import random
 
 import astro
 from astro.configurable import Configurable
 from astro.util import magnitude
+from astro import FRIENDLY_SHIPS, ENEMY_SHIPS
 
 class FireBehavior(Configurable):
     def init_ship(self, ship):
@@ -44,20 +46,23 @@ class FireAtPlayer(FireConstantly):
     """Causes the ship to fire at the player
     """
 
-    def FireWeapon(self, Weapon):
-        player_ship = astro.PLAYER.ship
+    def FireWeapon(self, weapon):
+        friendly = FRIENDLY_SHIPS.has(weapon.owner)
+        # Target a random ship from the opposing side
+        target_group = ENEMY_SHIPS if friendly else FRIENDLY_SHIPS
+        target_ship = random.choice(target_group.sprites())
 
         mode = 2
-        dx = player_ship.x - self.ship.x
-        dy = player_ship.y - self.ship.y
+        dx = target_ship.x - self.ship.x
+        dy = target_ship.y - self.ship.y
         d = magnitude(dx, dy)
         phi = math.atan2(dx, dy)
 
-        for projectile in Weapon.projectiles:
-            angle = self.ship.lead_target(player_ship.x, player_ship.y,
-                player_ship.speedx, player_ship.speedy,
+        for projectile in weapon.projectiles:
+            angle = self.ship.lead_target(target_ship.x, target_ship.y,
+                target_ship.speedx, target_ship.speedy,
                 projectile.speed, 2, projectile.relative_to_firer_velocity)
 
             projectile = projectile.copy()
             angle = math.degrees(angle)
-            projectile.place(self.ship.screen, firer=Weapon.owner, friendly=Weapon.owner.inverted, angle=angle)
+            projectile.place(self.ship.screen, firer=weapon.owner, friendly=friendly, angle=angle)

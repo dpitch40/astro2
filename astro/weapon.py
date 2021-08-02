@@ -2,6 +2,7 @@
 """
 
 from astro.item import TimekeeperItem
+from astro import FRIENDLY_SHIPS
 
 class Weapon(TimekeeperItem):
     """A ship-mounted weapon.
@@ -29,10 +30,10 @@ class Weapon(TimekeeperItem):
             self.FireBehavior.FireWeapon(self)
 
         else:
-
+            friendly = FRIENDLY_SHIPS.has(self.owner)
             for projectile in self.projectiles:
                 projectile = projectile.copy()
-                projectile.place(self.owner.screen, firer=self.owner, friendly=self.owner.inverted)
+                projectile.place(self.owner.screen, firer=self.owner, friendly=friendly)
         self.last_fired = now
 
     def is_ready_to_fire(self, now):
