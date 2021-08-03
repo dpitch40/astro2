@@ -53,7 +53,7 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
         if not self.deferred_image_load:
             self.load_image()
 
-    def place(self, screen, startx, starty, speedx=0, speedy=0):
+    def place(self, screen, startx, starty, speedx=0, speedy=0, absolute_coords=False):
         """Adds this object to the game at the specified location.
 
         Can optionally specify an initial speed. Also adds it to its sprite groups.
@@ -64,9 +64,9 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
             speedx (optional int): The starting horizontal speed. Defaults to 0.
             speedy (optional int): The starting vertical speed. Defaults to 0.
         """
+        super().place(screen, startx, starty, speedx, speedy, absolute_coords)
         if self.deferred_image_load:
             self.load_image()
-        super().place(screen, startx, starty, speedx, speedy)
         self.rect.center = self.x ,self.y = round(self.x), round(self.y)
         self.add(self.groups)
 
@@ -84,7 +84,7 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
         """Removes this object from the game.
         """
         self.kill()
-        for sprite in self.follow_sprites:
+        for sprite in list(self.follow_sprites):
             sprite.destroy()
 
     def update_position(self, elapsed):
@@ -163,12 +163,10 @@ class FollowSprite(AstroSprite):
         inverted (bool): Set to True for friendly ships and projectiles. Inverts the sprite.
     """
 
-    required_fields = AstroSprite.required_fields + ('above',)
-
     def place(self, screen, owner):
         self.owner = owner
         self.owner.follow_sprites.add(self)
-        super().place(screen, owner.x, owner.y, owner.speedx, owner.speedy)
+        super().place(screen, owner.x, owner.y, owner.speedx, owner.speedy, True)
 
     def destroy(self):
         super().destroy()

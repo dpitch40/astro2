@@ -60,7 +60,7 @@ class Shield(FollowSprite, TimekeeperItem):
             sizex += self.size_delta
             sizey += self.size_delta
             image = pygame.Surface((sizex, sizey), flags=pygame.SRCALPHA)
-            color = self.color + (self.max_alpha,)
+            color = tuple(self.color) + (self.max_alpha,)
             pygame.draw.ellipse(image, color, image.get_rect())
             return (image,) + generate_rect_and_mask(image)
 
