@@ -235,18 +235,5 @@ class EnemyShip(Ship):
         self.add(to_group)
 
     def tick(self, now, elapsed):
-        if self.overridden_move_behavior_duration is not None:
-            self.overridden_move_behavior_duration -= elapsed
-            if self.overridden_move_behavior_duration < 0:
-                self.move_behavior = self.overridden_move_behavior
-                self.overridden_move_behavior = None
-                self.overridden_move_behavior_duration = None
-        if self.overridden_fire_behavior_duration is not None:
-            self.overridden_fire_behavior_duration -= elapsed
-            if self.overridden_fire_behavior_duration < 0:
-                self.fire_behavior = self.overridden_fire_behavior
-                self.overridden_fire_behavior = None
-                self.overridden_fire_behavior_duration = None
-
         super().tick(now, elapsed)
         self.fire_behavior.update(now, elapsed)

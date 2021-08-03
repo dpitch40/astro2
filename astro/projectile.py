@@ -17,13 +17,16 @@ class Projectile(AstroSprite):
 
     required_fields = ('imagepath', 'speed', 'damage')
     defaults = {"angle": 0, 'relative_to_firer_velocity': True, 'fuel_duration': None,
-        "piercing": 1, 'angle_jitter': None, 'move_behavior': None, 'effect': None}
+        "piercing": 1, 'angle_jitter': None, 'move_behavior': None, 'effects': None}
 
     FACING_DIRECTIONS = 8
 
     def initialize(self):
         super().initialize()
         self.colliding_with = None
+
+        if self.effects is None:
+            self.effects = list()
 
         if self.move_behavior is not None:
             self.move_behavior = self.move_behavior.copy()
@@ -57,8 +60,8 @@ class Projectile(AstroSprite):
     def collide_with_ship(self, ship):
         if self.alive() and self.colliding_with is not ship:
             ship.damage(self.damage)
-            if self.effect is not None:
-                self.effect.apply(ship)
+            for effect in self.effects:
+                effect.apply(ship)
             if self.piercing > 1 or self.piercing < 0:
                 self.piercing -= 1
                 self.colliding_with = ship
@@ -108,22 +111,3 @@ class Projectile(AstroSprite):
     def update_velocity(self, elapsed):
         if self.move_behavior is not None and (self.fuel_duration is None or self.fuel_duration > 0):
             self.move_behavior.update_velocity(elapsed)
-
-class BehaviorAlteringProjectile(Projectile):
-    required_fields = Projectile.required_fields + ('effect_duration',)
-    defaults = {'move_behavior_to_apply': None,
-                'fire_behavior_to_apply': None}
-    defaults.update(Projectile.defaults)
-
-    def collide_with_ship(self, ship):
-        super().collide_with_ship(ship)
-        if self.move_behavior_to_apply is not None:
-            ship.overridden_move_behavior = ship.move_behavior
-            ship.overridden_move_behavior_duration = self.effect_duration
-            ship.move_behavior = self.move_behavior_to_apply.copy()
-            ship.move_behavior.init_ship(ship)
-        if self.fire_behavior_to_apply is not None:
-            ship.overridden_fire_behavior = ship.fire_behavior
-            ship.overridden_fire_behavior_duration = self.effect_duration
-            ship.fire_behavior = self.fire_behavior_to_apply.copy()
-            ship.fire_behavior.init_ship(ship)
