@@ -34,9 +34,6 @@ class Ship(AstroSprite):
 
     def destroy(self):
         super().destroy()
-        if self.shield is not None:
-            self.shield.destroy()
-
         self.explode()
 
     def explode(self):
@@ -48,8 +45,6 @@ class Ship(AstroSprite):
 
         for weapon in self.weapons:
             weapon.owner = self
-        if self.shield is not None:
-            self.shield.owner = self
 
         self.hp = self.max_hp
 
@@ -74,7 +69,7 @@ class Ship(AstroSprite):
     def place(self, *args, **kwargs):
         super().place(*args, **kwargs)
         if self.shield is not None:
-            self.shield.place(self.screen, self.rect.centerx, self.rect.centery)
+            self.shield.place(self.screen, self)
 
         # Set mass (for collisions)
         if self.mass is None:

@@ -32,6 +32,7 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
     groups = []
     inverted = False
     confined = False
+    deferred_image_load = False
 
     def __init__(self, key):
         pygame.sprite.Sprite.__init__(self)
@@ -45,10 +46,12 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
         self.mask_rect_offsety = 0
         self.x = 0
         self.y = 0
+        self.follow_sprites = set()
 
     def initialize(self):
         Movable.initialize(self)
-        self.load_image()
+        if not self.deferred_image_load:
+            self.load_image()
 
     def place(self, screen, startx, starty, speedx=0, speedy=0):
         """Adds this object to the game at the specified location.
@@ -61,6 +64,8 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
             speedx (optional int): The starting horizontal speed. Defaults to 0.
             speedy (optional int): The starting vertical speed. Defaults to 0.
         """
+        if self.deferred_image_load:
+            self.load_image()
         super().place(screen, startx, starty, speedx, speedy)
         self.rect.center = self.x ,self.y = round(self.x), round(self.y)
         self.add(self.groups)
@@ -79,6 +84,8 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
         """Removes this object from the game.
         """
         self.kill()
+        for sprite in self.follow_sprites:
+            sprite.destroy()
 
     def update_position(self, elapsed):
         """Called each tick; updates the sprite's position based on its velocity.
@@ -143,3 +150,74 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
                 self.destroy()
             elif self.mask_rect.centery > self.screen_size[1] + OFF_SCREEN_CUTOFF:
                 self.destroy()
+
+class FollowSprite(AstroSprite):
+    """Subclass for sprites that follow others sprites to be rendered over/under them.
+
+    Attributes:
+        confined (bool): If True, the object will be confined to the bounds of the screen and
+            unable to move past them. If False, it can travel beyond the screen boundaries, but will
+            be automatically destroyed if it moves too far offscreen.
+        groups (list of pygame.sprite.Group): List of sprite groups this object should belong to.
+        imagepath (str): Path to the object's sprite image file, within the assets directory.
+        inverted (bool): Set to True for friendly ships and projectiles. Inverts the sprite.
+    """
+
+    required_fields = AstroSprite.required_fields + ('above',)
+
+    def place(self, screen, owner):
+        self.owner = owner
+        self.owner.follow_sprites.add(self)
+        super().place(screen, owner.x, owner.y, owner.speedx, owner.speedy)
+
+    def destroy(self):
+        super().destroy()
+        self.remove()
+
+    def remove(self):
+        self.owner.follow_sprites.remove(self)
+
+    # Position and velocity mirror the owner's
+    @property
+    def x(self):
+        return self.owner.x
+    @x.setter
+    def x(self, value):
+        if hasattr(self, 'owner'):
+            self.owner.x = value
+
+    @property
+    def y(self):
+        return self.owner.y
+    @y.setter
+    def y(self, value):
+        if hasattr(self, 'owner'):
+            self.owner.y = value
+
+    @property
+    def speedx(self):
+        return self.owner.speedx
+    @speedx.setter
+    def speedx(self, value):
+        if hasattr(self, 'owner'):
+            self.owner.speedx = value
+
+    @property
+    def speedy(self):
+        return self.owner.speedy
+    @speedy.setter
+    def speedy(self, value):
+        if hasattr(self, 'owner'):
+            self.owner.speedy = value
+
+    def tick(self, now, elapsed):
+        # Don't update velocity, only position
+        self.update_position(elapsed)
+
+    def sync_position(self):
+        super().sync_position()
+        self.owner.sync_position()
+
+    def update_position(self, elapsed):
+        # Keep shield centered on owner ship
+        self.rect.center = self.owner.rect.center
