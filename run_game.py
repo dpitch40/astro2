@@ -23,6 +23,7 @@ import astro.wave_condition # pylint:disable=unused-import
 import astro.formation # pylint:disable=unused-import
 import astro.level
 import astro.effect
+import astro.vfx
 
 def main():
     pygame.init()

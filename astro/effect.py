@@ -16,6 +16,17 @@ class TimedEffect(Effect):
     def apply(self, ship):
         heapq.heappush(ship.timed_effects, (time.time() + self.duration, self))
 
+class AddVFX(TimedEffect):
+    required_fields = TimedEffect.required_fields + ('vfx',)
+
+    def apply(self, ship):
+        super().apply(ship)
+        self.vfx_inst = self.vfx.copy()
+        self.vfx_inst.place(ship.screen, ship)
+
+    def stop(self, ship):
+        self.vfx_inst.destroy()
+
 class MindControl(TimedEffect):
     def apply(self, ship):
         super().apply(ship)

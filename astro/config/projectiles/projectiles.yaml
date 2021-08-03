@@ -38,7 +38,14 @@ Projectile[mind_control_proj]:
   piercing: 1
   effects:
     - MindControl(mind_control):
-        duration: 10
+        duration: 4
+    - AddVFX():
+        duration: 4
+        vfx:
+          CircleVFX():
+            above: true
+            color: [64, 64, 255]
+            alpha: 80
 BehaviorAlteringProjectile[stop_firing_proj]:
   imagepath: projectiles/purple_blast.png
   speed: 300
