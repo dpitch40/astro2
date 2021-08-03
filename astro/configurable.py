@@ -153,8 +153,11 @@ class Configurable(metaclass=ConfigurableMeta):
         Returns:
             A new instance of the called instance's class.
         """
-        _, base_config = self._lookup[self.key]
-        config = base_config.copy()
+        if self.key is not None:
+            _, base_config = self._lookup[self.key]
+            config = base_config.copy()
+        else:
+            config = dict()
         config.update({f: self.copy_value(getattr(self, f)) for f in self.fields if hasattr(self, f)})
         config.update(overrides)
         copied = self.__class__(self.key)
