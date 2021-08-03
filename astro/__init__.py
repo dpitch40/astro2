@@ -35,6 +35,7 @@ EXPLOSION_DURATION_SCALE = 1
 
 # Order in which to load configs
 CONFIG_ORDER = ['behaviors',
+                'effects',
                 'projectiles',
                 'shields',
                 'weapons',

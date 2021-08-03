@@ -1,18 +1,25 @@
+import time
+import heapq
+
 from astro.configurable import Configurable
 
 class Effect(Configurable):
     def apply(self, ship):
-        raise NotImplementedError
+        pass
 
     def stop(self, ship):
-        raise NotImplementedError
+        pass
 
-class MindControl(Effect):
-    required_fields = ('duration')
+class TimedEffect(Effect):
+    required_fields = ('duration',)
 
     def apply(self, ship):
+        heapq.heappush(ship.timed_effects, (time.time() + self.duration, self))
+
+class MindControl(TimedEffect):
+    def apply(self, ship):
+        super().apply(ship)
         ship.become_friendly()
-        ship.timed_effects.append([self, self.duration])
 
     def stop(self, ship):
         ship.become_enemy()

@@ -36,6 +36,9 @@ Projectile[mind_control_proj]:
   move_behavior: Homing(basic_homing)
   fuel_duration: 10
   piercing: 1
+  effect:
+    MindControl(mind_control):
+      duration: 10
 BehaviorAlteringProjectile[stop_firing_proj]:
   imagepath: projectiles/purple_blast.png
   speed: 300

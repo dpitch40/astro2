@@ -2,6 +2,7 @@
 """
 
 import math
+import heapq
 
 import pygame
 
@@ -25,6 +26,8 @@ class Ship(AstroSprite):
     def __init__(self, key):
         super().__init__(key)
         self.weapons = list()
+        # List/heap of (end_time, effect) tuples
+        self.timed_effects = list()
 
     def calculate_mass(self):
         return self.mask.count()
@@ -81,6 +84,11 @@ class Ship(AstroSprite):
         self.update_velocity(elapsed)
 
         super().tick(now, elapsed)
+
+        # Check timed effects
+        while self.timed_effects and self.timed_effects[0][0] < now:
+            _, effect = heapq.heappop(self.timed_effects)
+            effect.stop(self)
 
         for weapon in self.weapons:
             weapon.tick(now, elapsed)
@@ -203,8 +211,6 @@ class EnemyShip(Ship):
         self.move_behavior = self.move_behavior.copy()
         self.fire_behavior = self.fire_behavior.copy()
         self.groups = [ENEMY_SHIPS]
-        # List of [effect, remaining_duration] lists
-        self.timed_effects = list()
 
     def place(self, *args, **kwargs):
         super().place(*args, **kwargs)
@@ -244,9 +250,3 @@ class EnemyShip(Ship):
 
         super().tick(now, elapsed)
         self.fire_behavior.update(now, elapsed)
-
-        for i, (effect, remaining_duration) in enumerate(self.timed_effects):
-            remaining_duration = self.timed_effects[i][1] = remaining_duration - elapsed
-            if remaining_duration < 0:
-                effect.stop(self)
-                # TODO: Remove effect from self.timed_effects
