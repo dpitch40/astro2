@@ -18,6 +18,9 @@ class WaveCondition(Configurable):
     def _ready(self, now, elapsed, current_formations):
         raise NotImplementedError
 
+    def reset(self):
+        self.triggered = False
+
 class AlwaysTrue(WaveCondition):
     def _ready(self, now, elapsed, current_formations):
         return True

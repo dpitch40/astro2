@@ -41,7 +41,8 @@ CONFIG_ORDER = ['behaviors',
                 'weapons',
                 'ships',
                 'formations',
-                'levels',]
+                'levels',
+                'campaigns']
 
 def load_all():
     for d in CONFIG_ORDER:

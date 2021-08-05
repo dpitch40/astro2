@@ -30,6 +30,7 @@ class Movable(Timekeeper):
             speedx (optional int): The starting horizontal speed. Defaults to 0.
             speedy (optional int): The starting vertical speed. Defaults to 0.
         """
+        self._last_updated = None
         self.screen = screen
         self.screen_size = self.screen.screen_size
         if not absolute_coords:

@@ -68,6 +68,7 @@ class Ship(AstroSprite):
 
     def place(self, *args, **kwargs):
         super().place(*args, **kwargs)
+        self.hp = self.max_hp
         if self.shield is not None:
             self.shield.place(self.screen, self)
 
@@ -108,7 +109,6 @@ class PlayerShip(Ship):
     def __init__(self, key):
         super().__init__(key)
 
-        self.is_firing = False
         self.dirx = 0
         self.diry = 0
 
@@ -119,7 +119,7 @@ class PlayerShip(Ship):
                     return True
             return False
         else:
-            return self.shield.key == item.key
+            return self.shield is not None and self.shield.key == item.key
 
     def equip(self, item):
         # TODO
@@ -132,6 +132,9 @@ class PlayerShip(Ship):
     def place(self, screen, startx=0.5, starty=0.75, speedx=0, speedy=0):
         """Overrides AstroSprite.place with default starting location.
         """
+        self.stop_firing()
+        self.dirx = 0
+        self.diry = 0
         return super().place(screen, startx, starty, speedx, speedy)
 
     def update_velocity(self, elapsed):

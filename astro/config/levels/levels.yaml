@@ -9,21 +9,21 @@ Level[level1]:
   waves:
     - condition:
         AlwaysTrue():
-          delay: 2.0
+          delay: 1.0
       formations:
         - Line(wave1)
     - condition:
         LastWaveDefeated():
-          delay: 2.0
+          delay: 1.0
       formations:
         - Line(wave2)
     - condition:
         LastWaveDefeated():
-          delay: 2.0
+          delay: 1.0
       formations:
         - Grid(wave3)
     - condition:
         LastWaveDefeated():
-          delay: 2.0
+          delay: 1.0
       formations:
         - Grid(wave4)

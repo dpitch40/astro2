@@ -1,6 +1,6 @@
 ---
 PlayerShip[testship]:
-    max_hp: 100
+    max_hp: 10
     imagepath: ships/t_wing.png
     engine_glow_imagepath: ships/t_wing_engine_glow.png
     acceleration: 2000

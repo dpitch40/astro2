@@ -222,6 +222,11 @@ class Configurable(metaclass=ConfigurableMeta):
             inst = base_instance
         return inst
 
+    @classmethod
+    def all_instances(cls, copy=False, **overrides):
+        for key in cls._lookup.keys():
+            yield key, cls.instance(key, copy, **overrides)
+
     def __repr__(self):
         if hasattr(self, 'name'):
             return f'{self.class_name}({self.name})'
@@ -236,6 +241,10 @@ class Configurable(metaclass=ConfigurableMeta):
                 if value != self.defaults.get(f, None):
                     d[f] = self._serialize(value)
         return {f'{self.class_name}({self.key})': d}
+
+    @classmethod
+    def deserialize(cls, obj):
+        return load_from_obj(obj)
 
     @staticmethod
     def _serialize(value):
