@@ -83,7 +83,7 @@ class Ship(AstroSprite):
 
         # Check timed effects
         while self.timed_effects and self.timed_effects[0][0] < now:
-            _, effect = heapq.heappop(self.timed_effects)
+            _, _, effect = heapq.heappop(self.timed_effects)
             effect.stop(self)
 
         for weapon in self.weapons:

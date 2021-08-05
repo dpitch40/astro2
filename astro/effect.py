@@ -14,7 +14,7 @@ class TimedEffect(Effect):
     required_fields = ('duration',)
 
     def apply(self, ship):
-        heapq.heappush(ship.timed_effects, (time.time() + self.duration, self))
+        heapq.heappush(ship.timed_effects, (time.time() + self.duration, id(self), self))
 
 class AddVFX(TimedEffect):
     required_fields = TimedEffect.required_fields + ('vfx',)

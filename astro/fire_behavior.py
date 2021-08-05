@@ -50,18 +50,18 @@ class FireAtPlayer(FireConstantly):
         friendly = FRIENDLY_SHIPS.has(weapon.owner)
         # Target a random ship from the opposing side
         target_group = ENEMY_SHIPS if friendly else FRIENDLY_SHIPS
-        target_ship = random.choice(target_group.sprites())
-
-        mode = 2
-        dx = target_ship.x - self.ship.x
-        dy = target_ship.y - self.ship.y
-        d = magnitude(dx, dy)
-        phi = math.atan2(dx, dy)
+        if target_group:
+            target_ship = random.choice(target_group.sprites())
+        else:
+            target_ship = None
 
         for projectile in weapon.projectiles:
-            angle = self.ship.lead_target(target_ship.x, target_ship.y,
-                target_ship.speedx, target_ship.speedy,
-                projectile.speed, 2, projectile.relative_to_firer_velocity)
+            if target_ship:
+                angle = self.ship.lead_target(target_ship.x, target_ship.y,
+                    target_ship.speedx, target_ship.speedy,
+                    projectile.speed, 2, projectile.relative_to_firer_velocity)
+            else:
+                angle = 0
 
             projectile = projectile.copy()
             angle = math.degrees(angle)
