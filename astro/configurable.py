@@ -153,8 +153,11 @@ class Configurable(metaclass=ConfigurableMeta):
         Returns:
             A new instance of the called instance's class.
         """
-        _, base_config = self._lookup[self.key]
-        config = base_config.copy()
+        if self.key is not None:
+            _, base_config = self._lookup[self.key]
+            config = base_config.copy()
+        else:
+            config = dict()
         config.update({f: self.copy_value(getattr(self, f)) for f in self.fields if hasattr(self, f)})
         config.update(overrides)
         copied = self.__class__(self.key)
@@ -219,6 +222,11 @@ class Configurable(metaclass=ConfigurableMeta):
             inst = base_instance
         return inst
 
+    @classmethod
+    def all_instances(cls, copy=False, **overrides):
+        for key in cls._lookup.keys():
+            yield key, cls.instance(key, copy, **overrides)
+
     def __repr__(self):
         if hasattr(self, 'name'):
             return f'{self.class_name}({self.name})'
@@ -233,6 +241,10 @@ class Configurable(metaclass=ConfigurableMeta):
                 if value != self.defaults.get(f, None):
                     d[f] = self._serialize(value)
         return {f'{self.class_name}({self.key})': d}
+
+    @classmethod
+    def deserialize(cls, obj):
+        return load_from_obj(obj)
 
     @staticmethod
     def _serialize(value):

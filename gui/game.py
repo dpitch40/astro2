@@ -12,6 +12,7 @@ from astro.ship import PlayerShip
 from astro.hud import HUD
 from astro.level import Level
 from astro.collidable import check_collisions
+from astro.player import active_player
 
 class GameScreen(Screen):
     mapped_action = None
@@ -21,11 +22,30 @@ class GameScreen(Screen):
     def __init__(self, screen):
         super().__init__(screen)
 
+        self.campaign = active_player().campaign
         self.background = pygame.Surface(self.screen.get_size()).convert()
         self.background.fill((0, 0, 0))
+        self.quit = False
+
+    def done(self):
+        if self.level.complete:
+            self.campaign.won_level()
+            if self.campaign.complete():
+                print('Congratulations, you won!')
+                NEXT_ACTION.set_next_action(Action.MAIN_MENU, ())
+            else:
+                NEXT_ACTION.set_next_action(Action.PRE_GAME, (self.campaign,))
+            return True
+        elif not self.player_ship.alive():
+            NEXT_ACTION.set_next_action(Action.PRE_GAME, (self.campaign,))
+            return True
+        elif self.quit:
+            return True
+
+        return False
 
     def set_player_ship(self):
-        self.player_ship = astro.PLAYER.ship
+        self.player_ship = active_player().ship
 
     def setup(self):
         pygame.mouse.set_visible(self.mouse_visible)
@@ -64,14 +84,17 @@ class GameScreen(Screen):
             elif event.type == KEYUP:
                 astro.keys.keyup(event.key, event.mod)
             elif event.type == pygame.QUIT:
+                self.quit = True
                 NEXT_ACTION.set_next_action(Action.QUIT, None)
 
 class MainGameScreen(GameScreen):
     mapped_action = Action.GAME
 
-    def __init__(self, screen, level):
+    def __init__(self, screen):
         super().__init__(screen)
-        self.level = level
+        self.level = self.campaign.current_level()
+        self.level.reset()
+        self.level.screen = self
 
     def setup(self):
         super().setup()

@@ -15,6 +15,7 @@ class Action(enum.Enum):
     GAME = 2
     SHOP = 3
     PRE_GAME = 4
+    CAMPAIGN_SELECT = 5
 
 class ScreenMeta(type):
     def __init__(self, *args, **kwargs):

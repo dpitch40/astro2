@@ -69,6 +69,7 @@ class Shield(AstroSprite, TimekeeperItem):
         self.last_damaged = time.time()
 
     def place(self, *args, **kwargs):
+        self.integrity = self.capacity
         self.groups = [FRIENDLY_SHIELDS] if FRIENDLY_SHIPS in self.owner.groups else \
             [ENEMY_SHIELDS]
         self.load_image()

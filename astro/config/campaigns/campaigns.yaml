@@ -1,0 +1,5 @@
+---
+Campaign[test]:
+  name: 'Test Campaign'
+  levels:
+    - Level(level1)

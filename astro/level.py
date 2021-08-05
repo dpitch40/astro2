@@ -8,6 +8,7 @@ class Level(Configurable, Timekeeper):
         Configurable.__init__(self, key)
         Timekeeper.__init__(self)
         self.wave_i = 0
+        self.complete = False
 
     def initialize(self):
         super().initialize()
@@ -24,9 +25,7 @@ class Level(Configurable, Timekeeper):
         self.wave_i += 1
 
     def complete_level(self):
-        # TODO
-        print('Congratulations, you won!')
-        raise SystemExit
+        self.complete = True
 
     def done(self):
         return self.wave_i >= self.num_waves and sum(f.ships_remaining for f in
@@ -38,6 +37,14 @@ class Level(Configurable, Timekeeper):
 
         wave_info = self.waves[self.wave_i]
         return wave_info['condition'].ready(now, elapsed, self.current_formations)
+
+    def reset(self):
+        self.wave_i = 0
+        self.complete = False
+        for wave_info in self.waves:
+            wave_info['condition'].reset()
+            for formation in wave_info['formations']:
+                formation.initialize()
 
     def start(self):
         pass

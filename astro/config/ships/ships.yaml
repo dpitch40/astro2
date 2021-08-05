@@ -1,13 +1,13 @@
 ---
 PlayerShip[testship]:
-    max_hp: 100
+    max_hp: 10
     imagepath: ships/t_wing.png
     engine_glow_imagepath: ships/t_wing_engine_glow.png
     acceleration: 2000
     max_speed: 500
     weapons:
       - Weapon(homing_hose)
-    shield: Shield(testshield)
+    # shield: Shield(testshield)
 EnemyShip[testenemyship]:
     max_hp: 10
     imagepath: ships/wedge.png
