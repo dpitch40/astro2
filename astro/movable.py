@@ -19,7 +19,7 @@ class Movable(Timekeeper):
             # Calsulate stopping distance
             self.stopping_distance = (self.max_speed ** 2) / (self.acceleration * 2)
 
-    def place(self, screen, startx, starty, speedx=0, speedy=0):
+    def place(self, screen, startx, starty, speedx=0, speedy=0, absolute_coords=False):
         """Adds this object to the game at the specified location.
 
         Can optionally specify an initial speed. Also adds it to its sprite groups.
@@ -33,8 +33,12 @@ class Movable(Timekeeper):
         self._last_updated = None
         self.screen = screen
         self.screen_size = self.screen.screen_size
-        self.x = self.screen.convert_prop_x(startx)
-        self.y = self.screen.convert_prop_y(starty)
+        if not absolute_coords:
+            self.x = self.screen.convert_prop_x(startx)
+            self.y = self.screen.convert_prop_y(starty)
+        else:
+            self.x = startx
+            self.y = starty
         self.speedx = speedx
         self.speedy = speedy
 

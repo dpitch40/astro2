@@ -5,24 +5,25 @@ import time
 import pygame
 
 from astro import FRIENDLY_SHIELDS, ENEMY_SHIELDS, FRIENDLY_SHIPS
-from astro.astro_sprite import AstroSprite
+from astro.astro_sprite import FollowSprite
 from astro.item import TimekeeperItem
 from astro.image import generate_rect_and_mask
 
-class Shield(AstroSprite, TimekeeperItem):
+class Shield(FollowSprite, TimekeeperItem):
     """A ship-mounted weapon.
     """
     required_fields = TimekeeperItem.required_fields + ('capacity', 'recharge_rate', 'recharge_delay')
-    defaults = AstroSprite.defaults.copy()
+    defaults = FollowSprite.defaults.copy()
     defaults.update({'color': (180, 180, 255),
                      'max_alpha': 128,
                      'imagepath': None,
                      'size_delta': 0,
                      'elasticity': 1.0})
     groups = []
+    deferred_image_load = True
 
     def __init__(self, key):
-        AstroSprite.__init__(self, key)
+        FollowSprite.__init__(self, key)
         TimekeeperItem.__init__(self, key)
         self.is_recharging = False
 
@@ -59,7 +60,7 @@ class Shield(AstroSprite, TimekeeperItem):
             sizex += self.size_delta
             sizey += self.size_delta
             image = pygame.Surface((sizex, sizey), flags=pygame.SRCALPHA)
-            color = self.color + (self.max_alpha,)
+            color = tuple(self.color) + (self.max_alpha,)
             pygame.draw.ellipse(image, color, image.get_rect())
             return (image,) + generate_rect_and_mask(image)
 
@@ -68,12 +69,10 @@ class Shield(AstroSprite, TimekeeperItem):
         self.integrity = self.capacity
         self.last_damaged = time.time()
 
-    def place(self, *args, **kwargs):
+    def place(self, screen, owner):
         self.integrity = self.capacity
-        self.groups = [FRIENDLY_SHIELDS] if FRIENDLY_SHIPS in self.owner.groups else \
-            [ENEMY_SHIELDS]
-        self.load_image()
-        super().place(*args, **kwargs)
+        self.groups = [FRIENDLY_SHIELDS] if FRIENDLY_SHIPS in owner.groups else [ENEMY_SHIELDS]
+        super().place(screen, owner)
 
     @property
     def integrity_proportion(self):
@@ -82,38 +81,6 @@ class Shield(AstroSprite, TimekeeperItem):
     @property
     def mass(self):
         return self.owner.mass
-
-    @property
-    def x(self):
-        return self.owner.x
-    @x.setter
-    def x(self, value):
-        if hasattr(self, 'owner'):
-            self.owner.x = value
-
-    @property
-    def y(self):
-        return self.owner.y
-    @y.setter
-    def y(self, value):
-        if hasattr(self, 'owner'):
-            self.owner.y = value
-
-    @property
-    def speedx(self):
-        return self.owner.speedx
-    @speedx.setter
-    def speedx(self, value):
-        if hasattr(self, 'owner'):
-            self.owner.speedx = value
-
-    @property
-    def speedy(self):
-        return self.owner.speedy
-    @speedy.setter
-    def speedy(self, value):
-        if hasattr(self, 'owner'):
-            self.owner.speedy = value
 
     @property
     def kinetic_energy(self):
@@ -132,12 +99,4 @@ class Shield(AstroSprite, TimekeeperItem):
 
         # Set alpha proportional to integrity
         self.image.set_alpha(int(255 * self.integrity_proportion))
-        self.update_position(elapsed)
-
-    def sync_position(self):
-        super().sync_position()
-        self.owner.sync_position()
-
-    def update_position(self, elapsed):
-        # Keep shield centered on owner ship
-        self.rect.center = self.owner.rect.center
+        super().tick(now, elapsed)

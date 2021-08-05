@@ -10,6 +10,12 @@ Weapon[homing_hose]:
         move_behavior: RandomHoming(random_homing)
         fuel_duration: 10000
         piercing: -1
+Weapon[mind_control_gun]:
+  name: Mind Control Gun
+  cost: 1000
+  rate_of_fire: 1
+  projectiles:
+    - Projectile(mind_control_proj)
 Weapon[yondus_arrow]:
   name: Yondu's Arrow
   cost: 11000

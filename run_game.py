@@ -23,7 +23,10 @@ import astro.fire_behavior # pylint:disable=unused-import
 import astro.wave_condition # pylint:disable=unused-import
 import astro.formation # pylint:disable=unused-import
 import astro.level
+import astro.effect
+import astro.vfx
 import astro.campaign
+
 
 def main():
     pygame.init()

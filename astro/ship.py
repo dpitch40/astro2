@@ -2,6 +2,7 @@
 """
 
 import math
+import heapq
 
 import pygame
 
@@ -25,15 +26,14 @@ class Ship(AstroSprite):
     def __init__(self, key):
         super().__init__(key)
         self.weapons = list()
+        # List/heap of (end_time, effect) tuples
+        self.timed_effects = list()
 
     def calculate_mass(self):
         return self.mask.count()
 
     def destroy(self):
         super().destroy()
-        if self.shield is not None:
-            self.shield.destroy()
-
         self.explode()
 
     def explode(self):
@@ -45,8 +45,6 @@ class Ship(AstroSprite):
 
         for weapon in self.weapons:
             weapon.owner = self
-        if self.shield is not None:
-            self.shield.owner = self
 
         self.hp = self.max_hp
 
@@ -72,7 +70,7 @@ class Ship(AstroSprite):
         super().place(*args, **kwargs)
         self.hp = self.max_hp
         if self.shield is not None:
-            self.shield.place(self.screen, self.rect.centerx, self.rect.centery)
+            self.shield.place(self.screen, self)
 
         # Set mass (for collisions)
         if self.mass is None:
@@ -82,6 +80,11 @@ class Ship(AstroSprite):
         self.update_velocity(elapsed)
 
         super().tick(now, elapsed)
+
+        # Check timed effects
+        while self.timed_effects and self.timed_effects[0][0] < now:
+            _, effect = heapq.heappop(self.timed_effects)
+            effect.stop(self)
 
         for weapon in self.weapons:
             weapon.tick(now, elapsed)
@@ -190,7 +193,7 @@ class EnemyShip(Ship):
                      'overridden_move_behavior_duration': None,
                      'overridden_fire_behavior': None,
                      'overridden_fire_behavior_duration': None})
-    groups = [ENEMY_SHIPS]
+    groups = None
     confined = False
 
     def destroy(self):
@@ -205,6 +208,7 @@ class EnemyShip(Ship):
 
         self.move_behavior = self.move_behavior.copy()
         self.fire_behavior = self.fire_behavior.copy()
+        self.groups = [ENEMY_SHIPS]
 
     def place(self, *args, **kwargs):
         super().place(*args, **kwargs)
@@ -215,19 +219,19 @@ class EnemyShip(Ship):
         if ENEMY_HEALTHBARS and self.enable_small_health_bar:
             self.healthbar = Healthbar(self)
 
-    def tick(self, now, elapsed):
-        if self.overridden_move_behavior_duration is not None:
-            self.overridden_move_behavior_duration -= elapsed
-            if self.overridden_move_behavior_duration < 0:
-                self.move_behavior = self.overridden_move_behavior
-                self.overridden_move_behavior = None
-                self.overridden_move_behavior_duration = None
-        if self.overridden_fire_behavior_duration is not None:
-            self.overridden_fire_behavior_duration -= elapsed
-            if self.overridden_fire_behavior_duration < 0:
-                self.fire_behavior = self.overridden_fire_behavior
-                self.overridden_fire_behavior = None
-                self.overridden_fire_behavior_duration = None
+    def become_friendly(self):
+        self._switch_sides(ENEMY_SHIPS, FRIENDLY_SHIPS)
 
+    def become_enemy(self):
+        self._switch_sides(FRIENDLY_SHIPS, ENEMY_SHIPS)
+
+    def _switch_sides(self, from_group, to_group):
+        # For mind control
+        self.groups.remove(from_group)
+        self.groups.append(to_group)
+        self.remove(from_group)
+        self.add(to_group)
+
+    def tick(self, now, elapsed):
         super().tick(now, elapsed)
         self.fire_behavior.update(now, elapsed)

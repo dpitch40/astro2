@@ -4,6 +4,7 @@ Level[level1]:
   shop_items:
     - Weapon(testgun)
     - Weapon(yondus_arrow)
+    - Weapon(mind_control_gun)
     - Shield(testshield)
   waves:
     - condition:

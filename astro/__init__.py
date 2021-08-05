@@ -35,6 +35,7 @@ EXPLOSION_DURATION_SCALE = 1
 
 # Order in which to load configs
 CONFIG_ORDER = ['behaviors',
+                'effects',
                 'projectiles',
                 'shields',
                 'weapons',
@@ -63,16 +64,20 @@ FRIENDLY_SHIELDS = pygame.sprite.RenderPlain()
 ENEMY_SHIELDS = pygame.sprite.RenderPlain()
 BACKGROUND_OBJECTS = pygame.sprite.RenderPlain()
 HEALTHBARS = pygame.sprite.RenderPlain()
+FRONT_VFX = pygame.sprite.RenderPlain()
+BACK_VFX = pygame.sprite.RenderPlain()
 
 # All groups in update order
 GROUPS = [
           BACKGROUND_OBJECTS,
+          BACK_VFX,
           FRIENDLY_SHIPS,
           ENEMY_SHIPS,
           FRIENDLY_PROJECTILES,
           ENEMY_PROJECTILES,
           PICKUPS,
           OBJECTS,
+          FRONT_VFX,
           FRIENDLY_SHIELDS,
           ENEMY_SHIELDS,
           EXPLOSIONS,
