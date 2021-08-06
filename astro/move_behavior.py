@@ -150,7 +150,7 @@ class Homing(MoveBehavior):
             self.target = self.choose_target(target_group)
 
     def get_target_group(self):
-        if set(self.ship.groups) & ENEMIES:
+        if self.ship in ENEMIES:
             target_group = FRIENDLY_SHIPS
         else:
             target_group = ENEMY_SHIPS

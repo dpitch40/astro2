@@ -193,7 +193,7 @@ class EnemyShip(Ship):
                      'overridden_move_behavior_duration': None,
                      'overridden_fire_behavior': None,
                      'overridden_fire_behavior_duration': None})
-    groups = None
+    groups = [ENEMY_SHIPS]
     confined = False
 
     def destroy(self):
@@ -208,7 +208,6 @@ class EnemyShip(Ship):
 
         self.move_behavior = self.move_behavior.copy()
         self.fire_behavior = self.fire_behavior.copy()
-        self.groups = [ENEMY_SHIPS]
 
     def place(self, *args, **kwargs):
         super().place(*args, **kwargs)
@@ -227,8 +226,6 @@ class EnemyShip(Ship):
 
     def _switch_sides(self, from_group, to_group):
         # For mind control
-        self.groups.remove(from_group)
-        self.groups.append(to_group)
         self.remove(from_group)
         self.add(to_group)
 

@@ -71,7 +71,7 @@ class Shield(FollowSprite, TimekeeperItem):
 
     def place(self, screen, owner):
         self.integrity = self.capacity
-        self.groups = [FRIENDLY_SHIELDS] if FRIENDLY_SHIPS in owner.groups else [ENEMY_SHIELDS]
+        self.groups = [FRIENDLY_SHIELDS] if owner in FRIENDLY_SHIPS else [ENEMY_SHIELDS]
         super().place(screen, owner)
 
     @property

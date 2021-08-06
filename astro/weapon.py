@@ -30,7 +30,7 @@ class Weapon(TimekeeperItem):
             self.FireBehavior.FireWeapon(self)
 
         else:
-            friendly = FRIENDLY_SHIPS.has(self.owner)
+            friendly = self.owner in FRIENDLY_SHIPS
             for projectile in self.projectiles:
                 projectile = projectile.copy()
                 projectile.place(self.owner.screen, firer=self.owner, friendly=friendly)

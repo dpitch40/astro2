@@ -68,7 +68,7 @@ class AstroSprite(Configurable, Movable, Collidable, pygame.sprite.Sprite,
         if self.deferred_image_load:
             self.load_image()
         self.rect.center = self.x ,self.y = round(self.x), round(self.y)
-        self.add(self.groups)
+        self.add(*self.groups)
 
     def _load_image(self, *args, **kwargs):
         return load_image(*args, **kwargs)
