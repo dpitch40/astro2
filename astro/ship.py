@@ -95,9 +95,10 @@ class Ship(AstroSprite):
         pass
 
     def damage(self, damage_amount):
-        self.hp -= damage_amount
-        if self.hp <= 0:
-            self.destroy()
+        if self.shield is None or self.shield.integrity <= 0:
+            self.hp -= damage_amount
+            if self.hp <= 0:
+                self.destroy()
 
     def collide_with_ship(self, other):
         return self.collide_with_mass(other)
