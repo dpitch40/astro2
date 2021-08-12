@@ -18,12 +18,14 @@ Weapon[mind_control_gun]:
     - Projectile(mind_control_proj)
 Weapon[yondus_arrow]:
   name: Yondu's Arrow
-  cost: 11000
+  cost: 9000
   rate_of_fire: 0.5
   projectiles:
     - Projectile(homing_proj):
         damage: 4
-        fuel_duration: -1
+        fuel_duration: 10000
+        move_behavior: RandomHoming(random_homing)
+        piercing: -1
 Weapon[testgun]:
   name: Test Gun
   cost: 1
