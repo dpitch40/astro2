@@ -96,7 +96,7 @@ class Collidable(metaclass=CollidableMeta):
         if angle_distance(normal_angle, a + math.pi, True) < angle_distance(normal_angle, a, True):
             normal_angle += math.pi
         # Angle of relative velocity
-        velocity_angle = math.atan2(self.speedy - other.speedy, self.speedx - other.speedy)
+        velocity_angle = math.atan2(self.speedy - other.speedy, self.speedx - other.speedx)
         # Need to ensure the collision actually pushes the ships apart; the code will fail to
         # find a solution if it doesn't
         for angle, name in [(normal_angle, 'Normal'),
