@@ -96,6 +96,7 @@ COLLIDABLE_PAIRS = [
                     (FRIENDLY_SHIELDS, ENEMY_SHIPS, True),
                     (FRIENDLY_SHIPS, ENEMY_SHIELDS, True),
                     (FRIENDLY_SHIPS, ENEMY_SHIPS, True),
+                    (FRIENDLY_SHIPS, FRIENDLY_SHIPS, True),
 
                     (FRIENDLY_SHIELDS, ENEMY_PROJECTILES, True),
                     (ENEMY_SHIELDS, FRIENDLY_PROJECTILES, False),

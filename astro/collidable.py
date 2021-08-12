@@ -24,6 +24,8 @@ class CollidableMeta(type):
 
 class Collidable(metaclass=CollidableMeta):
     def collide_with(self, other, use_mask=False):
+        if self is other:
+            return
         this_class = self.class_name.lower()
         other_class = other.class_name.lower()
         collided = not use_mask or pygame.sprite.collide_mask(self, other)
@@ -43,6 +45,8 @@ class Collidable(metaclass=CollidableMeta):
 
 
     def stop_colliding_with(self, other):
+        if self is other:
+            return
         this_class = self.class_name.lower()
         other_class = other.class_name.lower()
         for other_class in other.collidable_superclasses:
