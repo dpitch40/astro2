@@ -9,11 +9,18 @@ from astro import ENEMIES, FRIENDLY_SHIPS, ENEMY_SHIPS, REACHED_DEST_THRESHOLD
 class MoveBehavior(Configurable):
     defaults = {'initial_dest': None}
 
+    def _convert_dest(self, x, y):
+        if x is None:
+            x = self.ship.x
+        if y is None:
+            y = self.ship.y
+        return (x, y)
+
     def init_ship(self, ship):
         self.ship = ship
         if self.initial_dest:
             self.initial_dest = self.ship.screen.convert_proportional_coordinates(*self.initial_dest)
-            self.pre_dest = self.initial_dest
+            self.pre_dest = self._convert_dest(*self.initial_dest)
         else:
             self.pre_dest = None
 
@@ -102,7 +109,7 @@ class FixedPatrol(Patrol):
     def next_destination(self):
         dest = self._dests[self.dest_i]
         self.dest_i = (self.dest_i + 1) % len(self._dests)
-        return dest
+        return self._convert_dest(*dest)
 
 class RandomPatrol(Patrol):
     """Causes the ship to move to a series of random destinations.

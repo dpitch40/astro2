@@ -34,13 +34,13 @@ class Screen(metaclass=ScreenMeta):
 
     # Utility methods
     def convert_prop_x(self, x):
-        if isinstance(x, int):
+        if not isinstance(x, float):
             return x
         else:
             return round(x * self.screen_size[0])
 
     def convert_prop_y(self, y):
-        if isinstance(y, int):
+        if not isinstance(y, float):
             return y
         else:
             return round(y * self.screen_size[1])
