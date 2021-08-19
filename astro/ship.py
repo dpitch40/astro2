@@ -69,6 +69,10 @@ class Ship(AstroSprite):
     def place(self, *args, **kwargs):
         super().place(*args, **kwargs)
         self.hp = self.max_hp
+
+        for weapon in self.weapons:
+            weapon.place()
+
         if self.shield is not None:
             self.shield.place(self.screen, self)
 

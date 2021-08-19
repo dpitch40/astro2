@@ -5,6 +5,44 @@ Weapon[blaster_cannon]:
   rate_of_fire: 4
   projectiles:
     - Projectile(blueproj)
+Weapon[dual_blaster_cannon]:
+  name: Dual Blaster Cannon
+  cost: 2500
+  rate_of_fire: 4
+  projectiles:
+    - Projectile(blueproj)
+    - Projectile(blueproj)
+  projectile_offsets:
+    - [-3, 0]
+    - [3, 0]
+Weapon[triple_blaster_cannon]:
+  name: Triple Blaster Cannon
+  cost: 5000
+  rate_of_fire: 4
+  projectiles:
+    - Projectile(blueproj)
+    - Projectile(blueproj)
+    - Projectile(blueproj)
+  projectile_offsets:
+    - [-5, 0]
+    - [0, 0]
+    - [5, 0]
+Weapon[rapid_blaster_cannon]:
+  name: Rapid Blaster Cannon
+  cost: 3000
+  rate_of_fire: 10
+  projectiles:
+    - Projectile(blueproj)
+  projectile_offsets:
+    - [[-2, 0], [2, 0]]
+Weapon[blaster_cannon]:
+  name: Blaster Cannon
+  cost: 1000
+  rate_of_fire: 4
+  projectiles:
+    - Projectile(blueproj)
+  projectile_offsets:
+    - [[-3, 0], [3, 0]]
 Weapon[homing_hose]:
   name: Homing Hose
   cost: 1000000000000000000000000000000

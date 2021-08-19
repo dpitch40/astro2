@@ -47,7 +47,7 @@ class FireAtPlayer(FireConstantly):
     """
 
     def FireWeapon(self, weapon):
-        friendly = FRIENDLY_SHIPS.has(weapon.owner)
+        friendly = weapon.owner in FRIENDLY_SHIPS
         # Target a random ship from the opposing side
         target_group = ENEMY_SHIPS if friendly else FRIENDLY_SHIPS
         if target_group:
@@ -55,9 +55,10 @@ class FireAtPlayer(FireConstantly):
         else:
             target_ship = None
 
-        for projectile in weapon.projectiles:
+        for i, projectile in enumerate(weapon.projectiles):
+            offset = weapon.determine_projectile_offset(i)
             if target_ship:
-                angle = self.ship.lead_target(target_ship.x, target_ship.y,
+                angle = self.ship.lead_target(target_ship.x + offset[0], target_ship.y + offset[1],
                     target_ship.speedx, target_ship.speedy,
                     projectile.speed, 2, projectile.relative_to_firer_velocity)
             else:
@@ -65,4 +66,5 @@ class FireAtPlayer(FireConstantly):
 
             projectile = projectile.copy()
             angle = math.degrees(angle)
-            projectile.place(self.ship.screen, firer=weapon.owner, friendly=friendly, angle=angle)
+            projectile.place(self.ship.screen, firer=weapon.owner, friendly=friendly, angle=angle,
+                offset=offset)

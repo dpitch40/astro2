@@ -30,7 +30,10 @@ Level[testlevel]:
 Level[level1]:
   name: 'Level 1: The Real Testening'
   shop_items:
-
+    - Weapon(blaster_cannon)
+    - Weapon(dual_blaster_cannon)
+    - Weapon(triple_blaster_cannon)
+    - Weapon(rapid_blaster_cannon)
     - Shield(testshield)
   waves:
     - condition:
