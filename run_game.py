@@ -34,7 +34,6 @@ def main():
     screen = astro.SCREEN = pygame.display.set_mode(SCREEN_SIZE)
     pygame.display.set_caption('Astro test')
     load_all()
-    astro.PLAYER = Player(astro.ship.PlayerShip.instance('testship'))
     gui_loop(screen)
 
     pygame.quit()

@@ -1,7 +1,7 @@
 from astro.configurable import Configurable
 
 class Campaign(Configurable):
-    required_fields = ('name', 'levels')
+    required_fields = ('name', 'levels', 'starting_ship')
 
     def __init__(self, key):
         Configurable.__init__(self, key)

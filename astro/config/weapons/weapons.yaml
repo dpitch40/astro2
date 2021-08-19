@@ -1,4 +1,10 @@
 ---
+Weapon[blaster_cannon]:
+  name: Blaster Cannon
+  cost: 1000
+  rate_of_fire: 4
+  projectiles:
+    - Projectile(blueproj)
 Weapon[homing_hose]:
   name: Homing Hose
   cost: 1000000000000000000000000000000

@@ -10,7 +10,7 @@ from astro.ship import Ship
 from astro.campaign import Campaign
 
 class Player:
-    def __init__(self, ship, campaign=None,
+    def __init__(self, ship=None, campaign=None,
             owned_ships=None, owned_weapons=None, owned_shields=None, money=10000):
         self.money = money
         self.campaign = campaign
@@ -106,6 +106,9 @@ class Player:
 
 def active_player():
     return astro.PLAYER
+
+def set_active_player(player):
+    astro.PLAYER = player
 
 def load_player(filename):
     astro.PLAYER = Player.load(filename)

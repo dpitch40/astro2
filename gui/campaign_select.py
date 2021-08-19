@@ -8,7 +8,7 @@ from pygame_gui.elements.ui_selection_list import UISelectionList
 import astro
 from . import NEXT_ACTION, Action, MenuScreen
 from astro.campaign import Campaign
-from astro.player import active_player
+from astro.player import Player, active_player, set_active_player
 
 class CampaignSelectScreen(MenuScreen):
     mapped_action = Action.CAMPAIGN_SELECT
@@ -31,6 +31,7 @@ class CampaignSelectScreen(MenuScreen):
     def start_campaign(self):
         if self.selected_campaign is not None:
             NEXT_ACTION.set_next_action(Action.PRE_GAME, (self.selected_campaign,))
+            set_active_player(Player(self.selected_campaign.starting_ship))
             active_player().campaign = self.selected_campaign
             self.selected_campaign.reset()
 

@@ -1,5 +1,5 @@
 ---
-Line[wave1]:
+Line[enemy_line]:
   width: 0.5
   height: 1
   ships:
@@ -8,7 +8,7 @@ Line[wave1]:
     RandomPatrol(around):
       pause_time: 1
       width: 0.5
-Line[wave2]:
+Line[enemy_followers]:
   width: 0.4
   height: 1
   dest_y: 80
@@ -20,23 +20,20 @@ Line[wave2]:
                 - [0.25, 80]
                 - [0.75, 80]
       - 5
-Grid[wave3]:
+Line[invader_line]:
   width: 0.6
-  height: 0.3
-  rows: 3
-  columns: 10
-  dest_y: 0.25
+  height: 1
+  ships:
+    - ['EnemyShip(invader_green)', 4]
+    - ['EnemyShip(invader_red)', 4]
+    - ['EnemyShip(invader_blue)', 4]
   move_behavior:
     FixedPatrol(back_and_forth):
+      initial_dest: [0.5, 120]
       dests:
-        - [0.4, 0.25]
-        - [0.6, 0.25]
-  ships:
-    - ['EnemyShip(invader_green)', 10]
-    - ['EnemyShip(invader_red)', 10]
-    - ['EnemyShip(invader_blue)', 10]
-
-Grid[wave4]:
+        - [0.3, null]
+        - [0.7, null]
+Grid[invader_grid]:
   width: 0.6
   height: 0.3
   rows: 3

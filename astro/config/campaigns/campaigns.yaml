@@ -2,4 +2,10 @@
 Campaign[test]:
   name: 'Test Campaign'
   levels:
+    - Level(testlevel)
+  starting_ship: PlayerShip(testship)
+Campaign[test2]:
+  name: 'Test Campaign 2'
+  levels:
     - Level(level1)
+  starting_ship: PlayerShip(t_wing)

@@ -1,5 +1,5 @@
 ---
-Level[level1]:
+Level[testlevel]:
   name: 'Level 1: The Testening'
   shop_items:
     - Weapon(testgun)
@@ -11,19 +11,47 @@ Level[level1]:
         AlwaysTrue():
           delay: 1.0
       formations:
-        - Line(wave1)
+        - Line(enemy_line)
     - condition:
         LastWaveDefeated():
           delay: 1.0
       formations:
-        - Line(wave2)
+        - Line(enemy_followers)
     - condition:
         LastWaveDefeated():
           delay: 1.0
       formations:
-        - Grid(wave3)
+        - Grid(invader_grid)
     - condition:
         LastWaveDefeated():
           delay: 1.0
       formations:
-        - Grid(wave4)
+        - Grid(invader_grid)
+Level[level1]:
+  name: 'Level 1: The Real Testening'
+  shop_items:
+
+    - Shield(testshield)
+  waves:
+    - condition:
+        AlwaysTrue():
+          delay: 1.0
+      formations:
+        - Line(invader_line):
+            dest_y: 40
+    # - condition:
+    #     LastWaveDefeated():
+    #       delay: 1.0
+    #   formations:
+    #     - Line(wave2)
+    # - condition:
+    #     LastWaveDefeated():
+    #       delay: 1.0
+    #   formations:
+    #     - Grid(wave3)
+    # - condition:
+    #     LastWaveDefeated():
+    #       delay: 1.0
+    #   formations:
+    #     - Grid(wave4)
+
