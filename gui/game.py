@@ -103,6 +103,7 @@ class MainGameScreen(GameScreen):
         self.level.start()
         self.counting_down = True
         self.countdown_remaining = 3.0
+        self.time_total = 0
 
         deploying_font = pygame.font.Font(FONTS.mono_font, 48)
         self.deploying_msg = deploying_font.render("Deploying", 1, (255, 255, 255))
@@ -110,6 +111,13 @@ class MainGameScreen(GameScreen):
             (self.screen_size[0] / 2, self.screen_size[1] / 2))
 
         self.number_font = pygame.font.Font(FONTS.mono_font, 36)
+
+    def  teardown(self):
+        super().teardown()
+        if self.time_total >= 1:
+            print(f"Well, your time was ehhhhhhhhh ({self.time_total / 1000} seconds)")
+        else:
+            print("Nice job with the 1 millisecond time (plz stop hacking tho)")
 
     def update_display(self, elapsed):
         if self.counting_down:
@@ -131,9 +139,11 @@ class MainGameScreen(GameScreen):
             if self.countdown_remaining <= 0:
                 self.counting_down = False
 
+
         if not self.counting_down:
             self.level.update()
             elapsed = super().update(elapsed)
+            self.time_total += elapsed
 
         return elapsed
 

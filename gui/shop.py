@@ -12,6 +12,7 @@ from astro.player import active_player
 from astro.weapon import Weapon
 from astro.shield import Shield
 
+
 class ShopScreen(MenuScreen):
     mapped_action = Action.SHOP
     title = "Shop"
@@ -98,6 +99,10 @@ class ShopScreen(MenuScreen):
             for button in self.owned_list_buttons:
                 del self.button_mapping[button]
             self.owned_list_buttons.clear()
+
+        #Note how many of each item you own
+        #Delete duplicate items from owned_items
+        #
 
         owned_items = self.player.owned_weapons + self.player.owned_shields
         owned_item_strings = [f'{item.name} ({item.cost}ξ)' for item in owned_items]

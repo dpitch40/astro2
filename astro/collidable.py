@@ -151,8 +151,10 @@ class Collidable(metaclass=CollidableMeta):
         damage = f * (1.0 - elasticity) * COLLISION_DAMAGE_MULT
         # Multiplier to make heavier ships sustain less damage and lighter ships more
         mass_mult = other.mass / self.mass
-        self.damage(round(damage * mass_mult, 1))
-        other.damage(round(damage / mass_mult, 1))
+
+        self.damage(max(damage * mass_mult, 1))
+        other.damage(max(damage / mass_mult, 1))
+        print(f"Your damage (ono D:): {min(damage * mass_mult, 1)} Their Damage (ayy poggers :D): {min(damage / mass_mult, 1)}")
 
         # print('After', self.x, self.y, other.x, other.y, get_overlap_at_t(0).count())
         # print(self.speedx, self.speedy)

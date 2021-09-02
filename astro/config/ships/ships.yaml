@@ -53,7 +53,7 @@ EnemyShip[invader_red]:
     fire_behavior:
       FireConstantly(fire_constantly)
 EnemyShip[invader_blue]:
-    max_hp: 1
+    max_hp: 3
     imagepath: ships/invader_blue.png
     acceleration: 1000
     max_speed: 150
