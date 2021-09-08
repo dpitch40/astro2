@@ -114,10 +114,7 @@ class MainGameScreen(GameScreen):
 
     def  teardown(self):
         super().teardown()
-        if self.time_total >= 1:
-            print(f"Well, your time was ehhhhhhhhh ({self.time_total / 1000} seconds)")
-        else:
-            print("Nice job with the 1 millisecond time (plz stop hacking tho)")
+        print(f"Level {self.level.name} completed in {self.time_total / 1000} seconds")
 
     def update_display(self, elapsed):
         if self.counting_down:
@@ -138,7 +135,6 @@ class MainGameScreen(GameScreen):
             self.countdown_remaining -= elapsed / 1000
             if self.countdown_remaining <= 0:
                 self.counting_down = False
-
 
         if not self.counting_down:
             self.level.update()

@@ -100,11 +100,16 @@ class ShopScreen(MenuScreen):
                 del self.button_mapping[button]
             self.owned_list_buttons.clear()
 
+        owned_items = self.player.owned_weapons + self.player.owned_shields
+        # Goal: Instead of displaying a separate line for each item, display one line
+        # for each item type plus a quantity amount if there are duplicates
+        # e.g.:
+        # TestGun1 (10000ξ)
+        # TestGun2 x 10000 (1ξ)
+
         #Note how many of each item you own
         #Delete duplicate items from owned_items
-        #
 
-        owned_items = self.player.owned_weapons + self.player.owned_shields
         owned_item_strings = [f'{item.name} ({item.cost}ξ)' for item in owned_items]
         self.owned_list = UISelectionList(relative_rect=self.proportional_rect((0.5, 0.6), (0.35, 0.25)),
                                     item_list=owned_item_strings, manager=self.manager)
